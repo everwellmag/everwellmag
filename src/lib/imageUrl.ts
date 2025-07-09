@@ -1,9 +1,13 @@
-// src/lib/imageUrl.ts
-import imageUrlBuilder from '@sanity/image-url'
-import { sanity } from './sanity'
+import imageUrlBuilder from '@sanity/image-url';
+import { sanity } from './sanity';
 
-const builder = imageUrlBuilder(sanity)
+// Định nghĩa interface cho ImageSource
+interface ImageSource {
+  asset: { _ref: string };
+}
 
-export function urlFor(source: any) {
-  return builder.image(source)
+const builder = imageUrlBuilder(sanity);
+
+export function urlFor(source: ImageSource) {
+  return builder.image(source);
 }

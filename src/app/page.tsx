@@ -4,7 +4,6 @@ import { sanity } from '@/lib/sanity';
 import { urlFor } from '@/lib/imageUrl';
 import Image from 'next/image';
 
-// Định nghĩa interface cho Post
 interface Post {
   title: string;
   slug: { current: string };
@@ -19,9 +18,16 @@ export const metadata = {
 };
 
 export default async function Home() {
-  // Fetch danh sách bài viết từ Sanity (3 bài mới nhất)
-  const posts: Post[] = await sanity
-    .fetch(
+  console.log('Sanity Config:', {
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
+    useCdn: false,
+    apiVersion: '2025-07-09',
+    hasToken: !!process.env.SANITY_API_TOKEN,
+  });
+
+  try {
+    const posts: Post[] = await sanity.fetch(
       `*[_type == "post"] | order(publishedAt desc)[0...3]{
         title,
         slug,
@@ -29,29 +35,28 @@ export default async function Home() {
         body,
         publishedAt
       }`
-    )
-    .catch((err: unknown) => {
-      console.error('Sanity fetch error:', err);
-      return [];
-    });
+    );
+    console.log('Fetched posts:', JSON.stringify(posts, null, 2));
+    return renderHome(posts);
+  } catch (err) {
+    console.error('Sanity fetch error:', err);
+    return renderHome([]);
+  }
+}
 
+function renderHome(posts: Post[]) {
   return (
     <>
       <Head>
         <meta name="keywords" content="health tips 2025, weight loss, supplements, wellness, everwellmag" />
       </Head>
       <main className="min-h-screen bg-gray-100 text-gray-900">
-        {/* Hero Section */}
         <section className="bg-blue-900 text-white py-20 text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-4">EverWell Magazine</h1>
           <p className="text-xl md:text-2xl max-w-3xl mx-auto">
             Your trusted guide to 2025 health trends, expert advice, and premium wellness products.
           </p>
         </section>
-
-
-
-        {/* Featured Section */}
         <section className="max-w-6xl mx-auto px-4 py-12">
           <h2 className="text-4xl font-semibold text-gray-800 mb-8 text-center">
             🌿 Featured Articles & Products
@@ -82,8 +87,6 @@ export default async function Home() {
             </div>
           </div>
         </section>
-
-        {/* Latest Posts Section */}
         <section className="max-w-6xl mx-auto px-4 py-12">
           <h2 className="text-4xl font-semibold text-gray-800 mb-8 text-center">📰 Latest Articles</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

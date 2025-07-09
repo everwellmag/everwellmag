@@ -49,35 +49,7 @@ export default async function Home() {
           </p>
         </section>
 
-        {/* Navigation Menu */}
-        <nav className="bg-white py-4 shadow-md sticky top-0 z-10">
-          <div className="max-w-6xl mx-auto px-4">
-            <ul className="flex justify-center gap-8 text-lg flex-wrap">
-              {[
-                { href: '/', label: 'Home' },
-                { href: '/weight-loss', label: 'Weight Loss' },
-                { href: '/blood-sugar', label: 'Blood Sugar' },
-                { href: '/eye-health', label: 'Eye Health' },
-                { href: '/heart-health', label: 'Heart Health' },
-                { href: '/mens-health', label: "Men's Health" },
-                { href: '/womens-health', label: "Women's Health" },
-                { href: '/mind-sleep', label: 'Mind & Sleep' },
-                { href: '/supplements', label: 'Supplements' },
-                { href: '/about', label: 'About' },
-                { href: '/contact', label: 'Contact' },
-              ].map(({ href, label }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className="text-gray-800 hover:text-blue-600 font-medium px-3 py-2 rounded transition"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </nav>
+
 
         {/* Featured Section */}
         <section className="max-w-6xl mx-auto px-4 py-12">

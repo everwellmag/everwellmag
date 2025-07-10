@@ -142,16 +142,16 @@ export default function Navbar() {
         }
         .mobile-menu {
           position: fixed;
-          top: 0;
+          top: 1;
           right: 0;
-          width: 80%;
+          width: 100%;
           height: 100%;
           max-height: 100vh;
           overflow-y: auto;
           transform: translateX(100%);
           transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
           opacity: 0;
-          background: rgba(30, 58, 138, 0.9); /* Blue with 70% opacity */
+          background: rgba(30, 58, 138, 1); /* Blue with 70% opacity */
         }
         .mobile-menu.open {
           transform: translateX(0);
@@ -216,16 +216,7 @@ export default function Navbar() {
         onTouchEnd={handleTouchEnd}
       >
         <div className="flex flex-col gap-3 px-6 py-8">
-          {/* Close Button */}
-          <button
-            className="self-end text=white focus:outline-none p-3"
-            aria-label="Close menu"
-            onClick={toggleMenu}
-          >
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+
           {menuItems.map((item, index) => (
             <div key={item.href}>
               <div className="flex justify-between items-center">

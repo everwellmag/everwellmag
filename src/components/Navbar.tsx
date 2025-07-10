@@ -82,7 +82,7 @@ export default function Navbar() {
         { href: "/heart-health/heart-diet", label: "Heart-Healthy Diet" },
         { href: "/heart-health/exercise", label: "Cardio Exercises" },
         { href: "/heart-health/risk-factors", label: "Risk Factors" },
-      ],
+     ],
     },
     {
       href: "/mens-health",
@@ -151,7 +151,7 @@ export default function Navbar() {
           transform: translateX(100%);
           transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
           opacity: 0;
-          background: #1e3a8a; /* Slightly darker blue for contrast */
+          background: rgba(30, 58, 138, 0.9); /* Blue with 70% opacity */
         }
         .mobile-menu.open {
           transform: translateX(0);
@@ -218,7 +218,7 @@ export default function Navbar() {
         <div className="flex flex-col gap-3 px-6 py-8">
           {/* Close Button */}
           <button
-            className="self-end text-white focus:outline-none p-3"
+            className="self-end text=white focus:outline-none p-3"
             aria-label="Close menu"
             onClick={toggleMenu}
           >

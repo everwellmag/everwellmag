@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
+import Head from "next/head";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -32,12 +33,10 @@ export default function Navbar() {
   const handleTouchEnd = () => {
     if (touchStartX.current !== null && touchEndX.current !== null) {
       const deltaX = touchEndX.current - touchStartX.current;
-      // Swipe left to close (threshold: 100px)
       if (isMenuOpen && deltaX < -100) {
         setIsMenuOpen(false);
         setOpenSubMenu(null);
       }
-      // Swipe right to open (threshold: 100px)
       if (!isMenuOpen && deltaX > 100) {
         setIsMenuOpen(true);
       }
@@ -82,7 +81,7 @@ export default function Navbar() {
         { href: "/heart-health/heart-diet", label: "Heart-Healthy Diet" },
         { href: "/heart-health/exercise", label: "Cardio Exercises" },
         { href: "/heart-health/risk-factors", label: "Risk Factors" },
-     ],
+      ],
     },
     {
       href: "/mens-health",
@@ -125,142 +124,133 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-blue-900 text-white fixed top-0 left-0 w-full z-50 shadow-lg">
-      <style jsx>{`
-        .dropdown-menu {
-          min-width: fit-content;
-          white-space: nowrap;
-          transition: visibility 0s linear 0.3s, opacity 0.3s ease-in-out;
-          visibility: hidden;
-          opacity: 0;
-          left: 0;
-        }
-        .group:hover .dropdown-menu {
-          visibility: visible;
-          opacity: 1;
-          transition-delay: 0s;
-        }
-        .mobile-menu {
-          position: fixed;
-          top: 1;
-          right: 0;
-          width: 100%;
-          height: 100%;
-          max-height: 100vh;
-          overflow-y: auto;
-          transform: translateX(100%);
-          transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-          opacity: 0;
-          background: rgba(30, 58, 138, 1); /* Blue with 70% opacity */
-        }
-        .mobile-menu.open {
-          transform: translateX(0);
-          opacity: 1;
-        }
-        .submenu {
-          transition: max-height 0.3s ease-in-out;
-          max-height: 0;
-          overflow: hidden;
-        }
-        .submenu.open {
-          max-height: 500px;
-        }
-      `}</style>
-      <div className="px-6 sm:px-8 lg:px-12 mx-auto flex justify-between items-center py-4">
-        {/* Logo */}
-        <Link href="/" className="text-3xl font-bold tracking-tight">
-          EverWell Magazine
-        </Link>
+    <>
+      <Head>
+        <style>{`
+          .dropdown-menu, .submenu {
+            visibility: hidden;
+            opacity: 0;
+            display: none;
+          }
+        `}</style>
+      </Head>
+      <nav className="bg-blue-900 text-white fixed top-0 left-0 w-full z-50 shadow-lg">
+        <div className="px-6 sm:px-8 lg:px-12 mx-auto flex justify-between items-center py-4">
+          {/* Logo */}
+          <Link href="/" className="text-3xl font-bold tracking-tight">
+            EverWell Magazine
+          </Link>
 
-        {/* Menu Desktop */}
-        <div className="hidden md:flex gap-8">
-          {menuItems.map((item, index) => (
-            <div key={item.href} className="relative group">
-              <Link href={item.href} className="hover:text-blue-200 transition font-medium">
-                {item.label}
-              </Link>
-              {item.subItems && (
-                <div className="dropdown-menu absolute bg-blue-900 text-white shadow-lg rounded-lg mt-3 p-2">
-                  {item.subItems.map((subItem) => (
-                    <Link
-                      key={subItem.href}
-                      href={subItem.href}
-                      className="block px-5 py-3 text-base hover:bg-blue-800 rounded transition"
-                    >
-                      {subItem.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Hamburger Button Mobile */}
-        <button
-          className="md:hidden text-white focus:outline-none"
-          aria-label="Toggle menu"
-          onClick={toggleMenu}
-        >
-          <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
-      <div
-        className={`md:hidden mobile-menu ${isMenuOpen ? "open" : ""}`}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        <div className="flex flex-col gap-3 px-6 py-8">
-
-          {menuItems.map((item, index) => (
-            <div key={item.href}>
-              <div className="flex justify-between items-center">
+          {/* Menu Desktop */}
+          <div className="hidden md:flex gap-8">
+            {menuItems.map((item, index) => (
+              <div key={item.href} className="relative group">
                 <Link
                   href={item.href}
-                  className="text-xl font-medium hover:text-blue-200 transition py-3"
-                  onClick={toggleMenu}
+                  className="py-2 font-medium text-white hover:text-blue-200 transition-colors duration-200"
                 >
                   {item.label}
                 </Link>
                 {item.subItems && (
-                  <button
-                    className="text-white focus:outline-none p-3"
-                    onClick={() => toggleSubMenu(index)}
-                  >
-                    <svg
-                      className={`w-6 h-6 transform ${openSubMenu === index ? "rotate-180" : ""}`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
+                  <div className="dropdown-menu absolute top-full left-0 bg-blue-900 text-white shadow-lg rounded-lg p-2 min-w-[200px] invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-300">
+                    {item.subItems.map((subItem) => (
+                      <Link
+                        key={subItem.href}
+                        href={subItem.href}
+                        className="block px-4 py-2 text-base hover:bg-blue-800 rounded transition-colors duration-200"
+                      >
+                        {subItem.label}
+                      </Link>
+                    ))}
+                  </div>
                 )}
               </div>
-              {item.subItems && openSubMenu === index && (
-                <div className={`pl-6 flex flex-col gap-3 mt-2 submenu ${openSubMenu === index ? "open" : ""}`}>
-                  {item.subItems.map((subItem) => (
-                    <Link
-                      key={subItem.href}
-                      href={subItem.href}
-                      className="text-lg hover:text-blue-200 transition py-2"
-                      onClick={toggleMenu}
-                    >
-                      {subItem.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
+
+          {/* Hamburger Button Mobile */}
+          <button
+            className="md:hidden text-white focus:outline-none"
+            aria-label="Toggle menu"
+            onClick={toggleMenu}
+          >
+            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
         </div>
-      </div>
-    </nav>
+
+        {/* Mobile Menu */}
+        <div
+          className={`md:hidden fixed top-0 right-0 w-full h-full max-h-[100vh] bg-blue-900/95 overflow-y-auto transform ${
+            isMenuOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
+          } transition-all duration-300 ease-in-out`}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="flex flex-col gap-3 px-6 py-8">
+            {/* Close Button */}
+            <button
+              className="self-end text-white focus:outline-none mb-4"
+              aria-label="Close menu"
+              onClick={toggleMenu}
+            >
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            {menuItems.map((item, index) => (
+              <div key={item.href}>
+                <div className="flex justify-between items-center">
+                  <Link
+                    href={item.href}
+                    className="text-xl font-medium text-white hover:text-blue-200 transition-colors duration-200 py-3"
+                    onClick={toggleMenu}
+                  >
+                    {item.label}
+                  </Link>
+                  {item.subItems && (
+                    <button
+                      className="text-white focus:outline-none p-3"
+                      onClick={() => toggleSubMenu(index)}
+                    >
+                      <svg
+                        className={`w-6 h-6 transform transition-transform duration-200 ${
+                          openSubMenu === index ? "rotate-180" : ""
+                        }`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                {item.subItems && (
+                  <div
+                    className={`pl-6 flex flex-col gap-3 mt-2 submenu overflow-hidden ${
+                      openSubMenu === index ? "max-h-[500px]" : "max-h-0"
+                    } transition-all duration-300 ease-in-out`}
+                  >
+                    {item.subItems.map((subItem) => (
+                      <Link
+                        key={subItem.href}
+                        href={subItem.href}
+                        className="text-lg text-white hover:text-blue-200 transition-colors duration-200 py-2"
+                        onClick={toggleMenu}
+                      >
+                        {subItem.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </nav>
+    </>
   );
 }

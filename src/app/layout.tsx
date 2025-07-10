@@ -25,9 +25,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
         <Navbar />
-        <div className="pt-16">{children}</div>
+        <main className="flex-grow pt-16">{children}</main>
         <footer className="bg-blue-900 text-white py-6 w-full mx-0">
           <div className="px-4 sm:px-6 lg:px-8 text-center">
             <p className="mb-4">© 2025 EverWell Magazine. All rights reserved.</p>

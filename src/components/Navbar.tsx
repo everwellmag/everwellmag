@@ -95,41 +95,60 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-blue-900 text-white fixed top-0 left-0 w-full z-50 shadow-md">
+    <nav className="bg-blue-900 text-white fixed top-0 left-0 w-full z-50 shadow-lg">
       <style jsx>{`
         .dropdown-menu {
           min-width: fit-content;
           white-space: nowrap;
-          transition: visibility 0s linear 0.2s, opacity 0.2s linear;
+          transition: visibility 0s linear 0.3s, opacity 0.3s ease-in-out;
           visibility: hidden;
           opacity: 0;
+          left: 0;
         }
         .group:hover .dropdown-menu {
           visibility: visible;
           opacity: 1;
           transition-delay: 0s;
         }
+        .mobile-menu {
+          transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out;
+          max-height: 0;
+          opacity: 0;
+          overflow: hidden;
+        }
+        .mobile-menu.open {
+          max-height: 1000px;
+          opacity: 1;
+        }
+        .submenu {
+          transition: max-height 0.3s ease-in-out;
+          max-height: 0;
+          overflow: hidden;
+        }
+        .submenu.open {
+          max-height: 500px;
+        }
       `}</style>
-      <div className="px-4 sm:px-6 lg:px-8 mx-auto flex justify-between items-center py-4">
+      <div className="px-6 sm:px-8 lg:px-12 mx-auto flex justify-between items-center py-4">
         {/* Logo */}
-        <Link href="/" className="text-2xl font-bold">
+        <Link href="/" className="text-3xl font-bold tracking-tight">
           EverWell Magazine
         </Link>
 
         {/* Menu Desktop */}
-        <div className="hidden md:flex gap-6">
+        <div className="hidden md:flex gap-8">
           {menuItems.map((item, index) => (
             <div key={item.href} className="relative group">
-              <Link href={item.href} className="hover:text-blue-200 transition">
+              <Link href={item.href} className="hover:text-blue-200 transition font-medium">
                 {item.label}
               </Link>
               {item.subItems && (
-                <div className="dropdown-menu absolute bg-blue-900 text-white shadow-md rounded-md mt-2">
+                <div className="dropdown-menu absolute bg-blue-900 text-white shadow-lg rounded-lg mt-3 p-2">
                   {item.subItems.map((subItem) => (
                     <Link
                       key={subItem.href}
                       href={subItem.href}
-                      className="block px-4 py-2 hover:bg-blue-800 transition"
+                      className="block px-5 py-3 text-base hover:bg-blue-800 rounded transition"
                     >
                       {subItem.label}
                     </Link>
@@ -146,48 +165,48 @@ export default function Navbar() {
           aria-label="Toggle menu"
           onClick={toggleMenu}
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
       </div>
 
       {/* Mobile Menu */}
-      <div className={`${isMenuOpen ? "block" : "hidden"} md:hidden bg-blue-900`}>
-        <div className="flex flex-col gap-4 px-4 py-6">
+      <div className={`md:hidden bg-blue-900 mobile-menu ${isMenuOpen ? "open" : ""}`}>
+        <div className="flex flex-col gap-3 px-6 py-8">
           {menuItems.map((item, index) => (
             <div key={item.href}>
               <div className="flex justify-between items-center">
                 <Link
                   href={item.href}
-                  className="hover:text-blue-200 transition"
+                  className="text-xl font-medium hover:text-blue-200 transition py-3"
                   onClick={toggleMenu}
                 >
                   {item.label}
                 </Link>
                 {item.subItems && (
                   <button
-                    className="text-white focus:outline-none"
+                    className="text-white focus:outline-none p-3"
                     onClick={() => toggleSubMenu(index)}
                   >
                     <svg
-                      className={`w-4 h-4 transform ${openSubMenu === index ? "rotate-180" : ""}`}
+                      className={`w-6 h-6 transform ${openSubMenu === index ? "rotate-180" : ""}`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
                 )}
               </div>
               {item.subItems && openSubMenu === index && (
-                <div className="pl-4 flex flex-col gap-2 mt-2">
+                <div className={`pl-6 flex flex-col gap-3 mt-2 submenu ${openSubMenu === index ? "open" : ""}`}>
                   {item.subItems.map((subItem) => (
                     <Link
                       key={subItem.href}
                       href={subItem.href}
-                      className="hover:text-blue-200 transition"
+                      className="text-lg hover:text-blue-200 transition py-2"
                       onClick={toggleMenu}
                     >
                       {subItem.label}

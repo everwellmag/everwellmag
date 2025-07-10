@@ -161,9 +161,9 @@ export default async function PostPage({ params }: Props) {
   };
 
   return (
-    <main className="p-6 max-w-4xl mx-auto">
+    <main className="pt-6 md:pt-8 px-4 md:px-6 max-w-[1080px] mx-auto">
       {/* Nội dung bài viết */}
-      <article className="bg-white p-6 rounded-lg shadow-md mb-12">
+      <article className="mb-8">
         <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
         <p className="text-gray-600 text-sm mb-4">
           {post.category?.title || 'Uncategorized'} | Published on{' '}
@@ -184,7 +184,7 @@ export default async function PostPage({ params }: Props) {
       </article>
 
       {/* Bài viết liên quan */}
-      <section className="mb-12">
+      <section className="mb-8">
         <h2 className="text-2xl font-semibold text-gray-800 mb-6">Related Articles</h2>
         <div className="flex flex-col gap-4">
           {relatedPosts.length > 0 ? (

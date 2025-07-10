@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [openSubMenu, setOpenSubMenu] = useState<number | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -14,6 +16,34 @@ export default function Navbar() {
 
   const toggleSubMenu = (index: number) => {
     setOpenSubMenu(openSubMenu === index ? null : index);
+  };
+
+  // Handle touch start for swipe detection
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  // Handle touch move for swipe detection
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  // Handle touch end to determine swipe direction
+  const handleTouchEnd = () => {
+    if (touchStartX.current !== null && touchEndX.current !== null) {
+      const deltaX = touchEndX.current - touchStartX.current;
+      // Swipe left to close (threshold: 100px)
+      if (isMenuOpen && deltaX < -100) {
+        setIsMenuOpen(false);
+        setOpenSubMenu(null);
+      }
+      // Swipe right to open (threshold: 100px)
+      if (!isMenuOpen && deltaX > 100) {
+        setIsMenuOpen(true);
+      }
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
   };
 
   const menuItems = [
@@ -111,13 +141,20 @@ export default function Navbar() {
           transition-delay: 0s;
         }
         .mobile-menu {
-          transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out;
-          max-height: 0;
+          position: fixed;
+          top: 0;
+          right: 0;
+          width: 80%;
+          height: 100%;
+          max-height: 100vh;
+          overflow-y: auto;
+          transform: translateX(100%);
+          transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
           opacity: 0;
-          overflow: hidden;
+          background: #1e3a8a; /* Slightly darker blue for contrast */
         }
         .mobile-menu.open {
-          max-height: 1000px;
+          transform: translateX(0);
           opacity: 1;
         }
         .submenu {
@@ -172,8 +209,23 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu */}
-      <div className={`md:hidden bg-blue-900 mobile-menu ${isMenuOpen ? "open" : ""}`}>
+      <div
+        className={`md:hidden mobile-menu ${isMenuOpen ? "open" : ""}`}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         <div className="flex flex-col gap-3 px-6 py-8">
+          {/* Close Button */}
+          <button
+            className="self-end text-white focus:outline-none p-3"
+            aria-label="Close menu"
+            onClick={toggleMenu}
+          >
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
           {menuItems.map((item, index) => (
             <div key={item.href}>
               <div className="flex justify-between items-center">

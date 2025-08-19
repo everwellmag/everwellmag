@@ -86,8 +86,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   // Khởi tạo JSDOM trên server
   const window = new JSDOM('').window;
-  const purify = DOMPurify(window as unknown as Window);
-  const cleanDescription = purify.sanitize(post.attributes.content.slice(0, 150), { USE_PROFILES: { html: true } });
+  const purifyMetadata = DOMPurify(window as any);
+  const cleanDescription = purifyMetadata.sanitize(post.attributes.content.slice(0, 150), { USE_PROFILES: { html: true } });
 
   return {
     title: post.attributes.title,
@@ -120,8 +120,8 @@ export default async function PostPage({ params }: Props) {
 
   // Khởi tạo JSDOM trên server và dọn dẹp HTML
   const window = new JSDOM('').window;
-  const purify = DOMPurify(window as unknown as Window);
-  const cleanContent = purify.sanitize(post.attributes.content);
+  const purifyContent = DOMPurify(window as any);
+  const cleanContent = purifyContent.sanitize(post.attributes.content);
 
   return (
     <main className="pt-6 md:pt-8 px-4 md:px-6 max-w-[1080px] mx-auto">

@@ -1,15 +1,27 @@
+// app/page.tsx
+
 import Head from 'next/head';
 import Link from 'next/link';
-import { sanity } from '@/lib/sanity';
-import { urlFor } from '@/lib/imageUrl';
 import Image from 'next/image';
 
-interface Post {
+interface PostAttributes {
   title: string;
-  slug: { current: string };
-  mainImage?: { asset: { _ref: string }; alt?: string };
-  body?: { _type: string; children: { _type: string; text: string }[] }[];
-  publishedAt: string;
+  slug: string;
+  shortDescription?: string;
+  createdAt: string;
+  image: {
+    data: {
+      attributes: {
+        url: string;
+        alt?: string;
+      };
+    };
+  };
+}
+
+interface StrapiPost {
+  id: number;
+  attributes: PostAttributes;
 }
 
 export const metadata = {
@@ -17,34 +29,30 @@ export const metadata = {
   description: 'Explore top health tips, weight loss solutions, and affiliate products from ClickBank & Digistore24 at EverWell Magazine.',
 };
 
-export default async function Home() {
-  console.log('Sanity Config:', {
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-    useCdn: false,
-    apiVersion: '2025-07-09',
-    hasToken: !!process.env.SANITY_API_TOKEN,
-  });
+// Hàm này được gọi ở phía server để lấy dữ liệu từ Strapi
+async function getPosts() {
+  const url = `${process.env.STRAPI_API_URL}/posts?populate=image&pagination[limit]=3&sort[0]=createdAt:desc`;
 
   try {
-    const posts: Post[] = await sanity.fetch(
-      `*[_type == "post"] | order(publishedAt desc)[0...3]{
-        title,
-        slug,
-        mainImage,
-        body,
-        publishedAt
-      }`
-    );
-    console.log('Fetched posts:', JSON.stringify(posts, null, 2));
-    return renderHome(posts);
+    const res = await fetch(url, {
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch posts: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    return data.data as StrapiPost[];
   } catch (err) {
-    console.error('Sanity fetch error:', err);
-    return renderHome([]);
+    console.error('Lỗi khi lấy dữ liệu từ Strapi:', err);
+    return [];
   }
 }
 
-function renderHome(posts: Post[]) {
+export default async function Home() {
+  const posts = await getPosts();
+
   return (
     <>
       <Head>
@@ -92,26 +100,24 @@ function renderHome(posts: Post[]) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {posts.length > 0 ? (
               posts.map((post) => (
-                <div key={post.slug.current} className="bg-white p-6 rounded-lg shadow-md">
-                  {post.mainImage && (
+                <div key={post.id} className="bg-white p-6 rounded-lg shadow-md">
+                  {post.attributes.image?.data?.attributes?.url && (
                     <Image
-                      src={urlFor(post.mainImage).width(300).url()}
-                      alt={post.mainImage?.alt || post.title}
+                      src={`${process.env.STRAPI_API_URL}${post.attributes.image.data.attributes.url}`}
+                      alt={post.attributes.image.data.attributes.alt || post.attributes.title}
                       width={300}
                       height={192}
                       className="mb-4 rounded-md w-full h-48 object-cover"
                     />
                   )}
                   <Link
-                    href={`/post/${post.slug.current}`}
+                    href={`/post/${post.attributes.slug}`}
                     className="text-blue-600 hover:text-blue-500 text-xl font-medium block mb-2"
                   >
-                    {post.title}
+                    {post.attributes.title}
                   </Link>
                   <p className="text-gray-600 line-clamp-3">
-                    {post.body && post.body[0]?.children[0]?.text
-                      ? post.body[0].children[0].text.slice(0, 100) + '...'
-                      : 'No preview available.'}
+                    {post.attributes.shortDescription || 'No preview available.'}
                   </p>
                 </div>
               ))

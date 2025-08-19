@@ -1,79 +1,107 @@
+// app/post/page.tsx
+
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { sanity } from '@/lib/sanity';
-import { urlFor } from '@/lib/imageUrl';
-import { PortableText } from '@portabletext/react';
 import Image from 'next/image';
 import Link from 'next/link';
+import DOMPurify from 'dompurify';
+import { JSDOM } from 'jsdom';
 
-// Định nghĩa interface cho BodyBlock (dựa trên PortableText)
-interface BodyBlock {
-  _type: string;
-  children?: { _type: string; text: string; marks?: string[] }[];
-  style?: string;
-  asset?: { _ref: string };
-  alt?: string;
-}
-
-// Định nghĩa interface cho Post và RelatedPost
-interface Post {
+// Định nghĩa kiểu dữ liệu cho bài viết từ Strapi
+interface PostAttributes {
   title: string;
-  slug?: { current: string };
-  mainImage?: { asset: { _ref: string }; alt?: string };
-  body?: BodyBlock[];
-  publishedAt?: string;
-  category?: { title: string };
+  slug: string;
+  content: string; // Nội dung bài viết thường ở dạng HTML/Markdown
+  publishedAt: string;
+  image: {
+    data: {
+      attributes: {
+        url: string;
+        alt?: string;
+      };
+    };
+  };
+  category: {
+    data: {
+      attributes: {
+        title: string;
+      };
+    };
+  };
 }
 
-interface ImageValue {
-  asset: { _ref: string };
-  alt?: string;
+interface StrapiPost {
+  id: number;
+  attributes: PostAttributes;
 }
 
 type Props = {
-  params: any; // Giữ any để tránh lỗi PageProps
+  params: {
+    slug: string;
+  };
 };
+
+// Hàm lấy dữ liệu bài viết từ Strapi
+async function getPost(slug: string): Promise<StrapiPost | null> {
+  const url = `${process.env.STRAPI_API_URL}/posts?filters[slug][$eq]=${slug}&populate=*`;
+  try {
+    const res = await fetch(url, {
+      cache: 'no-store',
+    });
+    if (!res.ok) {
+      console.error(`Error fetching post: ${res.statusText}`);
+      return null;
+    }
+    const data = await res.json();
+    return data.data[0] || null;
+  } catch (err) {
+    console.error('Lỗi khi lấy dữ liệu bài viết:', err);
+    return null;
+  }
+}
+
+// Hàm lấy bài viết liên quan từ Strapi
+async function getRelatedPosts(currentPostId: number, categoryTitle: string): Promise<StrapiPost[]> {
+  const url = `${process.env.STRAPI_API_URL}/posts?filters[id][$ne]=${currentPostId}&filters[category][title][$eq]=${categoryTitle}&pagination[limit]=10&sort[0]=publishedAt:desc`;
+  try {
+    const res = await fetch(url, {
+      cache: 'no-store',
+    });
+    if (!res.ok) {
+      console.error(`Error fetching related posts: ${res.statusText}`);
+      return [];
+    }
+    const data = await res.json();
+    return data.data as StrapiPost[];
+  } catch (err) {
+    console.error('Lỗi khi lấy bài viết liên quan:', err);
+    return [];
+  }
+}
 
 // SEO Metadata cho bài viết
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const slug = params?.slug;
-  if (!slug) return { title: 'Not Found', description: 'Bài viết không tồn tại' };
-
-  const post: Post | null = await sanity
-    .fetch(
-      `*[_type == "post" && slug.current == $slug][0]{
-        title,
-        body,
-        mainImage,
-        category->{ title }
-      }`,
-      { slug }
-    )
-    .catch((err: unknown) => {
-      console.error('Sanity fetch error:', err);
-      return null;
-    });
-
+  const post = await getPost(params.slug);
   if (!post) return { title: 'Not Found', description: 'Bài viết không tồn tại' };
 
-  const description =
-    post.body && post.body[0]?.children?.[0]?.text
-      ? post.body[0].children[0].text.slice(0, 150)
-      : 'Bài viết từ EverWellMag';
+  // Khởi tạo JSDOM trên server
+  const window = new JSDOM('').window;
+  const purify = DOMPurify(window as unknown as Window);
+  const cleanDescription = purify.sanitize(post.attributes.content.slice(0, 150), { USE_PROFILES: { html: true } });
 
   return {
-    title: post.title,
-    description,
+    title: post.attributes.title,
+    description: cleanDescription,
     openGraph: {
-      title: post.title,
-      description,
-      images: post.mainImage
+      title: post.attributes.title,
+      description: cleanDescription,
+      images: post.attributes.image?.data?.attributes?.url
         ? [
             {
-              url: urlFor(post.mainImage).width(1200).height(630).url(),
+              url: `${process.env.STRAPI_API_URL}${post.attributes.image.data.attributes.url}`,
               width: 1200,
               height: 630,
-              alt: post.title,
+              alt: post.attributes.title,
             },
           ]
         : [],
@@ -83,104 +111,37 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // Trang chi tiết bài viết
 export default async function PostPage({ params }: Props) {
-  const slug = params?.slug;
-  if (!slug) return notFound();
+  const post = await getPost(params.slug);
+  if (!post) {
+    return notFound();
+  }
 
-  // Lấy dữ liệu bài viết hiện tại
-  const post: Post | null = await sanity
-    .fetch(
-      `*[_type == "post" && slug.current == $slug][0]{
-        title,
-        body,
-        mainImage,
-        publishedAt,
-        category->{ title }
-      }`,
-      { slug }
-    )
-    .catch((err: unknown) => {
-      console.error('Sanity fetch error:', err);
-      return null;
-    });
+  const relatedPosts = await getRelatedPosts(post.id, post.attributes.category.data.attributes.title);
 
-  if (!post) return notFound();
-
-  // Lấy bài viết liên quan (ưu tiên cùng danh mục, bổ sung nếu thiếu)
-  const relatedPostsSameCategory: Post[] = await sanity
-    .fetch(
-      `*[_type == "post" && category->title == $category && slug.current != $slug] | order(publishedAt desc)[0...10]{
-        title,
-        slug,
-        publishedAt,
-        category->{ title }
-      }`,
-      { category: post.category?.title || 'Uncategorized', slug }
-    )
-    .catch((err: unknown) => {
-      console.error('Sanity fetch related posts (same category) error:', err);
-      return [];
-    });
-
-  // Nếu không đủ 10 bài, lấy thêm từ danh mục khác
-  const remainingCount = 10 - relatedPostsSameCategory.length;
-  const relatedPostsOtherCategories: Post[] = remainingCount > 0
-    ? await sanity
-        .fetch(
-          `*[_type == "post" && slug.current != $slug && !(category->title == $category)] | order(publishedAt desc)[0...${remainingCount}]{
-            title,
-            slug,
-            publishedAt,
-            category->{ title }
-          }`,
-          { category: post.category?.title || 'Uncategorized', slug }
-        )
-        .catch((err: unknown) => {
-          console.error('Sanity fetch related posts (other categories) error:', err);
-          return [];
-        })
-    : [];
-
-  // Kết hợp danh sách bài viết liên quan
-  const relatedPosts: Post[] = [...relatedPostsSameCategory, ...relatedPostsOtherCategories].slice(0, 10);
-
-  console.log('Post data:', post);
-  console.log('Related posts:', relatedPosts);
-
-  const components = {
-    types: {
-      image: ({ value }: { value: ImageValue }) => (
-        <Image
-          src={urlFor(value).width(800).url()}
-          alt={value.alt || 'image'}
-          width={800}
-          height={600}
-          className="my-4 rounded-md"
-        />
-      ),
-    },
-  };
+  // Khởi tạo JSDOM trên server và dọn dẹp HTML
+  const window = new JSDOM('').window;
+  const purify = DOMPurify(window as unknown as Window);
+  const cleanContent = purify.sanitize(post.attributes.content);
 
   return (
     <main className="pt-6 md:pt-8 px-4 md:px-6 max-w-[1080px] mx-auto">
       {/* Nội dung bài viết */}
       <article className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
+        <h1 className="text-3xl font-bold mb-4">{post.attributes.title}</h1>
         <p className="text-gray-600 text-sm mb-4">
-          {post.category?.title || 'Uncategorized'} | Published on{' '}
-          {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : 'Unknown date'}
+          {post.attributes.category?.data?.attributes?.title || 'Uncategorized'} | Published on{' '}
+          {new Date(post.attributes.publishedAt).toLocaleDateString()}
         </p>
-        {post.mainImage && (
+        {post.attributes.image?.data?.attributes?.url && (
           <Image
-            src={urlFor(post.mainImage).width(800).url()}
-            alt={post.title}
+            src={`${process.env.STRAPI_API_URL}${post.attributes.image.data.attributes.url}`}
+            alt={post.attributes.image.data.attributes.alt || post.attributes.title}
             width={800}
             height={600}
             className="mb-6 rounded-md w-full"
           />
         )}
-        <div className="prose max-w-none">
-          <PortableText value={post.body || []} components={components} />
-        </div>
+        <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: cleanContent }} />
       </article>
 
       {/* Bài viết liên quan */}
@@ -190,20 +151,18 @@ export default async function PostPage({ params }: Props) {
           {relatedPosts.length > 0 ? (
             relatedPosts.map((relatedPost) => (
               <div
-                key={relatedPost.slug?.current || relatedPost.title}
+                key={relatedPost.id}
                 className="bg-white p-4 rounded-lg shadow-md"
               >
                 <Link
-                  href={`/post/${relatedPost.slug?.current || ''}`}
+                  href={`/post/${relatedPost.attributes.slug}`}
                   className="text-blue-600 hover:text-blue-500 text-lg font-medium block"
                 >
-                  {relatedPost.title}
+                  {relatedPost.attributes.title}
                 </Link>
                 <p className="text-gray-600 text-sm">
-                  {relatedPost.category?.title || 'Uncategorized'} | Published on{' '}
-                  {relatedPost.publishedAt
-                    ? new Date(relatedPost.publishedAt).toLocaleDateString()
-                    : 'Unknown date'}
+                  {relatedPost.attributes.category?.data?.attributes?.title || 'Uncategorized'} | Published on{' '}
+                  {new Date(relatedPost.attributes.publishedAt).toLocaleDateString()}
                 </p>
               </div>
             ))

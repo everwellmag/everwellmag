@@ -1,8 +1,8 @@
 // app/page.tsx
-
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
+import { fetchFromStrapi } from '@/lib/strapi';
 
 interface PostAttributes {
   title: string;
@@ -26,23 +26,16 @@ interface StrapiPost {
 
 export const metadata = {
   title: 'EverWell Magazine - Health & Wellness Tips 2025',
-  description: 'Explore top health tips, weight loss solutions, and affiliate products from ClickBank & Digistore24 at EverWell Magazine.',
+  description:
+    'Explore top health tips, weight loss solutions, and affiliate products from ClickBank & Digistore24 at EverWell Magazine.',
 };
 
-// Hàm này được gọi ở phía server để lấy dữ liệu từ Strapi
+// Hàm này gọi Strapi qua helper
 async function getPosts() {
-  const url = `${process.env.STRAPI_API_URL}/posts?populate=image&pagination[limit]=3&sort[0]=createdAt:desc`;
-
   try {
-    const res = await fetch(url, {
-      cache: 'no-store',
-    });
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch posts: ${res.statusText}`);
-    }
-
-    const data = await res.json();
+    const data = await fetchFromStrapi(
+      'posts?populate=image&pagination[limit]=3&sort[0]=createdAt:desc'
+    );
     return data.data as StrapiPost[];
   } catch (err) {
     console.error('Lỗi khi lấy dữ liệu từ Strapi:', err);
@@ -56,31 +49,49 @@ export default async function Home() {
   return (
     <>
       <Head>
-        <meta name="keywords" content="health tips 2025, weight loss, supplements, wellness, everwellmag" />
+        <meta
+          name="keywords"
+          content="health tips 2025, weight loss, supplements, wellness, everwellmag"
+        />
       </Head>
       <main className="min-h-screen bg-gray-100 text-gray-900">
         <section className="bg-blue-900 text-white py-20 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-4">EverWell Magazine</h1>
+          <h1 className="text-5xl md:text-6xl font-bold mb-4">
+            EverWell Magazine
+          </h1>
           <p className="text-xl md:text-2xl max-w-3xl mx-auto">
-            Your trusted guide to 2025 health trends, expert advice, and premium wellness products.
+            Your trusted guide to 2025 health trends, expert advice, and premium
+            wellness products.
           </p>
         </section>
+
+        {/* Featured section */}
         <section className="max-w-6xl mx-auto px-4 py-12">
           <h2 className="text-4xl font-semibold text-gray-800 mb-8 text-center">
             🌿 Featured Articles & Products
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <Link href="/weight-loss" className="text-blue-600 hover:underline text-xl font-medium block mb-2">
+              <Link
+                href="/weight-loss"
+                className="text-blue-600 hover:underline text-xl font-medium block mb-2"
+              >
                 Top 10 Weight Loss Tips for 2025
               </Link>
-              <p className="text-gray-600">Expert advice to kickstart your journey.</p>
+              <p className="text-gray-600">
+                Expert advice to kickstart your journey.
+              </p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <Link href="/blood-sugar" className="text-blue-600 hover:underline text-xl font-medium block mb-2">
+              <Link
+                href="/blood-sugar"
+                className="text-blue-600 hover:underline text-xl font-medium block mb-2"
+              >
                 Natural Ways to Manage Blood Sugar
               </Link>
-              <p className="text-gray-600">Holistic solutions for better health.</p>
+              <p className="text-gray-600">
+                Holistic solutions for better health.
+              </p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md">
               <a
@@ -95,8 +106,12 @@ export default async function Home() {
             </div>
           </div>
         </section>
+
+        {/* Latest posts */}
         <section className="max-w-6xl mx-auto px-4 py-12">
-          <h2 className="text-4xl font-semibold text-gray-800 mb-8 text-center">📰 Latest Articles</h2>
+          <h2 className="text-4xl font-semibold text-gray-800 mb-8 text-center">
+            📰 Latest Articles
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {posts.length > 0 ? (
               posts.map((post) => (
@@ -104,7 +119,10 @@ export default async function Home() {
                   {post.attributes.image?.data?.attributes?.url && (
                     <Image
                       src={`${process.env.STRAPI_API_URL}${post.attributes.image.data.attributes.url}`}
-                      alt={post.attributes.image.data.attributes.alt || post.attributes.title}
+                      alt={
+                        post.attributes.image.data.attributes.alt ||
+                        post.attributes.title
+                      }
                       width={300}
                       height={192}
                       className="mb-4 rounded-md w-full h-48 object-cover"
@@ -122,7 +140,9 @@ export default async function Home() {
                 </div>
               ))
             ) : (
-              <p className="text-center text-gray-600 col-span-3">No articles found.</p>
+              <p className="text-center text-gray-600 col-span-3">
+                No articles found.
+              </p>
             )}
           </div>
         </section>

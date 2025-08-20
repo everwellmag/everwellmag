@@ -1,20 +1,16 @@
-// app/page.tsx
+// src/app/page.tsx
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
 import { fetchFromStrapi } from '@/lib/strapi';
 
-interface PostAttributes {
-  title: string;
+interface Post {
+  id: number;
   documentId: string;
+  title: string;
   content: { type: string; children: { type: string; text: string }[] }[];
   createdAt: string;
   media: { data: { attributes: { url: string; alt?: string } } } | null;
-}
-
-interface StrapiPost {
-  id: number;
-  attributes: PostAttributes;
 }
 
 export const metadata = {
@@ -23,19 +19,21 @@ export const metadata = {
     'Explore top health tips, weight loss solutions, and affiliate products from ClickBank & Digistore24 at EverWell Magazine.',
 };
 
-// Hàm lấy mô tả ngắn từ content
 const getShortDescription = (content: any[]) => {
   const firstParagraph = content.find((item) => item.type === 'paragraph');
   return firstParagraph?.children[0]?.text.slice(0, 100) + '...' || 'No preview available.';
 };
 
-// Hàm gọi Strapi để lấy bài viết
 async function getPosts() {
   try {
     const data = await fetchFromStrapi(
       'posts?populate=media&pagination[limit]=3&sort[0]=createdAt:desc'
     );
-    return data.data as StrapiPost[];
+    if (!data || !data.data) {
+      console.error('No posts found in getPosts');
+      return [];
+    }
+    return data.data as Post[];
   } catch (err) {
     console.error('Lỗi khi lấy dữ liệu từ Strapi:', err);
     return [];
@@ -60,8 +58,6 @@ export default async function Home() {
             Your trusted guide to 2025 health trends, expert advice, and premium wellness products.
           </p>
         </section>
-
-        {/* Featured section */}
         <section className="max-w-6xl mx-auto px-4 py-12">
           <h2 className="text-4xl font-semibold text-gray-800 mb-8 text-center">
             🌿 Featured Articles & Products
@@ -98,8 +94,6 @@ export default async function Home() {
             </div>
           </div>
         </section>
-
-        {/* Latest posts */}
         <section className="max-w-6xl mx-auto px-4 py-12">
           <h2 className="text-4xl font-semibold text-gray-800 mb-8 text-center">
             📰 Latest Articles
@@ -108,23 +102,23 @@ export default async function Home() {
             {posts.length > 0 ? (
               posts.map((post) => (
                 <div key={post.id} className="bg-white p-6 rounded-lg shadow-md">
-                  {post.attributes.media?.data?.attributes?.url && (
+                  {post.media?.data?.attributes?.url && (
                     <Image
-                      src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${post.attributes.media.data.attributes.url}`}
-                      alt={post.attributes.media.data.attributes.alt || post.attributes.title}
+                      src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${post.media.data.attributes.url}`}
+                      alt={post.media.data.attributes.alt || post.title}
                       width={300}
                       height={192}
                       className="mb-4 rounded-md w-full h-48 object-cover"
                     />
                   )}
                   <Link
-                    href={`/post/${post.attributes.documentId}`}
+                    href={`/post/${post.documentId}`}
                     className="text-blue-600 hover:text-blue-500 text-xl font-medium block mb-2"
                   >
-                    {post.attributes.title}
+                    {post.title}
                   </Link>
                   <p className="text-gray-600 line-clamp-3">
-                    {getShortDescription(post.attributes.content)}
+                    {getShortDescription(post.content)}
                   </p>
                 </div>
               ))

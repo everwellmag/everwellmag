@@ -1,16 +1,15 @@
-// lib/strapi.ts
+// src/lib/strapi.ts
 export async function fetchFromStrapi(endpoint: string) {
-    const res = await fetch(`${process.env.STRAPI_API_URL}/${endpoint}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_API_URL}/${endpoint}`, {
       headers: {
         Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
       },
-      next: { revalidate: 60 }, // cache 60s
+      cache: 'no-store',
     });
   
-    if (!res.ok) {
-      throw new Error(`Strapi fetch failed: ${res.status} ${res.statusText}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch from Strapi: ${response.statusText}`);
     }
   
-    return res.json();
+    return await response.json();
   }
-  

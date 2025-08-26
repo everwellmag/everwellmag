@@ -1,16 +1,15 @@
 // src/app/post/[documentId]/page.tsx
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import Image from 'next/image';
+import ReactMarkdown from 'react-markdown';
 import { fetchFromStrapi } from '@/lib/strapi';
 
 interface Post {
   id: number;
   documentId: string;
   title: string;
-  content: { type: string; children: { type: string; text: string }[] }[];
+  content: string | null; // Cho phép content là null
   publishedAt: string;
-  media: { data: { attributes: { url: string; alt?: string } } } | null;
 }
 
 type Props = {
@@ -22,7 +21,7 @@ async function getPost(documentId: string): Promise<Post | null> {
     if (!process.env.NEXT_PUBLIC_STRAPI_API_URL) {
       throw new Error('NEXT_PUBLIC_STRAPI_API_URL is not defined');
     }
-    const data = await fetchFromStrapi(`posts?filters[documentId][$eq]=${documentId}&populate=media`);
+    const data = await fetchFromStrapi(`posts?filters[documentId][$eq]=${documentId}`);
     if (!data || !data.data || data.data.length === 0) {
       console.error(`No post found for documentId: ${documentId}`);
       return null;
@@ -65,9 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: 'Not Found', description: 'Bài viết không tồn tại' };
   }
 
-  const cleanDescription = post.content
-    .find((item) => item.type === 'paragraph')
-    ?.children[0]?.text.slice(0, 150) || 'No description available';
+  const cleanDescription = post.content?.split('\n')[0]?.slice(0, 150) || 'No description available';
 
   return {
     title: post.title,
@@ -75,16 +72,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: post.title,
       description: cleanDescription,
-      images: post.media?.data?.attributes?.url
-        ? [
-            {
-              url: `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${post.media.data.attributes.url}`,
-              width: 1200,
-              height: 630,
-              alt: post.title,
-            },
-          ]
-        : [],
+      images: [], // Xóa phần images vì không dùng media
     },
   };
 }
@@ -103,21 +91,12 @@ export default async function PostPage({ params }: Props) {
         <p className="text-gray-600 text-sm mb-4">
           Published on {new Date(post.publishedAt).toLocaleDateString()}
         </p>
-        {post.media?.data?.attributes?.url && (
-          <Image
-            src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${post.media.data.attributes.url}`}
-            alt={post.media.data.attributes.alt || post.title}
-            width={800}
-            height={600}
-            className="mb-6 rounded-md w-full"
-          />
-        )}
         <div className="prose max-w-none">
-          {post.content.map((block, index) => (
-            block.type === 'paragraph' && (
-              <p key={index}>{block.children[0]?.text || ''}</p>
-            )
-          ))}
+          {post.content ? (
+            <ReactMarkdown>{post.content}</ReactMarkdown>
+          ) : (
+            <p className="text-gray-500 italic">No content available.</p>
+          )}
         </div>
       </article>
     </main>

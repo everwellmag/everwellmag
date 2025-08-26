@@ -1,16 +1,14 @@
 // src/app/page.tsx
 import Head from 'next/head';
 import Link from 'next/link';
-import Image from 'next/image';
 import { fetchFromStrapi } from '@/lib/strapi';
 
 interface Post {
   id: number;
   documentId: string;
   title: string;
-  content: { type: string; children: { type: string; text: string }[] }[];
+  content: string | null; // Cho phép content là null
   createdAt: string;
-  media: { data: { attributes: { url: string; alt?: string } } } | null;
 }
 
 export const metadata = {
@@ -19,16 +17,15 @@ export const metadata = {
     'Explore top health tips, weight loss solutions, and affiliate products from ClickBank & Digistore24 at EverWell Magazine.',
 };
 
-const getShortDescription = (content: any[]) => {
-  const firstParagraph = content.find((item) => item.type === 'paragraph');
-  return firstParagraph?.children[0]?.text.slice(0, 100) + '...' || 'No preview available.';
+const getShortDescription = (content: string | null) => {
+  if (!content) return 'No preview available...';
+  const firstParagraph = content.split('\n')[0] || 'No preview available.';
+  return firstParagraph.slice(0, 100) + '...';
 };
 
 async function getPosts() {
   try {
-    const data = await fetchFromStrapi(
-      'posts?populate=media&pagination[limit]=3&sort[0]=createdAt:desc'
-    );
+    const data = await fetchFromStrapi('posts?pagination[limit]=3&sort[0]=createdAt:desc');
     if (!data || !data.data) {
       console.error('No posts found in getPosts');
       return [];
@@ -102,15 +99,6 @@ export default async function Home() {
             {posts.length > 0 ? (
               posts.map((post) => (
                 <div key={post.id} className="bg-white p-6 rounded-lg shadow-md">
-                  {post.media?.data?.attributes?.url && (
-                    <Image
-                      src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${post.media.data.attributes.url}`}
-                      alt={post.media.data.attributes.alt || post.title}
-                      width={300}
-                      height={192}
-                      className="mb-4 rounded-md w-full h-48 object-cover"
-                    />
-                  )}
                   <Link
                     href={`/post/${post.documentId}`}
                     className="text-blue-600 hover:text-blue-500 text-xl font-medium block mb-2"

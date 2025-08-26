@@ -8,8 +8,9 @@ interface Post {
   id: number;
   documentId: string;
   title: string;
-  content: string | null; // Cho phép content là null
+  content: string | null;
   publishedAt: string;
+  category: { data: { id: number; attributes: { name: string; parent?: { data: { id: number; attributes: { name: string } } } | null } } } | null;
 }
 
 type Props = {
@@ -21,7 +22,7 @@ async function getPost(documentId: string): Promise<Post | null> {
     if (!process.env.NEXT_PUBLIC_STRAPI_API_URL) {
       throw new Error('NEXT_PUBLIC_STRAPI_API_URL is not defined');
     }
-    const data = await fetchFromStrapi(`posts?filters[documentId][$eq]=${documentId}`);
+    const data = await fetchFromStrapi(`posts?filters[documentId][$eq]=${documentId}&populate=category`);
     if (!data || !data.data || data.data.length === 0) {
       console.error(`No post found for documentId: ${documentId}`);
       return null;
@@ -43,7 +44,7 @@ export async function generateStaticParams() {
     if (!process.env.NEXT_PUBLIC_STRAPI_API_URL) {
       throw new Error('NEXT_PUBLIC_STRAPI_API_URL is not defined');
     }
-    const data = await fetchFromStrapi('posts?pagination[limit]=100');
+    const data = await fetchFromStrapi('posts?pagination[limit]=100&populate=category');
     if (!data || !data.data) {
       console.error('No posts found in generateStaticParams');
       return [];
@@ -72,7 +73,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: post.title,
       description: cleanDescription,
-      images: [], // Xóa phần images vì không dùng media
+      images: [],
     },
   };
 }
@@ -84,12 +85,16 @@ export default async function PostPage({ params }: Props) {
     return notFound();
   }
 
+  const categoryName = post.category?.data?.attributes?.name || 'Uncategorized';
+  const parentName = post.category?.data?.attributes?.parent?.data?.attributes?.name;
+
   return (
     <main className="pt-6 md:pt-8 px-4 md:px-6 max-w-[1080px] mx-auto">
       <article className="mb-8">
         <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
         <p className="text-gray-600 text-sm mb-4">
-          Published on {new Date(post.publishedAt).toLocaleDateString()}
+          Published on {new Date(post.publishedAt).toLocaleDateString()} |{' '}
+          {parentName ? `${categoryName} (under ${parentName})` : categoryName}
         </p>
         <div className="prose max-w-none">
           {post.content ? (

@@ -143,7 +143,7 @@ export default function Navbar() {
 
           {/* Menu Desktop */}
           <div className="hidden md:flex gap-8">
-            {menuItems.map((item, index) => (
+            {menuItems.map((item) => (
               <div key={item.href} className="relative group">
                 <Link
                   href={item.href}
@@ -182,9 +182,8 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         <div
-          className={`md:hidden fixed top-0 right-0 w-full h-full max-h-[100vh] bg-blue-900/95 overflow-y-auto transform ${
-            isMenuOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
-          } transition-all duration-300 ease-in-out`}
+          className={`md:hidden fixed top-0 right-0 w-full h-full max-h-[100vh] bg-blue-900/95 overflow-y-auto transform ${isMenuOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
+            } transition-all duration-300 ease-in-out`}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -216,9 +215,8 @@ export default function Navbar() {
                       onClick={() => toggleSubMenu(index)}
                     >
                       <svg
-                        className={`w-6 h-6 transform transition-transform duration-200 ${
-                          openSubMenu === index ? "rotate-180" : ""
-                        }`}
+                        className={`w-6 h-6 transform transition-transform duration-200 ${openSubMenu === index ? "rotate-180" : ""
+                          }`}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -230,9 +228,8 @@ export default function Navbar() {
                 </div>
                 {item.subItems && (
                   <div
-                    className={`pl-6 flex flex-col gap-3 mt-2 submenu overflow-hidden ${
-                      openSubMenu === index ? "max-h-[500px]" : "max-h-0"
-                    } transition-all duration-300 ease-in-out`}
+                    className={`pl-6 flex flex-col gap-3 mt-2 submenu overflow-hidden ${openSubMenu === index ? "max-h-[500px]" : "max-h-0"
+                      } transition-all duration-300 ease-in-out`}
                   >
                     {item.subItems.map((subItem) => (
                       <Link

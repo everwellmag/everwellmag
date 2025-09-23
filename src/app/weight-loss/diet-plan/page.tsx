@@ -112,8 +112,8 @@ export default function DietPlanPage() {
         const data: ApiResponse = await response.json();
         setArticles(data.data);
         setLoading(false);
-      } catch (err: any) {
-        setError(err.message || 'An error occurred while fetching articles');
+      } catch (err: unknown) {
+        setError((err instanceof Error ? err.message : 'An error occurred while fetching articles') || 'An error occurred while fetching articles');
         setLoading(false);
       }
     };

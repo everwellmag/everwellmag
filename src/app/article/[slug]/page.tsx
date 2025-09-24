@@ -85,16 +85,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             case 'shared.rich-text':
                 let markdownBody = block.body || '';
                 console.log('Original Markdown:', markdownBody);
-                // Thay thế URL sai (dạng lẫn lộn domain + IP)
-                markdownBody = markdownBody.replace(
-                    /https:\/\/cms\.everwellmag\.com15\.235\.208\.94:1337/g,
-                    baseUrl
-                );
-                // Thay thế mọi HTTP/HTTPS sai bằng baseUrl
-                markdownBody = markdownBody.replace(
-                    /(https?:\/\/[^\/]+)(\/Uploads\/[^"'\s]+)/g,
-                    (match: string, p1: string, p2: string) => `${baseUrl}${p2}`
-                );
                 console.log('Processed Markdown:', markdownBody);
                 return (
                     <div key={blockKey} className="prose max-w-none">

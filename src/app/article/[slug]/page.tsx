@@ -85,16 +85,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             case 'shared.rich-text':
                 let markdownBody = block.body || '';
                 console.log('Original Markdown:', markdownBody);
-                // Thay thế URL sai (dạng lẫn lộn domain + IP)
-                markdownBody = markdownBody.replace(
-                    /https:\/\/cms\.everwellmag\.com15\.235\.208\.94:1337/g,
-                    baseUrl
-                );
-                // Thay thế mọi HTTP/HTTPS sai bằng baseUrl
-                markdownBody = markdownBody.replace(
-                    /(https?:\/\/[^\/]+)(\/Uploads\/[^"'\s]+)/g,
-                    (match: string, p1: string, p2: string) => `${baseUrl}${p2}`
-                );
                 console.log('Processed Markdown:', markdownBody);
                 return (
                     <div key={blockKey} className="prose max-w-none">
@@ -115,9 +105,20 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                                 em: ({ ...props }) => (
                                     <em className="italic" {...props} />
                                 ),
-                                img: ({ ...props }) => (
-                                    <img className="max-w-full h-auto my-4 rounded-lg" {...props} />
-                                ),
+                                img: ({ ...props }) => {
+                                    const src = props.src ? toStringSrc(props.src) : null;
+                                    return src ? (
+                                        <Image
+                                            src={src}
+                                            alt={props.alt || 'Image'}
+                                            width={toNumber(props.width) || 500}
+                                            height={toNumber(props.height) || 500}
+                                            className="max-w-full h-auto my-4 rounded-lg"
+                                        />
+                                    ) : (
+                                        <span className="text-gray-500">[Image: Missing URL]</span>
+                                    );
+                                },
                             }}
                         >
                             {markdownBody}
@@ -154,12 +155,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 return images.length > 0 ? (
                     <div key={blockKey} className="my-6">
                         {images.map((img, imgIndex: number) => {
-                            const imgUrl = toStringSrc(`${baseUrl}${isUrlWithPath(img.attributes.url, '/uploads') ? img.attributes.url : `/Uploads${img.attributes.url}`}`);
+                            const imgUrl = img.attributes.url
+                                ? toStringSrc(`${baseUrl}${isUrlWithPath(img.attributes.url, '/uploads') ? img.attributes.url : `/uploads${img.attributes.url}`}`)
+                                : null;
                             console.log('Slider Image URL:', imgUrl);
                             return (
                                 <Image
                                     key={`${img.id}-${imgIndex}`}
-                                    src={imgUrl}
+                                    src={imgUrl || ''}
                                     alt={img.attributes.alternativeText || 'Slider image'}
                                     width={toNumber(img.attributes.width) || 500}
                                     height={toNumber(img.attributes.height) || 500}

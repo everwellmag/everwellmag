@@ -60,7 +60,7 @@ export default function Navbar() {
       href: "/blood-sugar",
       label: "Blood Sugar",
       subItems: [
-        { href: "/diet-plan-for-blood-sugar", label: "Diet Tips" },
+        { href: "/blood-sugar/diet-tips", label: "Diet Tips" },
         { href: "/workout-plan-for-blood-sugar", label: "Workout Plan" },
         { href: "/supplements-for-blood-sugar", label: "Supplements" },
       ],

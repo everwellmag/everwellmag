@@ -1,9 +1,10 @@
+import Image from 'next/image';
+import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
 import { fetchFromStrapi } from '@/lib/strapi';
 import { notFound } from 'next/navigation';
-import { marked } from 'marked';
-import Image from 'next/image';
 
-// Định nghĩa interface cho dữ liệu từ Strapi
+// Define TypeScript interfaces for the API response
 interface StrapiMedia {
     data: {
         attributes: {
@@ -41,7 +42,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     console.log('Slug:', slug);
     console.log('STRAPI_API_URL:', process.env.STRAPI_API_URL);
 
-    const data = await fetchFromStrapi(`articles?filters[slug][$eq]=${slug}&populate[blocks][populate]=*`);
+    const data = await fetchFromStrapi(`articles?filters[slug][$eq]=${slug}&populate=*`);
     console.log('API Data:', JSON.stringify(data, null, 2));
 
     const article: StrapiArticle = data.data?.[0];
@@ -55,7 +56,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     const baseUrl = process.env.STRAPI_API_URL || 'https://cms.everwellmag.com';
     const coverImageUrl = cover?.url ? `${baseUrl}${cover.url.startsWith('/uploads') ? cover.url : `/uploads${cover.url}`}` : null;
 
-    const renderBlock = async (block: StrapiBlock, index: number) => {
+    const renderBlock = (block: StrapiBlock, index: number) => {
         const blockKey = `${block.__component}-${block.id}-${index}`;
         switch (block.__component) {
             case 'shared.rich-text':
@@ -72,17 +73,37 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     (match: string, p1: string, p2: string) => `${baseUrl}${p2}`
                 );
                 console.log('Processed Markdown:', markdownBody);
-                const htmlContent = await marked(markdownBody);
                 return (
-                    <div
-                        key={blockKey}
-                        className="prose max-w-none"
-                        dangerouslySetInnerHTML={{ __html: htmlContent }}
-                    />
+                    <div key={blockKey} className="prose max-w-none">
+                        <ReactMarkdown
+                            components={{
+                                p: ({ node, ...props }) => (
+                                    <p className="text-gray-700 mb-4" {...props} />
+                                ),
+                                h1: ({ node, ...props }) => (
+                                    <h1 className="text-3xl font-bold text-gray-800 mb-4" {...props} />
+                                ),
+                                h2: ({ node, ...props }) => (
+                                    <h2 className="text-2xl font-semibold text-gray-800 mb-3" {...props} />
+                                ),
+                                strong: ({ node, ...props }) => (
+                                    <strong className="font-bold" {...props} />
+                                ),
+                                em: ({ node, ...props }) => (
+                                    <em className="italic" {...props} />
+                                ),
+                                img: ({ node, ...props }) => (
+                                    <img className="max-w-full h-auto my-4 rounded-lg" {...props} />
+                                ),
+                            }}
+                        >
+                            {markdownBody}
+                        </ReactMarkdown>
+                    </div>
                 );
             case 'shared.quote':
                 return (
-                    <blockquote key={blockKey} className="border-l-4 pl-4 italic my-4">
+                    <blockquote key={blockKey} className="border-l-4 pl-4 italic my-6 text-gray-600">
                         <p className="text-lg font-semibold">{block.title}</p>
                         <p>{block.body}</p>
                     </blockquote>
@@ -100,7 +121,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                         width={block.file?.data?.attributes?.width || 500}
                         height={block.file?.data?.attributes?.height || 500}
                         className="w-full max-w-md my-4 rounded-lg"
-                        onError={() => console.error(`Failed to load media: ${mediaUrl}`)}
                     />
                 ) : (
                     <div key={blockKey} className="text-gray-500">[Media: Thiếu dữ liệu]</div>
@@ -109,7 +129,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 const images = block.images?.data || [];
                 console.log('Slider Images:', images);
                 return images.length > 0 ? (
-                    <div key={blockKey} className="my-4">
+                    <div key={blockKey} className="my-6">
                         {images.map((img, imgIndex: number) => {
                             const imgUrl = `${baseUrl}${img.attributes.url.startsWith('/uploads') ? img.attributes.url : `/Uploads${img.attributes.url}`}`;
                             console.log('Slider Image URL:', imgUrl);
@@ -121,7 +141,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                                     width={img.attributes.width || 500}
                                     height={img.attributes.height || 500}
                                     className="w-full max-w-md my-2 rounded-lg"
-                                    onError={() => console.error(`Failed to load slider image: ${imgUrl}`)}
                                 />
                             );
                         })}
@@ -134,7 +153,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         }
     };
 
-    const renderedBlocks = await Promise.all(blocks?.map((block: StrapiBlock, index: number) => renderBlock(block, index)) || []);
+    const renderedBlocks = blocks?.map((block: StrapiBlock, index: number) => renderBlock(block, index)) || [];
 
     return (
         <main className="max-w-5xl mx-auto p-6">
@@ -148,7 +167,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     height={cover?.height || 707}
                     className="w-full max-w-md mb-4 rounded-lg"
                     priority
-                    onError={() => console.error(`Failed to load cover: ${coverImageUrl}`)}
                 />
             )}
             <div>{renderedBlocks}</div>

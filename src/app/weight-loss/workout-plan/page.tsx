@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
 
 // Define TypeScript interfaces for the API response
 interface Media {
@@ -11,25 +12,59 @@ interface Media {
   caption?: string;
   width?: number;
   height?: number;
+  formats?: {
+    thumbnail?: { url: string };
+    small?: { url: string };
+    medium?: { url: string };
+    large?: { url: string };
+  };
 }
 
 interface Author {
+  id: number;
+  documentId: string;
   name: string;
   email: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
 }
 
 interface Category {
+  id: number;
+  documentId: string;
   name: string;
   slug: string;
   description: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
 }
 
-interface Block {
-  __component: string;
+interface RichTextBlock {
+  __component: 'shared.rich-text';
   id: number;
-  body?: string;
-  title?: string;
+  body: string;
 }
+
+interface QuoteBlock {
+  __component: 'shared.quote';
+  id: number;
+  title: string;
+  body: string;
+}
+
+interface MediaBlock {
+  __component: 'shared.media';
+  id: number;
+}
+
+interface SliderBlock {
+  __component: 'shared.slider';
+  id: number;
+}
+
+type Block = RichTextBlock | QuoteBlock | MediaBlock | SliderBlock;
 
 interface Article {
   id: number;
@@ -71,7 +106,7 @@ const extractImageUrls = (body: string): string[] => {
 // Function to get the first image from blocks
 const getFirstImageFromBlocks = (blocks: Block[]): string | null => {
   for (const block of blocks) {
-    if (block.__component === 'shared.rich-text' && block.body) {
+    if (block.__component === 'shared.rich-text' && 'body' in block && block.body) {
       const imageUrls = extractImageUrls(block.body);
       if (imageUrls.length > 0) {
         return imageUrls[0]; // Return the first valid image URL
@@ -82,9 +117,9 @@ const getFirstImageFromBlocks = (blocks: Block[]): string | null => {
 };
 
 // Function to normalize and validate cover URL
-const normalizeCoverUrl = (url: string | undefined): string | null => {
-  if (!url) return null;
-  return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
+const normalizeCoverUrl = (media?: Media | null): string | null => {
+  if (!media || !media.url) return null;
+  return media.url.startsWith('http') ? media.url : `https://cms.everwellmag.com${media.url}`;
 };
 
 export default function WorkoutPlanPage() {
@@ -140,8 +175,8 @@ export default function WorkoutPlanPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {articles.map((article) => {
           // Normalize cover URL and fallback to first image from blocks if cover fails
-          let thumbnailUrl = normalizeCoverUrl(article.cover?.url);
-          if (!thumbnailUrl || thumbnailUrl === 'https://cms.everwellmag.comnull') {
+          let thumbnailUrl = normalizeCoverUrl(article.cover);
+          if (!thumbnailUrl) {
             thumbnailUrl = getFirstImageFromBlocks(article.blocks);
           }
 
@@ -159,12 +194,7 @@ export default function WorkoutPlanPage() {
                   height={300}
                   className="w-full h-48 object-cover rounded-md mb-4"
                   onError={(e) => {
-                    const fallbackUrl = getFirstImageFromBlocks(article.blocks);
-                    if (fallbackUrl) {
-                      e.currentTarget.src = fallbackUrl; // Fallback to blocks image on error
-                    } else {
-                      e.currentTarget.style.display = 'none'; // Hide if no fallback
-                    }
+                    e.currentTarget.style.display = 'none'; // Hide if image fails to load
                   }}
                 />
               )}
@@ -184,16 +214,39 @@ export default function WorkoutPlanPage() {
                 </p>
               )}
 
-              {/* Rich Text Preview (Text Only) */}
+              {/* Rich Text Preview (with ReactMarkdown) */}
               {article.blocks.map((block, index) => {
-                if (block.__component === 'shared.rich-text' && block.body) {
+                if (block.__component === 'shared.rich-text' && 'body' in block && block.body) {
                   return (
                     <div key={index} className="mb-4">
-                      <p className="text-gray-700 line-clamp-3">{block.body}</p>
+                      <ReactMarkdown
+                        components={{
+                          p: ({ node, ...props }) => (
+                            <p className="text-gray-700 line-clamp-3" {...props} />
+                          ),
+                          h1: ({ node, ...props }) => (
+                            <h1 className="text-2xl font-bold text-gray-700 line-clamp-3" {...props} />
+                          ),
+                          h2: ({ node, ...props }) => (
+                            <h2 className="text-xl font-semibold text-gray-700 line-clamp-3" {...props} />
+                          ),
+                          strong: ({ node, ...props }) => (
+                            <strong className="font-bold" {...props} />
+                          ),
+                          em: ({ node, ...props }) => (
+                            <em className="italic" {...props} />
+                          ),
+                          img: ({ node, ...props }) => (
+                            <img className="max-w-full h-auto" {...props} />
+                          ),
+                        }}
+                      >
+                        {block.body}
+                      </ReactMarkdown>
                     </div>
                   );
                 }
-                if (block.__component === 'shared.quote' && block.title && block.body) {
+                if (block.__component === 'shared.quote' && 'title' in block && 'body' in block && block.title && block.body) {
                   return (
                     <blockquote key={index} className="border-l-4 pl-4 italic text-gray-600 mb-4">
                       <p>{block.body}</p>

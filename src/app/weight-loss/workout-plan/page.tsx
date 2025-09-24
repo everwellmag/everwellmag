@@ -145,10 +145,13 @@ export default function WorkoutPlanPage() {
         }
 
         const data: ApiResponse = await response.json();
+        if (!data.data || data.data.length === 0) {
+          throw new Error('No articles found for category ID 4');
+        }
         setArticles(data.data);
         setLoading(false);
       } catch (err: unknown) {
-        setError((err instanceof Error ? err.message : 'An error occurred while fetching articles') || 'An error occurred while fetching articles');
+        setError((err instanceof Error ? err.message : 'An error occurred while fetching articles') || 'An error occurred');
         setLoading(false);
       }
     };
@@ -162,6 +165,10 @@ export default function WorkoutPlanPage() {
 
   if (error) {
     return <div className="container mx-auto p-4 text-red-500">{error}</div>;
+  }
+
+  if (articles.length === 0) {
+    return <div className="container mx-auto p-4 text-red-500">No articles available.</div>;
   }
 
   return (
@@ -221,22 +228,22 @@ export default function WorkoutPlanPage() {
                     <div key={index} className="mb-4">
                       <ReactMarkdown
                         components={{
-                          p: ({ node, ...props }) => (
+                          p: ({ ...props }) => (
                             <p className="text-gray-700 line-clamp-3" {...props} />
                           ),
-                          h1: ({ node, ...props }) => (
+                          h1: ({ ...props }) => (
                             <h1 className="text-2xl font-bold text-gray-700 line-clamp-3" {...props} />
                           ),
-                          h2: ({ node, ...props }) => (
+                          h2: ({ ...props }) => (
                             <h2 className="text-xl font-semibold text-gray-700 line-clamp-3" {...props} />
                           ),
-                          strong: ({ node, ...props }) => (
+                          strong: ({ ...props }) => (
                             <strong className="font-bold" {...props} />
                           ),
-                          em: ({ node, ...props }) => (
+                          em: ({ ...props }) => (
                             <em className="italic" {...props} />
                           ),
-                          img: ({ node, ...props }) => (
+                          img: ({ ...props }) => (
                             <img className="max-w-full h-auto" {...props} />
                           ),
                         }}

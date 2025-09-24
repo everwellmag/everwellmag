@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import { fetchFromStrapi } from '@/lib/strapi';
 import { notFound } from 'next/navigation';
@@ -8,10 +7,10 @@ import { notFound } from 'next/navigation';
 interface StrapiMedia {
     data: {
         attributes: {
-            url: string;
+            url: string | Blob;
             alternativeText?: string;
-            width?: number;
-            height?: number;
+            width?: number | string;
+            height?: number | string;
         };
     } | null;
 }
@@ -22,7 +21,7 @@ interface StrapiBlock {
     body?: string;
     title?: string;
     file?: StrapiMedia;
-    images?: { data: Array<{ id: number; attributes: { url: string; alternativeText?: string; width?: number; height?: number } }> };
+    images?: { data: Array<{ id: number; attributes: { url: string | Blob; alternativeText?: string; width?: number | string; height?: number | string } }> };
 }
 
 interface StrapiArticle {
@@ -30,12 +29,36 @@ interface StrapiArticle {
     description?: string;
     slug: string;
     cover?: {
-        url: string;
-        width?: number;
-        height?: number;
+        url: string | Blob;
+        width?: number | string;
+        height?: number | string;
     };
     blocks?: StrapiBlock[];
 }
+
+// Helper to convert string/Blob to string
+const toStringSrc = (url: string | Blob | null): string => {
+    if (!url) return '';
+    if (url instanceof Blob) {
+        return URL.createObjectURL(url); // Chuyển Blob thành URL tạm
+    }
+    return url;
+};
+
+// Helper to convert string/number to number or undefined
+const toNumber = (value: string | number | undefined): number | undefined => {
+    if (value === undefined) return undefined;
+    const num = typeof value === 'string' ? parseInt(value, 10) : value;
+    return isNaN(num) ? undefined : num;
+};
+
+// Helper to check if URL starts with a path (works with string only)
+const isUrlWithPath = (url: string | Blob, path: string): boolean => {
+    if (typeof url === 'string') {
+        return url.startsWith(path);
+    }
+    return false; // Blob không có startsWith
+};
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
@@ -54,7 +77,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     const { title, description, cover, blocks } = article;
 
     const baseUrl = process.env.STRAPI_API_URL || 'https://cms.everwellmag.com';
-    const coverImageUrl = cover?.url ? `${baseUrl}${cover.url.startsWith('/uploads') ? cover.url : `/uploads${cover.url}`}` : null;
+    const coverImageUrl = cover?.url ? toStringSrc(`${baseUrl}${isUrlWithPath(cover.url, '/uploads') ? cover.url : `/uploads${cover.url}`}`) : null;
 
     const renderBlock = (block: StrapiBlock, index: number) => {
         const blockKey = `${block.__component}-${block.id}-${index}`;
@@ -77,22 +100,22 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     <div key={blockKey} className="prose max-w-none">
                         <ReactMarkdown
                             components={{
-                                p: ({ node, ...props }) => (
+                                p: ({ ...props }) => (
                                     <p className="text-gray-700 mb-4" {...props} />
                                 ),
-                                h1: ({ node, ...props }) => (
+                                h1: ({ ...props }) => (
                                     <h1 className="text-3xl font-bold text-gray-800 mb-4" {...props} />
                                 ),
-                                h2: ({ node, ...props }) => (
+                                h2: ({ ...props }) => (
                                     <h2 className="text-2xl font-semibold text-gray-800 mb-3" {...props} />
                                 ),
-                                strong: ({ node, ...props }) => (
+                                strong: ({ ...props }) => (
                                     <strong className="font-bold" {...props} />
                                 ),
-                                em: ({ node, ...props }) => (
+                                em: ({ ...props }) => (
                                     <em className="italic" {...props} />
                                 ),
-                                img: ({ node, ...props }) => (
+                                img: ({ ...props }) => (
                                     <img className="max-w-full h-auto my-4 rounded-lg" {...props} />
                                 ),
                             }}
@@ -110,7 +133,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 );
             case 'shared.media':
                 const mediaUrl = block.file?.data?.attributes?.url
-                    ? `${baseUrl}${block.file.data.attributes.url.startsWith('/uploads') ? block.file.data.attributes.url : `/uploads${block.file.data.attributes.url}`}`
+                    ? toStringSrc(`${baseUrl}${isUrlWithPath(block.file.data.attributes.url, '/uploads') ? block.file.data.attributes.url : `/uploads${block.file.data.attributes.url}`}`)
                     : null;
                 console.log('Media URL:', mediaUrl);
                 return mediaUrl ? (
@@ -118,8 +141,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                         key={blockKey}
                         src={mediaUrl}
                         alt={block.file?.data?.attributes?.alternativeText || 'Media'}
-                        width={block.file?.data?.attributes?.width || 500}
-                        height={block.file?.data?.attributes?.height || 500}
+                        width={toNumber(block.file?.data?.attributes?.width) || 500}
+                        height={toNumber(block.file?.data?.attributes?.height) || 500}
                         className="w-full max-w-md my-4 rounded-lg"
                     />
                 ) : (
@@ -131,15 +154,15 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 return images.length > 0 ? (
                     <div key={blockKey} className="my-6">
                         {images.map((img, imgIndex: number) => {
-                            const imgUrl = `${baseUrl}${img.attributes.url.startsWith('/uploads') ? img.attributes.url : `/Uploads${img.attributes.url}`}`;
+                            const imgUrl = toStringSrc(`${baseUrl}${isUrlWithPath(img.attributes.url, '/uploads') ? img.attributes.url : `/Uploads${img.attributes.url}`}`);
                             console.log('Slider Image URL:', imgUrl);
                             return (
                                 <Image
                                     key={`${img.id}-${imgIndex}`}
                                     src={imgUrl}
                                     alt={img.attributes.alternativeText || 'Slider image'}
-                                    width={img.attributes.width || 500}
-                                    height={img.attributes.height || 500}
+                                    width={toNumber(img.attributes.width) || 500}
+                                    height={toNumber(img.attributes.height) || 500}
                                     className="w-full max-w-md my-2 rounded-lg"
                                 />
                             );
@@ -163,8 +186,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 <Image
                     src={coverImageUrl}
                     alt={title || 'Cover image'}
-                    width={cover?.width || 1200}
-                    height={cover?.height || 707}
+                    width={toNumber(cover?.width) || 1200}
+                    height={toNumber(cover?.height) || 707}
                     className="w-full max-w-md mb-4 rounded-lg"
                     priority
                 />

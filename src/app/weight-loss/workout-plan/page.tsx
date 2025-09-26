@@ -190,7 +190,7 @@ export default function WorkoutPlanPage() {
           return (
             <div
               key={article.id}
-              className="border rounded-lg shadow-md p-4 hover:shadow-lg transition"
+              className="border rounded-lg shadow-md p-4 hover:shadow-lg transition h-[450px] flex flex-col justify-between" // Set fixed height and flex layout
             >
               {/* Thumbnail Image */}
               {thumbnailUrl && (
@@ -206,68 +206,69 @@ export default function WorkoutPlanPage() {
                 />
               )}
 
-              {/* Title and Description */}
-              <h2 className="text-xl font-semibold mb-2">
-                <Link href={`/article/${article.slug}`} className="hover:underline">
-                  {article.title}
-                </Link>
-              </h2>
-              <p className="text-gray-600 mb-4">{article.description}</p>
+              {/* Content Container with fixed height */}
+              <div className="flex-1 overflow-hidden">
+                {/* Title and Description */}
+                <h2 className="text-xl font-semibold mb-2 line-clamp-2">
+                  <Link href={`/article/${article.slug}`} className="hover:underline">
+                    {article.title}
+                  </Link>
+                </h2>
+                <p className="text-gray-600 mb-4 line-clamp-2">{article.description}</p>
 
-              {/* Author */}
-              {article.author && (
-                <p className="text-sm text-gray-500 mb-2">
-                  By {article.author.name}
-                </p>
-              )}
+                {/* Author */}
+                {article.author && (
+                  <p className="text-sm text-gray-500 mb-2 line-clamp-1">
+                    By {article.author.name}
+                  </p>
+                )}
 
-              {/* Rich Text Preview (with ReactMarkdown) */}
-              {article.blocks.map((block, index) => {
-                if (block.__component === 'shared.rich-text' && 'body' in block && block.body) {
-                  return (
-                    <div key={index} className="mb-4">
-                      <ReactMarkdown
-                        components={{
-                          p: ({ ...props }) => (
-                            <p className="text-gray-700 line-clamp-3" {...props} />
-                          ),
-                          h1: ({ ...props }) => (
-                            <h1 className="text-2xl font-bold text-gray-700 line-clamp-3" {...props} />
-                          ),
-                          h2: ({ ...props }) => (
-                            <h2 className="text-xl font-semibold text-gray-700 line-clamp-3" {...props} />
-                          ),
-                          strong: ({ ...props }) => (
-                            <strong className="font-bold" {...props} />
-                          ),
-                          em: ({ ...props }) => (
-                            <em className="italic" {...props} />
-                          ),
-                          img: ({ ...props }) => (
-                            <img className="max-w-full h-auto" {...props} />
-                          ),
-                        }}
-                      >
-                        {block.body}
-                      </ReactMarkdown>
-                    </div>
-                  );
-                }
-                if (block.__component === 'shared.quote' && 'title' in block && 'body' in block && block.title && block.body) {
-                  return (
-                    <blockquote key={index} className="border-l-4 pl-4 italic text-gray-600 mb-4">
-                      <p>{block.body}</p>
-                      <p className="text-sm text-gray-500">— {block.title}</p>
-                    </blockquote>
-                  );
-                }
-                return null;
-              })}
+                {/* Rich Text Preview (without images, only text) */}
+                {article.blocks.map((block, index) => {
+                  if (block.__component === 'shared.rich-text' && 'body' in block && block.body) {
+                    return (
+                      <div key={index} className="mb-4 line-clamp-3">
+                        <ReactMarkdown
+                          components={{
+                            p: ({ ...props }) => (
+                              <p className="text-gray-700" {...props} />
+                            ),
+                            h1: ({ ...props }) => (
+                              <h1 className="text-2xl font-bold text-gray-700" {...props} />
+                            ),
+                            h2: ({ ...props }) => (
+                              <h2 className="text-xl font-semibold text-gray-700" {...props} />
+                            ),
+                            strong: ({ ...props }) => (
+                              <strong className="font-bold" {...props} />
+                            ),
+                            em: ({ ...props }) => (
+                              <em className="italic" {...props} />
+                            ),
+                            img: () => null,
+                          }}
+                        >
+                          {block.body}
+                        </ReactMarkdown>
+                      </div>
+                    );
+                  }
+                  if (block.__component === 'shared.quote' && 'title' in block && 'body' in block && block.title && block.body) {
+                    return (
+                      <blockquote key={index} className="border-l-4 pl-4 italic text-gray-600 mb-4 line-clamp-2">
+                        <p>{block.body}</p>
+                        <p className="text-sm text-gray-500">— {block.title}</p>
+                      </blockquote>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
 
-              {/* Read More Link */}
+              {/* Read More Link (always at bottom) */}
               <Link
                 href={`/article/${article.slug}`}
-                className="text-blue-500 hover:underline"
+                className="text-blue-500 hover:underline mt-2 block"
               >
                 Read More
               </Link>

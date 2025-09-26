@@ -83,7 +83,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         const blockKey = `${block.__component}-${block.id}-${index}`;
         switch (block.__component) {
             case 'shared.rich-text':
-                let markdownBody = block.body || '';
+                const markdownBody = block.body || ''; // Changed from let to const
                 console.log('Original Markdown:', markdownBody);
                 console.log('Processed Markdown:', markdownBody);
                 return (

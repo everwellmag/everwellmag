@@ -122,7 +122,7 @@ const normalizeCoverUrl = (media?: Media | null): string | null => {
     return media.url.startsWith('http') ? media.url : `https://cms.everwellmag.com${media.url}`;
 };
 
-export default function WeightLossFoodsPage() {
+export default function CommonEyeConditionsPage() {
     const [articles, setArticles] = useState<Article[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -132,7 +132,7 @@ export default function WeightLossFoodsPage() {
         const fetchArticles = async () => {
             try {
                 const response = await fetch(
-                    'https://cms.everwellmag.com/api/articles?filters[category][id]=2&pagination[page]=1&pagination[pageSize]=10&populate=*',
+                    'https://cms.everwellmag.com/api/articles?filters[category][id]=11&pagination[page]=1&pagination[pageSize]=10&populate=*',
                     {
                         headers: {
                             'Content-Type': 'application/json',
@@ -146,7 +146,7 @@ export default function WeightLossFoodsPage() {
 
                 const data: ApiResponse = await response.json();
                 if (!data.data || data.data.length === 0) {
-                    throw new Error('No articles found for category ID 2');
+                    throw new Error('No articles found for category ID 11');
                 }
                 setArticles(data.data);
                 setLoading(false);
@@ -173,10 +173,10 @@ export default function WeightLossFoodsPage() {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-6">Weight Loss Foods</h1>
+            <h1 className="text-3xl font-bold mb-6">Common Eye Conditions</h1>
             <p className="text-gray-600 mb-8">
-                Discover nutritious foods to support your weight loss journey with delicious
-                recipes and expert tips.
+                Learn about common eye conditions, their symptoms, and management strategies
+                with expert insights.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -173,9 +173,9 @@ export default function MensCareTipsPage() {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-6">Men's Care Tips</h1>
+            <h1 className="text-3xl font-bold mb-6">Men&#39;s Care Tips</h1>
             <p className="text-gray-600 mb-8">
-                Get practical tips for men's health and wellness with expert guidance and
+                Get practical tips for men&#39;s health and wellness with expert guidance and
                 actionable advice.
             </p>
 

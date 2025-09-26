@@ -173,9 +173,9 @@ export default function SupplementsForWomensHealthPage() {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-6">Supplements for Women's Health</h1>
+            <h1 className="text-3xl font-bold mb-6">Supplements for Women&#39;s Health</h1>
             <p className="text-gray-600 mb-8">
-                Discover supplements to support women's health with expert recommendations
+                Discover supplements to support women&#39;s health with expert recommendations
                 and valuable insights.
             </p>
 

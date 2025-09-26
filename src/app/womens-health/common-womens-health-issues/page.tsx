@@ -173,9 +173,9 @@ export default function CommonWomensHealthIssuesPage() {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-6">Common Women's Health Issues</h1>
+            <h1 className="text-3xl font-bold mb-6">Common Women&#39;s Health Issues</h1>
             <p className="text-gray-600 mb-8">
-                Learn about common women's health issues, their symptoms, and management
+                Learn about common women&#39;s health issues, their symptoms, and management
                 strategies with expert advice.
             </p>
 

@@ -173,9 +173,9 @@ export default function SupplementsForMensHealthPage() {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-6">Supplements for Men's Health</h1>
+            <h1 className="text-3xl font-bold mb-6">Supplements for Men&#39;s Health</h1>
             <p className="text-gray-600 mb-8">
-                Discover supplements to support men's health with expert recommendations and
+                Discover supplements to support men&#39;s health with expert recommendations and
                 valuable insights.
             </p>
 

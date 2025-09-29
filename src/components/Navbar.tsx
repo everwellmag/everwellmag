@@ -152,7 +152,7 @@ export default function Navbar() {
                   {item.label}
                 </Link>
                 {item.subItems && (
-                  <div className="dropdown-menu absolute top-full left-0 bg-blue-900 text-white shadow-lg rounded-lg p-2 min-w-[200px] invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-300">
+                  <div className="dropdown-menu absolute top-full left-0 bg-blue-900 text-white shadow-lg rounded-lg p-2 min-w-[300px] invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-300">
                     {item.subItems.map((subItem) => (
                       <Link
                         key={subItem.href}

@@ -122,7 +122,7 @@ const normalizeCoverUrl = (media?: Media | null): string | null => {
     return media.url.startsWith('http') ? media.url : `https://cms.everwellmag.com${media.url}`;
 };
 
-export default function WorkoutPlanForBloodSugarPage() {
+export default function CommonBloodSugarIssuesPage() {
     const [articles, setArticles] = useState<Article[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -173,10 +173,10 @@ export default function WorkoutPlanForBloodSugarPage() {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-6">Workout Plans for Blood Sugar</h1>
+            <h1 className="text-3xl font-bold mb-6">Common Blood Sugar Issues</h1>
             <p className="text-gray-600 mb-8">
-                Discover workout plans designed to help manage blood sugar levels with expert
-                guidance and effective exercises.
+                Learn about common blood sugar issues, their symptoms, and management
+                strategies with expert guidance.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

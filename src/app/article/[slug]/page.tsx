@@ -83,7 +83,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         const blockKey = `${block.__component}-${block.id}-${index}`;
         switch (block.__component) {
             case 'shared.rich-text':
-                const markdownBody = block.body || ''; // Changed from let to const
+                const markdownBody = block.body || '';
                 console.log('Original Markdown:', markdownBody);
                 console.log('Processed Markdown:', markdownBody);
                 return (
@@ -111,9 +111,10 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                                         <Image
                                             src={src}
                                             alt={props.alt || 'Image'}
-                                            width={toNumber(props.width) || 500}
-                                            height={toNumber(props.height) || 500}
+                                            width={toNumber(props.width) || 768} // Thay 500 bằng 768
+                                            height={toNumber(props.height) || 768} // Thay 500 bằng 768
                                             className="max-w-full h-auto my-4 rounded-lg"
+                                            unoptimized // Sử dụng ảnh gốc từ Strapi
                                         />
                                     ) : (
                                         <span className="text-gray-500">[Image: Missing URL]</span>
@@ -142,9 +143,10 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                         key={blockKey}
                         src={mediaUrl}
                         alt={block.file?.data?.attributes?.alternativeText || 'Media'}
-                        width={toNumber(block.file?.data?.attributes?.width) || 500}
-                        height={toNumber(block.file?.data?.attributes?.height) || 500}
+                        width={toNumber(block.file?.data?.attributes?.width) || 768} // Thay 500 bằng 768
+                        height={toNumber(block.file?.data?.attributes?.height) || 768} // Thay 500 bằng 768
                         className="w-full max-w-md my-4 rounded-lg"
+                        unoptimized // Sử dụng ảnh gốc từ Strapi
                     />
                 ) : (
                     <div key={blockKey} className="text-gray-500">[Media: Thiếu dữ liệu]</div>
@@ -164,9 +166,10 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                                     key={`${img.id}-${imgIndex}`}
                                     src={imgUrl || ''}
                                     alt={img.attributes.alternativeText || 'Slider image'}
-                                    width={toNumber(img.attributes.width) || 500}
-                                    height={toNumber(img.attributes.height) || 500}
+                                    width={toNumber(img.attributes.width) || 768} // Thay 500 bằng 768
+                                    height={toNumber(img.attributes.height) || 768} // Thay 500 bằng 768
                                     className="w-full max-w-md my-2 rounded-lg"
+                                    unoptimized // Sử dụng ảnh gốc từ Strapi
                                 />
                             );
                         })}
@@ -192,7 +195,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     width={toNumber(cover?.width) || 1200}
                     height={toNumber(cover?.height) || 707}
                     className="w-full max-w-md mb-4 rounded-lg"
-                    priority
+                    unoptimized // Sử dụng ảnh gốc từ Strapi
                 />
             )}
             <div>{renderedBlocks}</div>

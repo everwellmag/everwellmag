@@ -60,8 +60,31 @@ const isUrlWithPath = (url: string | Blob, path: string): boolean => {
     return false; // Blob không có startsWith
 };
 
-export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
-    const { slug } = await params;
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+    const data = await fetchFromStrapi(`articles?filters[slug][$eq]=${params.slug}&populate=*`);
+    const article: StrapiArticle = data.data?.[0];
+    const baseUrl = process.env.STRAPI_API_URL || 'https://cms.everwellmag.com';
+    const coverImageUrl = article?.cover?.url ? toStringSrc(`${baseUrl}${isUrlWithPath(article.cover.url, '/uploads') ? article.cover.url : `/uploads${article.cover.url}`}`) : null;
+
+    return {
+        title: article?.title || 'Everwell Magazine - Article',
+        description: article?.description || `Read more about ${article?.title || 'this article'} on Everwell Magazine. Discover expert insights and tips.`,
+        robots: { index: true, follow: true },
+        openGraph: {
+            title: article?.title || 'Everwell Magazine - Article',
+            description: article?.description || `Read more about ${article?.title || 'this article'} on Everwell Magazine.`,
+            images: [coverImageUrl || `${baseUrl}/uploads/default-image.jpg`],
+            url: `https://www.everwellmag.com/article/${params.slug}`,
+            type: 'article',
+        },
+        alternates: {
+            canonical: `https://www.everwellmag.com/article/${params.slug}`,
+        },
+    };
+}
+
+export default async function ArticlePage({ params }: { params: { slug: string } }) {
+    const { slug } = params; // Xóa await vì params không phải Promise
     console.log('Slug:', slug);
     console.log('STRAPI_API_URL:', process.env.STRAPI_API_URL);
 
@@ -102,28 +125,28 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                                 h3: ({ ...props }) => (
                                     <h3 className="text-xl font-semibold text-gray-700 mb-2" {...props} />
                                 ),
-                                h4: ({ ...props }) => ( // Thêm h4
+                                h4: ({ ...props }) => (
                                     <h4 className="text-lg font-semibold text-gray-600 mb-2" {...props} />
                                 ),
                                 ul: ({ ...props }) => (
                                     <ul className="list-disc list-inside text-gray-700 mb-4" {...props} />
                                 ),
-                                ol: ({ ...props }) => ( // Thêm ol cho danh sách có thứ tự
+                                ol: ({ ...props }) => (
                                     <ol className="list-decimal list-inside text-gray-700 mb-4" {...props} />
                                 ),
                                 li: ({ ...props }) => (
                                     <li className="mb-2" {...props} />
                                 ),
-                                blockquote: ({ ...props }) => ( // Thêm blockquote
+                                blockquote: ({ ...props }) => (
                                     <blockquote className="border-l-4 pl-4 italic text-gray-600 my-4" {...props} />
                                 ),
-                                code: ({ ...props }) => ( // Thêm code inline
+                                code: ({ ...props }) => (
                                     <code className="bg-gray-100 text-red-600 px-1 rounded" {...props} />
                                 ),
-                                pre: ({ ...props }) => ( // Thêm pre cho code block
+                                pre: ({ ...props }) => (
                                     <pre className="bg-gray-100 p-4 rounded overflow-x-auto text-sm" {...props} />
                                 ),
-                                a: ({ ...props }) => ( // Thêm a cho link
+                                a: ({ ...props }) => (
                                     <a className="text-blue-500 hover:underline" {...props} />
                                 ),
                                 strong: ({ ...props }) => (
@@ -221,7 +244,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     alt={title || 'Cover image'}
                     width={toNumber(cover?.width) || 1200}
                     height={toNumber(cover?.height) || 707}
-                    className="w-full max-w-md mb-4 rounded-lg"
+                    className="w-full mb-4 rounded-lg" // Bỏ max-w-md
                     unoptimized
                 />
             )}

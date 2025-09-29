@@ -2,7 +2,7 @@ import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import { fetchFromStrapi } from '@/lib/strapi';
 import { notFound } from 'next/navigation';
-import { Metadata, ResolvingMetadata } from 'next'; // Sử dụng kiểu chính thức
+import { Metadata } from 'next'; // Chỉ import Metadata, không cần ResolvingMetadata nếu không dùng parent
 
 // Define TypeScript interfaces for the API response
 interface StrapiMedia {
@@ -65,10 +65,7 @@ const isUrlWithPath = (url: string | Blob, path: string): boolean => {
     return false;
 };
 
-export async function generateMetadata(
-    { params }: { params: { slug: string } },
-    parent: ResolvingMetadata
-): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
     try {
         const data = await fetchFromStrapi(`articles?filters[slug][$eq]=${params.slug}&populate=*`);
         const article: StrapiArticle = data.data?.[0];
@@ -174,7 +171,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                                                 height={toNumber(props.height) || 768}
                                                 className="max-w-full h-auto my-4 rounded-lg"
                                                 unoptimized
-                                                loading="lazy" // Thêm lazy loading
+                                                loading="lazy"
                                             />
                                         ) : (
                                             <span className="text-gray-500">[Image: Missing URL]</span>

@@ -148,7 +148,9 @@ export default function SupplementsForBloodSugarPage() {
                 if (!data.data || data.data.length === 0) {
                     throw new Error('No articles found for category ID 6');
                 }
-                setArticles(data.data);
+                // Sort articles by createdAt in descending order (newest first)
+                const sortedArticles = data.data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+                setArticles(sortedArticles);
                 setLoading(false);
             } catch (err: unknown) {
                 setError((err instanceof Error ? err.message : 'An error occurred while fetching articles') || 'An error occurred');

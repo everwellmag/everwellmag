@@ -84,7 +84,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
-    const { slug } = params; // Xóa await vì params không phải Promise
+    const { slug } = params; // Không dùng await, params là object trực tiếp
     console.log('Slug:', slug);
     console.log('STRAPI_API_URL:', process.env.STRAPI_API_URL);
 
@@ -244,7 +244,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                     alt={title || 'Cover image'}
                     width={toNumber(cover?.width) || 1200}
                     height={toNumber(cover?.height) || 707}
-                    className="w-full mb-4 rounded-lg" // Bỏ max-w-md
+                    className="w-full mb-4 rounded-lg" // Giữ w-full, bỏ max-w-md
                     unoptimized
                 />
             )}

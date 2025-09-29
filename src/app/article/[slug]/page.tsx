@@ -2,7 +2,7 @@ import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import { fetchFromStrapi } from '@/lib/strapi';
 import { notFound } from 'next/navigation';
-import { Metadata } from 'next'; // Chỉ import Metadata, không cần ResolvingMetadata nếu không dùng parent
+import { Metadata } from 'next';
 
 // Define TypeScript interfaces for the API response
 interface StrapiMedia {
@@ -65,9 +65,10 @@ const isUrlWithPath = (url: string | Blob, path: string): boolean => {
     return false;
 };
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const resolvedParams = await params; // Giải nén Promise
     try {
-        const data = await fetchFromStrapi(`articles?filters[slug][$eq]=${params.slug}&populate=*`);
+        const data = await fetchFromStrapi(`articles?filters[slug][$eq]=${resolvedParams.slug}&populate=*`);
         const article: StrapiArticle = data.data?.[0];
         const baseUrl = process.env.STRAPI_API_URL || 'https://cms.everwellmag.com';
         const coverImageUrl = article?.cover?.url
@@ -88,11 +89,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
                     article?.description ||
                     `Read more about ${article?.title || 'this article'} on Everwell Magazine.`,
                 images: [coverImageUrl || `${baseUrl}/uploads/default-image.jpg`],
-                url: `https://www.everwellmag.com/article/${params.slug}`,
+                url: `https://www.everwellmag.com/article/${resolvedParams.slug}`,
                 type: 'article',
             },
             alternates: {
-                canonical: `https://www.everwellmag.com/article/${params.slug}`,
+                canonical: `https://www.everwellmag.com/article/${resolvedParams.slug}`,
             },
         };
     } catch (error) {
@@ -105,19 +106,20 @@ export async function generateMetadata({ params }: { params: { slug: string } })
                 title: 'Everwell Magazine - Article',
                 description: 'Discover expert insights and tips on Everwell Magazine.',
                 images: [`${process.env.STRAPI_API_URL || 'https://cms.everwellmag.com'}/uploads/default-image.jpg`],
-                url: `https://www.everwellmag.com/article/${params.slug}`,
+                url: `https://www.everwellmag.com/article/${resolvedParams.slug}`,
                 type: 'article',
             },
             alternates: {
-                canonical: `https://www.everwellmag.com/article/${params.slug}`,
+                canonical: `https://www.everwellmag.com/article/${resolvedParams.slug}`,
             },
         };
     }
 }
 
-export default async function ArticlePage({ params }: { params: { slug: string } }) {
+export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+    const resolvedParams = await params; // Giải nén Promise
     try {
-        const { slug } = params;
+        const { slug } = resolvedParams;
         console.log('Slug:', slug);
         console.log('STRAPI_API_URL:', process.env.STRAPI_API_URL);
 

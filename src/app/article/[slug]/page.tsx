@@ -99,6 +99,33 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                                 h2: ({ ...props }) => (
                                     <h2 className="text-2xl font-semibold text-gray-800 mb-3" {...props} />
                                 ),
+                                h3: ({ ...props }) => (
+                                    <h3 className="text-xl font-semibold text-gray-700 mb-2" {...props} />
+                                ),
+                                h4: ({ ...props }) => ( // Thêm h4
+                                    <h4 className="text-lg font-semibold text-gray-600 mb-2" {...props} />
+                                ),
+                                ul: ({ ...props }) => (
+                                    <ul className="list-disc list-inside text-gray-700 mb-4" {...props} />
+                                ),
+                                ol: ({ ...props }) => ( // Thêm ol cho danh sách có thứ tự
+                                    <ol className="list-decimal list-inside text-gray-700 mb-4" {...props} />
+                                ),
+                                li: ({ ...props }) => (
+                                    <li className="mb-2" {...props} />
+                                ),
+                                blockquote: ({ ...props }) => ( // Thêm blockquote
+                                    <blockquote className="border-l-4 pl-4 italic text-gray-600 my-4" {...props} />
+                                ),
+                                code: ({ ...props }) => ( // Thêm code inline
+                                    <code className="bg-gray-100 text-red-600 px-1 rounded" {...props} />
+                                ),
+                                pre: ({ ...props }) => ( // Thêm pre cho code block
+                                    <pre className="bg-gray-100 p-4 rounded overflow-x-auto text-sm" {...props} />
+                                ),
+                                a: ({ ...props }) => ( // Thêm a cho link
+                                    <a className="text-blue-500 hover:underline" {...props} />
+                                ),
                                 strong: ({ ...props }) => (
                                     <strong className="font-bold" {...props} />
                                 ),
@@ -111,10 +138,10 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                                         <Image
                                             src={src}
                                             alt={props.alt || 'Image'}
-                                            width={toNumber(props.width) || 768} // Thay 500 bằng 768
-                                            height={toNumber(props.height) || 768} // Thay 500 bằng 768
+                                            width={toNumber(props.width) || 768}
+                                            height={toNumber(props.height) || 768}
                                             className="max-w-full h-auto my-4 rounded-lg"
-                                            unoptimized // Sử dụng ảnh gốc từ Strapi
+                                            unoptimized
                                         />
                                     ) : (
                                         <span className="text-gray-500">[Image: Missing URL]</span>
@@ -143,10 +170,10 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                         key={blockKey}
                         src={mediaUrl}
                         alt={block.file?.data?.attributes?.alternativeText || 'Media'}
-                        width={toNumber(block.file?.data?.attributes?.width) || 768} // Thay 500 bằng 768
-                        height={toNumber(block.file?.data?.attributes?.height) || 768} // Thay 500 bằng 768
+                        width={toNumber(block.file?.data?.attributes?.width) || 768}
+                        height={toNumber(block.file?.data?.attributes?.height) || 768}
                         className="w-full max-w-md my-4 rounded-lg"
-                        unoptimized // Sử dụng ảnh gốc từ Strapi
+                        unoptimized
                     />
                 ) : (
                     <div key={blockKey} className="text-gray-500">[Media: Thiếu dữ liệu]</div>
@@ -166,10 +193,10 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                                     key={`${img.id}-${imgIndex}`}
                                     src={imgUrl || ''}
                                     alt={img.attributes.alternativeText || 'Slider image'}
-                                    width={toNumber(img.attributes.width) || 768} // Thay 500 bằng 768
-                                    height={toNumber(img.attributes.height) || 768} // Thay 500 bằng 768
+                                    width={toNumber(img.attributes.width) || 768}
+                                    height={toNumber(img.attributes.height) || 768}
                                     className="w-full max-w-md my-2 rounded-lg"
-                                    unoptimized // Sử dụng ảnh gốc từ Strapi
+                                    unoptimized
                                 />
                             );
                         })}
@@ -195,7 +222,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     width={toNumber(cover?.width) || 1200}
                     height={toNumber(cover?.height) || 707}
                     className="w-full max-w-md mb-4 rounded-lg"
-                    unoptimized // Sử dụng ảnh gốc từ Strapi
+                    unoptimized
                 />
             )}
             <div>{renderedBlocks}</div>

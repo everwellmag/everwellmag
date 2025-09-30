@@ -4,14 +4,10 @@ export default function robots(): MetadataRoute.Robots {
     const baseUrl = "https://everwellmag.com";
 
     return {
-        rules: [
-            {
-                userAgent: "*",
-                allow: "/",
-                disallow: ["/admin", "/api", "/private"],
-            },
-        ],
+        rules: {
+            userAgent: "*",
+            allow: "/",
+        },
         sitemap: `${baseUrl}/sitemap.xml`,
-        host: baseUrl,
     };
 }

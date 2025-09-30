@@ -47,7 +47,13 @@ interface StrapiArticle {
     blocks?: StrapiBlock[];
 }
 
-// Helper functions (unchanged)
+// Memoize fetch to avoid duplicate calls
+const getArticleData = async (slug: string) => {
+    const data = await fetchFromStrapi(`articles?filters[slug][$eq]=${slug}&populate=*`);
+    return data.data?.[0] || null;
+};
+
+// Helper functions
 const toStringSrc = (url: string | Blob | null): string => {
     if (!url) return '';
     if (url instanceof Blob) return URL.createObjectURL(url);
@@ -60,22 +66,12 @@ const toNumber = (value: string | number | undefined): number | undefined => {
     return isNaN(num) ? undefined : num;
 };
 
-const isUrlWithPath = (url: string | Blob, path: string): boolean => {
-    if (typeof url === 'string') return url.startsWith(path);
-    return false;
-};
-
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-    const resolvedParams = await params; // Giải nén Promise
+    const resolvedParams = await params;
     try {
-        const data = await fetchFromStrapi(`articles?filters[slug][$eq]=${resolvedParams.slug}&populate=*`);
-        const article: StrapiArticle = data.data?.[0];
+        const article = await getArticleData(resolvedParams.slug);
         const baseUrl = process.env.STRAPI_API_URL || 'https://cms.everwellmag.com';
-        const coverImageUrl = article?.cover?.url
-            ? toStringSrc(
-                `${baseUrl}${isUrlWithPath(article.cover.url, '/uploads') ? article.cover.url : `/uploads${article.cover.url}`}`
-            )
-            : null;
+        const coverImageUrl = article?.cover?.url ? toStringSrc(article.cover.url) : null;
 
         return {
             title: article?.title || 'Everwell Magazine - Article',
@@ -117,28 +113,20 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
-    const resolvedParams = await params; // Giải nén Promise
+    const resolvedParams = await params;
     try {
         const { slug } = resolvedParams;
         console.log('Slug:', slug);
         console.log('STRAPI_API_URL:', process.env.STRAPI_API_URL);
 
-        const data = await fetchFromStrapi(`articles?filters[slug][$eq]=${slug}&populate=*`);
-        console.log('API Data:', JSON.stringify(data, null, 2));
-
-        const article: StrapiArticle = data.data?.[0];
+        const article = await getArticleData(slug);
         if (!article) {
             console.log('No article found for slug:', slug);
             notFound();
         }
 
-        const { title, description, cover, blocks } = article;
-        const baseUrl = process.env.STRAPI_API_URL || 'https://cms.everwellmag.com';
-        const coverImageUrl = cover?.url
-            ? toStringSrc(
-                `${baseUrl}${isUrlWithPath(cover.url, '/uploads') ? cover.url : `/uploads${cover.url}`}`
-            )
-            : null;
+        const { title, description, cover, blocks } = article as StrapiArticle;
+        const coverImageUrl = cover?.url ? toStringSrc(cover.url) : null;
 
         const renderBlock = (block: StrapiBlock, index: number) => {
             const blockKey = `${block.__component}-${block.id}-${index}`;
@@ -168,7 +156,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                                         return src ? (
                                             <Image
                                                 src={src}
-                                                alt={props.alt || 'Image'}
+                                                alt={props.alt || 'Image'} // Đảm bảo alt có giá trị mặc định
                                                 width={toNumber(props.width) || 768}
                                                 height={toNumber(props.height) || 768}
                                                 className="max-w-full h-auto my-4 rounded-lg"
@@ -193,19 +181,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                         </blockquote>
                     );
                 case 'shared.media':
-                    const mediaUrl = block.file?.data?.attributes?.url
-                        ? toStringSrc(
-                            `${baseUrl}${isUrlWithPath(block.file.data.attributes.url, '/uploads')
-                                ? block.file.data.attributes.url
-                                : `/uploads${block.file.data.attributes.url}`
-                            }`
-                        )
-                        : null;
+                    const mediaUrl = block.file?.data?.attributes?.url ? toStringSrc(block.file.data.attributes.url) : null;
                     return mediaUrl ? (
                         <Image
                             key={blockKey}
                             src={mediaUrl}
-                            alt={block.file?.data?.attributes?.alternativeText || 'Media'}
+                            alt={block.file?.data?.attributes?.alternativeText || 'Media'} // Đảm bảo alt có giá trị mặc định
                             width={toNumber(block.file?.data?.attributes?.width) || 768}
                             height={toNumber(block.file?.data?.attributes?.height) || 768}
                             className="w-full max-w-md my-4 rounded-lg"
@@ -220,26 +201,19 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     return images.length > 0 ? (
                         <div key={blockKey} className="my-6">
                             {images.map((img, imgIndex: number) => {
-                                const imgUrl = img.attributes.url
-                                    ? toStringSrc(
-                                        `${baseUrl}${isUrlWithPath(img.attributes.url, '/uploads')
-                                            ? img.attributes.url
-                                            : `/uploads${img.attributes.url}`
-                                        }`
-                                    )
-                                    : null;
-                                return (
+                                const imgUrl = img.attributes.url ? toStringSrc(img.attributes.url) : null;
+                                return imgUrl ? (
                                     <Image
                                         key={`${img.id}-${imgIndex}`}
-                                        src={imgUrl || ''}
-                                        alt={img.attributes.alternativeText || 'Slider image'}
+                                        src={imgUrl}
+                                        alt={img.attributes.alternativeText || 'Slider image'} // Đảm bảo alt có giá trị mặc định
                                         width={toNumber(img.attributes.width) || 768}
                                         height={toNumber(img.attributes.height) || 768}
                                         className="w-full max-w-md my-2 rounded-lg"
                                         unoptimized
                                         loading="lazy"
                                     />
-                                );
+                                ) : null;
                             })}
                         </div>
                     ) : (
@@ -259,7 +233,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 {coverImageUrl && (
                     <Image
                         src={coverImageUrl}
-                        alt={title || 'Cover image'}
+                        alt={title || 'Cover image'} // Đảm bảo alt có giá trị mặc định
                         width={toNumber(cover?.width) || 1200}
                         height={toNumber(cover?.height) || 707}
                         className="w-full mb-4 rounded-lg"

@@ -273,7 +273,7 @@ export default function DietTipsForBloodSugarPage() {
                             {/* Read More Link (always at bottom) */}
                             <Link
                                 href={`/article/${article.slug}`}
-                                className="mt-1 block hover:underline"
+                                className="mt-0 block hover:underline"
                                 style={{ color: '#3b82f6' }}
                             >
                                 Read More

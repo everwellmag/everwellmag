@@ -197,16 +197,18 @@ export default function CommonBloodSugarIssuesPage() {
                         >
                             {/* Thumbnail Image */}
                             {thumbnailUrl && (
-                                <Image
-                                    src={thumbnailUrl}
-                                    alt={article.cover?.alternativeText || article.title}
-                                    width={500}
-                                    height={300}
-                                    className="w-full h-48 object-cover rounded-md mb-4"
-                                    onError={(e) => {
-                                        e.currentTarget.style.display = 'none'; // Hide if image fails to load
-                                    }}
-                                />
+                                <Link href={`/article/${article.slug}`}>
+                                    <Image
+                                        src={thumbnailUrl}
+                                        alt={article.cover?.alternativeText || article.title}
+                                        width={500}
+                                        height={300}
+                                        className="w-full h-48 object-cover rounded-md mb-4 cursor-pointer"
+                                        onError={(e) => {
+                                            e.currentTarget.style.display = 'none'; // Hide if image fails to load
+                                        }}
+                                    />
+                                </Link>
                             )}
 
                             {/* Content Container with fixed height */}
@@ -272,7 +274,7 @@ export default function CommonBloodSugarIssuesPage() {
                             <Link
                                 href={`/article/${article.slug}`}
                                 className="mt-2 block hover:underline"
-                                style={{ color: 'var(--foreground)' }}
+                                style={{ color: '#3b82f6' }}
                             >
                                 Read More
                             </Link>

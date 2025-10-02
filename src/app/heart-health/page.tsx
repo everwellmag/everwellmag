@@ -122,7 +122,7 @@ const normalizeCoverUrl = (media?: Media | null): string | null => {
     return media.url.startsWith('http') ? media.url : `https://cms.everwellmag.com${media.url}`;
 };
 
-export default function SupplementsForHeartHealthPage() {
+export default function CommonHeartConditionsPage() {
     const [articles, setArticles] = useState<Article[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -132,7 +132,7 @@ export default function SupplementsForHeartHealthPage() {
         const fetchArticles = async () => {
             try {
                 const response = await fetch(
-                    'https://cms.everwellmag.com/api/articles?filters[category][id]=14&pagination[page]=1&pagination[pageSize]=10&populate=*',
+                    'https://cms.everwellmag.com/api/articles?filters[category][id]=15&pagination[page]=1&pagination[pageSize]=10&populate=*',
                     {
                         headers: {
                             'Content-Type': 'application/json',
@@ -146,7 +146,7 @@ export default function SupplementsForHeartHealthPage() {
 
                 const data: ApiResponse = await response.json();
                 if (!data.data || data.data.length === 0) {
-                    throw new Error('No articles found for category ID 14');
+                    throw new Error('No articles found for category ID 15');
                 }
                 // Sort articles by createdAt in descending order (newest first)
                 const sortedArticles = data.data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -162,23 +162,23 @@ export default function SupplementsForHeartHealthPage() {
     }, []);
 
     if (loading) {
-        return <div className="container mx-auto p-4">Loading...</div>;
+        return <div className="container mx-auto p-4" style={{ color: 'var(--foreground)' }}>Loading...</div>;
     }
 
     if (error) {
-        return <div className="container mx-auto p-4 text-red-500">{error}</div>;
+        return <div className="container mx-auto p-4" style={{ color: 'var(--foreground)' }}>{error}</div>;
     }
 
     if (articles.length === 0) {
-        return <div className="container mx-auto p-4 text-red-500">No articles available.</div>;
+        return <div className="container mx-auto p-4" style={{ color: 'var(--foreground)' }}>No articles available.</div>;
     }
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-6">Supplements for Heart Health</h1>
-            <p className="text-gray-600 mb-8">
-                Explore supplements to support heart health with expert recommendations and
-                valuable insights.
+        <div className="container mx-auto p-4" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
+            <h1 className="text-3xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>Common Heart Conditions</h1>
+            <p className="mb-8" style={{ color: 'var(--foreground)' }}>
+                Learn about common heart conditions, their symptoms, and management strategies
+                with expert insights.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -192,35 +192,38 @@ export default function SupplementsForHeartHealthPage() {
                     return (
                         <div
                             key={article.id}
-                            className="border rounded-lg shadow-md p-4 hover:shadow-lg transition h-[450px] flex flex-col justify-between" // Set fixed height and flex layout
+                            className="border rounded-lg shadow-md p-4 hover:shadow-lg transition h-[450px] flex flex-col justify-between"
+                            style={{ borderColor: 'var(--foreground)', color: 'var(--foreground)' }}
                         >
                             {/* Thumbnail Image */}
                             {thumbnailUrl && (
-                                <Image
-                                    src={thumbnailUrl}
-                                    alt={article.cover?.alternativeText || article.title}
-                                    width={500}
-                                    height={300}
-                                    className="w-full h-48 object-cover rounded-md mb-4"
-                                    onError={(e) => {
-                                        e.currentTarget.style.display = 'none'; // Hide if image fails to load
-                                    }}
-                                />
+                                <Link href={`/article/${article.slug}`}>
+                                    <Image
+                                        src={thumbnailUrl}
+                                        alt={article.cover?.alternativeText || article.title}
+                                        width={500}
+                                        height={300}
+                                        className="w-full h-48 object-cover rounded-md mb-4 cursor-pointer"
+                                        onError={(e) => {
+                                            e.currentTarget.style.display = 'none'; // Hide if image fails to load
+                                        }}
+                                    />
+                                </Link>
                             )}
 
                             {/* Content Container with fixed height */}
                             <div className="flex-1 overflow-hidden">
                                 {/* Title and Description */}
                                 <h2 className="text-xl font-semibold mb-2 line-clamp-2">
-                                    <Link href={`/article/${article.slug}`} className="hover:underline">
+                                    <Link href={`/article/${article.slug}`} className="hover:underline" style={{ color: 'var(--foreground)' }}>
                                         {article.title}
                                     </Link>
                                 </h2>
-                                <p className="text-gray-600 mb-4 line-clamp-2">{article.description}</p>
+                                <p className="mb-4 line-clamp-2" style={{ color: 'var(--foreground)' }}>{article.description}</p>
 
                                 {/* Author */}
                                 {article.author && (
-                                    <p className="text-sm text-gray-500 mb-2 line-clamp-1">
+                                    <p className="text-sm mb-2 line-clamp-1" style={{ color: 'var(--foreground)' }}>
                                         By {article.author.name}
                                     </p>
                                 )}
@@ -233,13 +236,13 @@ export default function SupplementsForHeartHealthPage() {
                                                 <ReactMarkdown
                                                     components={{
                                                         p: ({ ...props }) => (
-                                                            <p className="text-gray-700" {...props} />
+                                                            <p style={{ color: 'var(--foreground)' }} {...props} />
                                                         ),
                                                         h1: ({ ...props }) => (
-                                                            <h1 className="text-2xl font-bold text-gray-700" {...props} />
+                                                            <h1 className="text-2xl font-bold" style={{ color: 'var(--foreground)' }} {...props} />
                                                         ),
                                                         h2: ({ ...props }) => (
-                                                            <h2 className="text-xl font-semibold text-gray-700" {...props} />
+                                                            <h2 className="text-xl font-semibold" style={{ color: 'var(--foreground)' }} {...props} />
                                                         ),
                                                         strong: ({ ...props }) => (
                                                             <strong className="font-bold" {...props} />
@@ -257,9 +260,9 @@ export default function SupplementsForHeartHealthPage() {
                                     }
                                     if (block.__component === 'shared.quote' && 'title' in block && 'body' in block && block.title && block.body) {
                                         return (
-                                            <blockquote key={index} className="border-l-4 pl-4 italic text-gray-600 mb-4 line-clamp-2">
+                                            <blockquote key={index} className="border-l-4 pl-4 italic mb-4 line-clamp-2" style={{ color: 'var(--foreground)', borderColor: 'var(--foreground)' }}>
                                                 <p>{block.body}</p>
-                                                <p className="text-sm text-gray-500">— {block.title}</p>
+                                                <p className="text-sm" style={{ color: 'var(--foreground)' }}>— {block.title}</p>
                                             </blockquote>
                                         );
                                     }
@@ -270,7 +273,8 @@ export default function SupplementsForHeartHealthPage() {
                             {/* Read More Link (always at bottom) */}
                             <Link
                                 href={`/article/${article.slug}`}
-                                className="text-blue-500 hover:underline mt-2 block"
+                                className="mt-2 block hover:underline"
+                                style={{ color: '#3b82f6' }}
                             >
                                 Read More
                             </Link>

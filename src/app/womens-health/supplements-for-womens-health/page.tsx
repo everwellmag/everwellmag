@@ -162,21 +162,21 @@ export default function SupplementsForWomensHealthPage() {
     }, []);
 
     if (loading) {
-        return <div className="container mx-auto p-4">Loading...</div>;
+        return <div className="container mx-auto p-4" style={{ color: 'var(--foreground)' }}>Loading...</div>;
     }
 
     if (error) {
-        return <div className="container mx-auto p-4 text-red-500">{error}</div>;
+        return <div className="container mx-auto p-4" style={{ color: 'var(--foreground)' }}>{error}</div>;
     }
 
     if (articles.length === 0) {
-        return <div className="container mx-auto p-4 text-red-500">No articles available.</div>;
+        return <div className="container mx-auto p-4" style={{ color: 'var(--foreground)' }}>No articles available.</div>;
     }
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-6">Supplements for Women&#39;s Health</h1>
-            <p className="text-gray-600 mb-8">
+        <div className="container mx-auto p-4" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
+            <h1 className="text-3xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>Supplements for Women&#39;s Health</h1>
+            <p className="mb-8" style={{ color: 'var(--foreground)' }}>
                 Discover supplements to support women&#39;s health with expert recommendations
                 and valuable insights.
             </p>
@@ -192,35 +192,38 @@ export default function SupplementsForWomensHealthPage() {
                     return (
                         <div
                             key={article.id}
-                            className="border rounded-lg shadow-md p-4 hover:shadow-lg transition h-[450px] flex flex-col justify-between" // Set fixed height and flex layout
+                            className="border rounded-lg shadow-md p-4 hover:shadow-lg transition h-[450px] flex flex-col justify-between"
+                            style={{ borderColor: 'var(--foreground)', color: 'var(--foreground)' }}
                         >
                             {/* Thumbnail Image */}
                             {thumbnailUrl && (
-                                <Image
-                                    src={thumbnailUrl}
-                                    alt={article.cover?.alternativeText || article.title}
-                                    width={500}
-                                    height={300}
-                                    className="w-full h-48 object-cover rounded-md mb-4"
-                                    onError={(e) => {
-                                        e.currentTarget.style.display = 'none'; // Hide if image fails to load
-                                    }}
-                                />
+                                <Link href={`/article/${article.slug}`}>
+                                    <Image
+                                        src={thumbnailUrl}
+                                        alt={article.cover?.alternativeText || article.title}
+                                        width={500}
+                                        height={300}
+                                        className="w-full h-48 object-cover rounded-md mb-4 cursor-pointer"
+                                        onError={(e) => {
+                                            e.currentTarget.style.display = 'none'; // Hide if image fails to load
+                                        }}
+                                    />
+                                </Link>
                             )}
 
                             {/* Content Container with fixed height */}
                             <div className="flex-1 overflow-hidden">
                                 {/* Title and Description */}
                                 <h2 className="text-xl font-semibold mb-2 line-clamp-2">
-                                    <Link href={`/article/${article.slug}`} className="hover:underline">
+                                    <Link href={`/article/${article.slug}`} className="hover:underline" style={{ color: 'var(--foreground)' }}>
                                         {article.title}
                                     </Link>
                                 </h2>
-                                <p className="text-gray-600 mb-4 line-clamp-2">{article.description}</p>
+                                <p className="mb-4 line-clamp-2" style={{ color: 'var(--foreground)' }}>{article.description}</p>
 
                                 {/* Author */}
                                 {article.author && (
-                                    <p className="text-sm text-gray-500 mb-2 line-clamp-1">
+                                    <p className="text-sm mb-2 line-clamp-1" style={{ color: 'var(--foreground)' }}>
                                         By {article.author.name}
                                     </p>
                                 )}
@@ -233,13 +236,13 @@ export default function SupplementsForWomensHealthPage() {
                                                 <ReactMarkdown
                                                     components={{
                                                         p: ({ ...props }) => (
-                                                            <p className="text-gray-700" {...props} />
+                                                            <p style={{ color: 'var(--foreground)' }} {...props} />
                                                         ),
                                                         h1: ({ ...props }) => (
-                                                            <h1 className="text-2xl font-bold text-gray-700" {...props} />
+                                                            <h1 className="text-2xl font-bold" style={{ color: 'var(--foreground)' }} {...props} />
                                                         ),
                                                         h2: ({ ...props }) => (
-                                                            <h2 className="text-xl font-semibold text-gray-700" {...props} />
+                                                            <h2 className="text-xl font-semibold" style={{ color: 'var(--foreground)' }} {...props} />
                                                         ),
                                                         strong: ({ ...props }) => (
                                                             <strong className="font-bold" {...props} />
@@ -257,9 +260,9 @@ export default function SupplementsForWomensHealthPage() {
                                     }
                                     if (block.__component === 'shared.quote' && 'title' in block && 'body' in block && block.title && block.body) {
                                         return (
-                                            <blockquote key={index} className="border-l-4 pl-4 italic text-gray-600 mb-4 line-clamp-2">
+                                            <blockquote key={index} className="border-l-4 pl-4 italic mb-4 line-clamp-2" style={{ color: 'var(--foreground)', borderColor: 'var(--foreground)' }}>
                                                 <p>{block.body}</p>
-                                                <p className="text-sm text-gray-500">— {block.title}</p>
+                                                <p className="text-sm" style={{ color: 'var(--foreground)' }}>— {block.title}</p>
                                             </blockquote>
                                         );
                                     }
@@ -270,7 +273,8 @@ export default function SupplementsForWomensHealthPage() {
                             {/* Read More Link (always at bottom) */}
                             <Link
                                 href={`/article/${article.slug}`}
-                                className="text-blue-500 hover:underline mt-2 block"
+                                className="mt-2 block hover:underline"
+                                style={{ color: '#3b82f6' }}
                             >
                                 Read More
                             </Link>

@@ -12,7 +12,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #1b1919;
-    --foreground: #e4dddd;
+    --foreground: #c8bc97;
   }
 }
 
@@ -26,5 +26,3 @@ footer {
   max-width: none !important;
   width: 100% !important;
 }
-
-

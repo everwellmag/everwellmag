@@ -180,8 +180,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                                             {...props}
                                         />
                                     ),
+                                    // 🔥 LINK XANH LÈ CHỈ TRONG BÀI VIẾT!
                                     a: ({ ...props }) => (
-                                        <a style={{ color: 'var(--foreground)' }} className="hover:underline" {...props} />
+                                        <a
+                                            style={{ color: '#3B82F6' }}
+                                            className="hover:underline hover:text-blue-700 font-medium"
+                                            {...props}
+                                        />
                                     ),
                                     strong: ({ ...props }) => <strong className="font-bold" {...props} />,
                                     em: ({ ...props }) => <em className="italic" {...props} />,

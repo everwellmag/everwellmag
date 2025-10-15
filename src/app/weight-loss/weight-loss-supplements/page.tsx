@@ -150,8 +150,8 @@ export default function WeightLossSupplementsPage() {
                                     <p className="text-sm" style={{ color: 'var(--foreground)' }}>Supplier: {product.Supplier}</p>
                                     {product.ReleaseYear && <p className="text-sm" style={{ color: 'var(--foreground)' }}>Released: {product.ReleaseYear}</p>}
                                     {product.rating !== undefined && (
-                                        <p className="text-sm" style={{ color: 'var(--foreground)' }}>
-                                            Rating: <span>{getStarRating(product.rating)}</span>
+                                        <p className="text-2xl" style={{ color: 'var(--foreground)' }}>
+                                            <span>{getStarRating(product.rating)}</span>
                                         </p>
                                     )}
                                 </div>

@@ -211,6 +211,14 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                         {Description || 'No description available'}
                     </ReactMarkdown>
                 </div>
+                <a
+                    href={AffiliateLink}
+                    target="_blank"
+                    rel="nofollow noopener noreferrer"
+                    className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 mb-4 inline-block"
+                >
+                    Buy Now from Official Site
+                </a>
             </main>
         );
     } catch (error) {

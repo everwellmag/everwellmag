@@ -3,86 +3,33 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import ReactMarkdown from 'react-markdown';
 
-// Define TypeScript interfaces for the API response
-interface Media {
-    url: string;
-    alternativeText?: string;
-    caption?: string;
-    width?: number;
-    height?: number;
-    formats?: {
-        thumbnail?: { url: string };
-        small?: { url: string };
-        medium?: { url: string };
-        large?: { url: string };
+// Define TypeScript interfaces for the API response from Products
+interface Product {
+    id: number;
+    Name: string;
+    Description: string;
+    Price: string;
+    Supplier: string;
+    ReleaseYear?: string;
+    AffiliateLink: string;
+    slug: string | null; // Sửa thành "slug" viết thường để khớp JSON Strapi
+    Image: {
+        id: number;
+        url: string;
+        alternativeText?: string;
+        width?: number;
+        height?: number;
+    };
+    category: {
+        id: number;
+        name: string;
+        slug: string;
     };
 }
 
-interface Author {
-    id: number;
-    documentId: string;
-    name: string;
-    email: string;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-}
-
-interface Category {
-    id: number;
-    documentId: string;
-    name: string;
-    slug: string;
-    description: string;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-}
-
-interface RichTextBlock {
-    __component: 'shared.rich-text';
-    id: number;
-    body: string;
-}
-
-interface QuoteBlock {
-    __component: 'shared.quote';
-    id: number;
-    title: string;
-    body: string;
-}
-
-interface MediaBlock {
-    __component: 'shared.media';
-    id: number;
-}
-
-interface SliderBlock {
-    __component: 'shared.slider';
-    id: number;
-}
-
-type Block = RichTextBlock | QuoteBlock | MediaBlock | SliderBlock;
-
-interface Article {
-    id: number;
-    documentId: string;
-    title: string;
-    description: string;
-    slug: string;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-    cover?: Media | null;
-    author?: Author | null;
-    category: Category;
-    blocks: Block[];
-}
-
 interface ApiResponse {
-    data: Article[];
+    data: Product[];
     meta: {
         pagination: {
             page: number;
@@ -93,191 +40,107 @@ interface ApiResponse {
     };
 }
 
-// Function to extract image URLs from rich-text body
-const extractImageUrls = (body: string): string[] => {
-    const regex = /!\[.*?\]\((.*?)\)/g;
-    const matches = body.match(regex) || [];
-    return matches.map((match) => {
-        const url = match.replace(/!\[.*?\]\((.*?)\)/, '$1');
-        return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`; // Normalize URL
-    });
+// Function to normalize image URL
+const normalizeImageUrl = (url?: string): string | null => {
+    if (!url) return null;
+    return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
 };
 
-// Function to get the first image from blocks
-const getFirstImageFromBlocks = (blocks: Block[]): string | null => {
-    for (const block of blocks) {
-        if (block.__component === 'shared.rich-text' && 'body' in block && block.body) {
-            const imageUrls = extractImageUrls(block.body);
-            if (imageUrls.length > 0) {
-                return imageUrls[0]; // Return the first valid image URL
-            }
-        }
-    }
-    return null;
-};
-
-// Function to normalize and validate cover URL
-const normalizeCoverUrl = (media?: Media | null): string | null => {
-    if (!media || !media.url) return null;
-    return media.url.startsWith('http') ? media.url : `https://cms.everwellmag.com${media.url}`;
-};
-
-export default function WeightLossFoodsPage() {
-    const [articles, setArticles] = useState<Article[]>([]);
+export default function WeightLossSupplementsPage() {
+    const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Fetch articles from Strapi API
     useEffect(() => {
-        const fetchArticles = async () => {
+        const fetchProducts = async () => {
             try {
+                console.log('Fetching products...');
                 const response = await fetch(
-                    'https://cms.everwellmag.com/api/articles?filters[category][id]=2&pagination[page]=1&pagination[pageSize]=10&populate=*',
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    }
+                    'https://cms.everwellmag.com/api/products?filters[category][id]=2&pagination[page]=1&pagination[pageSize]=10&populate=*',
+                    { headers: { 'Content-Type': 'application/json' } }
                 );
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch articles');
-                }
-
+                console.log('Response status:', response.status);
+                if (!response.ok) throw new Error(`Failed to fetch products: ${response.statusText}`);
                 const data: ApiResponse = await response.json();
-                if (!data.data || data.data.length === 0) {
-                    throw new Error('No articles found for category ID 2');
-                }
-                // Sort articles by createdAt in descending order (newest first)
-                const sortedArticles = data.data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-                setArticles(sortedArticles);
+                console.log('Fetched data:', data);
+                if (!data.data || data.data.length === 0) throw new Error('No products found for this category');
+                setProducts(data.data);
                 setLoading(false);
             } catch (err: unknown) {
-                setError((err instanceof Error ? err.message : 'An error occurred while fetching articles') || 'An error occurred');
+                console.error('Error fetching products:', err);
+                setError((err instanceof Error ? err.message : 'An error occurred') || 'Error');
                 setLoading(false);
             }
         };
-
-        fetchArticles();
+        fetchProducts();
     }, []);
 
-    if (loading) {
-        return <div className="container mx-auto p-4" style={{ color: 'var(--foreground)' }}>Loading...</div>;
-    }
-
-    if (error) {
-        return <div className="container mx-auto p-4" style={{ color: 'var(--foreground)' }}>{error}</div>;
-    }
-
-    if (articles.length === 0) {
-        return <div className="container mx-auto p-4" style={{ color: 'var(--foreground)' }}>No articles available.</div>;
-    }
+    if (loading) return <div className="container mx-auto p-4 text-center text-gray-600">Loading...</div>;
+    if (error) return <div className="container mx-auto p-4 text-center text-red-500">{error}</div>;
+    if (products.length === 0) return <div className="container mx-auto p-4 text-center text-gray-600">No products available.</div>;
 
     return (
-        <div className="container mx-auto p-4" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
-            <h1 className="text-3xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>Weight Loss Foods</h1>
-            <p className="mb-8" style={{ color: 'var(--foreground)' }}>
-                Discover nutritious foods to support your weight loss journey with delicious
-                recipes and expert tips.
+        <div className="container mx-auto p-4 py-8" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
+            <h1 className="text-4xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                Weight Loss Supplements
+            </h1>
+            <p className="text-center mb-12 text-lg text-gray-400 max-w-2xl mx-auto">
+                Discover top-tier weight loss supplements from trusted providers. Click to shop via our affiliate links!
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {articles.map((article) => {
-                    // Normalize cover URL and fallback to first image from blocks if cover fails
-                    let thumbnailUrl = normalizeCoverUrl(article.cover);
-                    if (!thumbnailUrl) {
-                        thumbnailUrl = getFirstImageFromBlocks(article.blocks);
-                    }
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {products.map((product) => {
+                    const imageUrl = normalizeImageUrl(product.Image?.url);
+                    console.log('Product:', product); // Debug để kiểm tra slug
+                    const productSlug = product.slug || product.id.toString(); // Sửa thành "slug" viết thường, fallback id nếu null
                     return (
                         <div
-                            key={article.id}
-                            className="border rounded-lg shadow-md p-4 hover:shadow-lg transition h-[450px] flex flex-col justify-between"
-                            style={{ borderColor: 'var(--foreground)', color: 'var(--foreground)' }}
+                            key={product.id}
+                            className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl hover:-translate-y-2 border border-gray-100"
+                            style={{ color: 'var(--foreground)' }}
                         >
-                            {/* Thumbnail Image */}
-                            {thumbnailUrl && (
-                                <Link href={`/article/${article.slug}`}>
+                            {imageUrl && (
+                                <Link href={`/product/${productSlug}`}>
                                     <Image
-                                        src={thumbnailUrl}
-                                        alt={article.cover?.alternativeText || article.title}
-                                        width={500}
-                                        height={300}
-                                        className="w-full h-48 object-cover rounded-md mb-4 cursor-pointer"
-                                        onError={(e) => {
-                                            e.currentTarget.style.display = 'none'; // Hide if image fails to load
-                                        }}
+                                        src={imageUrl}
+                                        alt={product.Image?.alternativeText || product.Name}
+                                        width={400}
+                                        height={400}
+                                        className="w-full h-48 object-cover hover:opacity-90 transition-opacity"
                                     />
                                 </Link>
                             )}
 
-                            {/* Content Container with fixed height */}
-                            <div className="flex-1 overflow-hidden">
-                                {/* Title and Description */}
-                                <h2 className="text-xl font-semibold mb-2 line-clamp-2">
-                                    <Link href={`/article/${article.slug}`} className="hover:underline" style={{ color: 'var(--foreground)' }}>
-                                        {article.title}
+                            <div className="p-6">
+                                <h2 className="text-xl font-semibold mb-2 line-clamp-2 text-gray-800">
+                                    <Link href={`/product/${productSlug}`} className="hover:text-blue-600">
+                                        {product.Name}
                                     </Link>
                                 </h2>
-                                <p className="mb-4 line-clamp-2" style={{ color: 'var(--foreground)' }}>{article.description}</p>
-
-                                {/* Author */}
-                                {article.author && (
-                                    <p className="text-sm mb-2 line-clamp-1" style={{ color: 'var(--foreground)' }}>
-                                        By {article.author.name}
-                                    </p>
-                                )}
-
-                                {/* Rich Text Preview (without images, only text) */}
-                                {article.blocks.map((block, index) => {
-                                    if (block.__component === 'shared.rich-text' && 'body' in block && block.body) {
-                                        return (
-                                            <div key={index} className="mb-4 line-clamp-3">
-                                                <ReactMarkdown
-                                                    components={{
-                                                        p: ({ ...props }) => (
-                                                            <p style={{ color: 'var(--foreground)' }} {...props} />
-                                                        ),
-                                                        h1: ({ ...props }) => (
-                                                            <h1 className="text-2xl font-bold" style={{ color: 'var(--foreground)' }} {...props} />
-                                                        ),
-                                                        h2: ({ ...props }) => (
-                                                            <h2 className="text-xl font-semibold" style={{ color: 'var(--foreground)' }} {...props} />
-                                                        ),
-                                                        strong: ({ ...props }) => (
-                                                            <strong className="font-bold" {...props} />
-                                                        ),
-                                                        em: ({ ...props }) => (
-                                                            <em className="italic" {...props} />
-                                                        ),
-                                                        img: () => null,
-                                                    }}
-                                                >
-                                                    {block.body}
-                                                </ReactMarkdown>
-                                            </div>
-                                        );
-                                    }
-                                    if (block.__component === 'shared.quote' && 'title' in block && 'body' in block && block.title && block.body) {
-                                        return (
-                                            <blockquote key={index} className="border-l-4 pl-4 italic mb-4 line-clamp-2" style={{ color: 'var(--foreground)', borderColor: 'var(--foreground)' }}>
-                                                <p>{block.body}</p>
-                                                <p className="text-sm" style={{ color: 'var(--foreground)' }}>— {block.title}</p>
-                                            </blockquote>
-                                        );
-                                    }
-                                    return null;
-                                })}
+                                <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.Description}</p>
+                                <div className="space-y-2 mb-4">
+                                    <p className="text-md font-medium">Price: <span className="text-green-600">{product.Price}</span></p>
+                                    <p className="text-sm">Supplier: {product.Supplier}</p>
+                                    {product.ReleaseYear && <p className="text-sm">Released: {product.ReleaseYear}</p>}
+                                </div>
                             </div>
 
-                            {/* Read More Link (always at bottom) */}
-                            <Link
-                                href={`/article/${article.slug}`}
-                                className="mt-2 block hover:underline"
-                                style={{ color: '#3b82f6' }}
-                            >
-                                Read More
-                            </Link>
+                            <div className="p-4 bg-gray-50 flex gap-3">
+                                <Link
+                                    href={`/product/${productSlug}`}
+                                    className="flex-1 text-center py-2 rounded-lg border border-blue-500 text-blue-500 hover:bg-blue-50 transition-colors"
+                                >
+                                    Detail
+                                </Link>
+                                <a
+                                    href={product.AffiliateLink}
+                                    target="_blank"
+                                    rel="nofollow noopener noreferrer"
+                                    className="flex-1 block text-center py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200"
+                                >
+                                    Buy Now
+                                </a>
+                            </div>
                         </div>
                     );
                 })}

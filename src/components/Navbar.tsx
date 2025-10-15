@@ -53,7 +53,7 @@ export default function Navbar() {
       subItems: [
         { href: "/weight-loss/diet-plan", label: "Diet Plan" },
         { href: "/weight-loss/workout-plan", label: "Workout Plan" },
-        { href: "/weight-loss/weight-loss-foods", label: "Weight Loss Foods" },
+        { href: "/weight-loss/weight-loss-supplements", label: "Weight Loss Supplements" },
       ],
     },
     {
@@ -62,7 +62,7 @@ export default function Navbar() {
       subItems: [
         { href: "/blood-sugar/diet-tips", label: "Diet Tips" },
         { href: "/blood-sugar/common-blood-sugar-issues", label: "Common Blood Sugar Issues" },
-        { href: "/blood-sugar/supplements-for-blood-sugar", label: "Supplements" },
+        { href: "/blood-sugar/supplements-for-blood-sugar", label: "Blood Sugar Supplements" },
       ],
     },
     {

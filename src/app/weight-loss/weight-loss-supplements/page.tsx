@@ -19,12 +19,17 @@ interface Product {
         alternativeText?: string;
         width?: number;
         height?: number;
-    };
+    } | null;
     category: {
         id: number;
         name: string;
         slug: string;
+        description: string;
+        createdAt: string;
+        updatedAt: string;
+        publishedAt: string;
     };
+    rating?: number; // Trường Decimal từ Strapi
 }
 
 interface ApiResponse {
@@ -47,9 +52,21 @@ const getFirstImageFromDescription = (description: string): string | null => {
 };
 
 // Function to normalize image URL
-const normalizeImageUrl = (url?: string): string | null => {
-    if (!url) return null;
-    return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
+const normalizeImageUrl = (image?: { url?: string } | null): string | null => {
+    if (!image || !image.url) return null;
+    return image.url.startsWith('http') ? image.url : `https://cms.everwellmag.com${image.url}`;
+};
+
+// Function to generate star rating
+const getStarRating = (rating?: number): React.ReactNode => {
+    if (rating === undefined || rating < 0) return <span></span>;
+    const fullStars = Math.min(Math.round(rating), 5);
+    const emptyStars = 5 - fullStars;
+    return (
+        <span className="text-yellow-500">
+            {'★'.repeat(fullStars)} {'☆'.repeat(emptyStars)}
+        </span>
+    );
 };
 
 export default function WeightLossSupplementsPage() {
@@ -96,7 +113,7 @@ export default function WeightLossSupplementsPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((product) => {
-                    let imageUrl = normalizeImageUrl(product.Image?.url); // Prioritize attached image
+                    let imageUrl = normalizeImageUrl(product.Image); // Prioritize attached image
                     if (!imageUrl) {
                         imageUrl = getFirstImageFromDescription(product.Description); // Fallback to first image in description
                     }
@@ -105,18 +122,20 @@ export default function WeightLossSupplementsPage() {
                     return (
                         <div
                             key={product.id}
-                            className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+                            className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl hover:-translate-y-2 border border-blue-500"
                             style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
                         >
                             {imageUrl && (
                                 <Link href={`/product/${productSlug}`}>
-                                    <Image
-                                        src={imageUrl}
-                                        alt={product.Image?.alternativeText || product.Name}
-                                        width={400}
-                                        height={400}
-                                        className="w-full h-48 object-cover hover:opacity-90 transition-opacity"
-                                    />
+                                    <div className="relative w-full h-56">
+                                        <Image
+                                            src={imageUrl}
+                                            alt={product.Image?.alternativeText || product.Name}
+                                            width={400}
+                                            height={400}
+                                            className="w-full h-full object-cover hover:opacity-90 transition-opacity"
+                                        />
+                                    </div>
                                 </Link>
                             )}
 
@@ -126,10 +145,15 @@ export default function WeightLossSupplementsPage() {
                                         {product.Name}
                                     </Link>
                                 </h2>
-                                <div className="space-y-2 mb-4">
+                                <div className="space-y-1 mb-2">
                                     <p className="text-md font-medium">Price: <span className="text-green-600">{product.Price}</span></p>
                                     <p className="text-sm" style={{ color: 'var(--foreground)' }}>Supplier: {product.Supplier}</p>
                                     {product.ReleaseYear && <p className="text-sm" style={{ color: 'var(--foreground)' }}>Released: {product.ReleaseYear}</p>}
+                                    {product.rating !== undefined && (
+                                        <p className="text-sm" style={{ color: 'var(--foreground)' }}>
+                                            Rating: <span>{getStarRating(product.rating)}</span>
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 

@@ -193,7 +193,7 @@ export default function WeightLossSupplementsPage() {
                                                         {priceOption.quantity} {priceOption.quantity > 1 ? 'units' : 'unit'}:
                                                     </span>{' '}
                                                     <span className="font-semibold text-green-600">
-                                                        {priceOption.price} {priceOption.currency}
+                                                        {priceOption.currency}{priceOption.price}
                                                     </span>
                                                 </div>
                                             ))}

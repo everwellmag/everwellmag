@@ -22,7 +22,7 @@ interface Category {
     createdAt: string;
     updatedAt: string;
     publishedAt: string;
-    parent_slug?: string | null; // Field mới thêm trong Strapi
+    parent_slug?: string | null;
 }
 
 interface Product {
@@ -36,7 +36,7 @@ interface Product {
     rating?: number;
     Pricemulti: PriceMulti[];
     Image: {
-        url: string | Blob; // Giữ nguyên để xử lý Blob với type guard
+        url: string | Blob;
         alternativeText?: string;
         width?: number;
         height?: number;
@@ -62,7 +62,7 @@ const getFirstImageFromDescription = (description: string): string | null => {
     const match = description.match(regex);
     if (!match) return null;
     const url = match[1];
-    if (typeof url !== 'string') return null; // Type guard
+    if (typeof url !== 'string') return null;
     return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
 };
 
@@ -73,26 +73,24 @@ const normalizeImageUrl = (image?: { url?: string | Blob } | null): string | nul
     if (typeof url === 'string') {
         return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
     } else if (url instanceof Blob) {
-        return URL.createObjectURL(url); // Chuyển Blob thành string URL
+        return URL.createObjectURL(url);
     }
     return null;
 };
 
 // Function to generate star rating with decimal support using CSS clip-path
 const getStarRating = (rating?: number): React.ReactNode => {
-    if (rating === undefined || rating < 0) return <span>No rating</span>;
-    const fullStars = Math.floor(rating); // Số sao đầy
-    const decimal = rating % 1; // Phần thập phân
+    if (rating === undefined || rating < 0) return <span style={{ color: 'var(--text-secondary)' }}>No rating</span>;
+    const fullStars = Math.floor(rating);
+    const decimal = rating % 1;
     const stars = [];
 
-    // Thêm sao đầy
     for (let i = 0; i < fullStars; i++) {
         stars.push(<span key={`full-${i}`} style={{ color: '#FFD700', fontSize: '1.5em' }}>★</span>);
     }
 
-    // Thêm sao thập phân (nửa sao hoặc một phần sao)
     if (decimal > 0 && fullStars < 5) {
-        const clipPercentage = decimal * 100; // Phần trăm đầy của sao
+        const clipPercentage = decimal * 100;
         stars.push(
             <span
                 key="decimal"
@@ -104,12 +102,11 @@ const getStarRating = (rating?: number): React.ReactNode => {
                 }}
             >
                 <span style={{ position: 'absolute', clipPath: `inset(0 ${100 - clipPercentage}% 0 0)` }}>★</span>
-                <span style={{ color: '#D3D3D3' }}>★</span> {/* Sao nền xám */}
+                <span style={{ color: '#D3D3D3' }}>★</span>
             </span>
         );
     }
 
-    // Thêm sao rỗng
     const emptyStars = 5 - fullStars - (decimal > 0 ? 1 : 0);
     for (let i = 0; i < emptyStars; i++) {
         stars.push(<span key={`empty-${i}`} style={{ color: '#D3D3D3', fontSize: '1.5em' }}>★</span>);
@@ -127,29 +124,41 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
         const fetchProduct = async () => {
             const resolvedParams = await params;
             try {
-                console.log('Fetching product with slug:', resolvedParams.slug);
                 const response = await fetch(
                     `https://cms.everwellmag.com/api/products?filters[slug][$eq]=${resolvedParams.slug}&populate=*`,
                     { headers: { 'Content-Type': 'application/json' } }
                 );
-                console.log('Response status:', response.status);
                 if (!response.ok) throw new Error(`Failed to fetch product: ${response.statusText}`);
                 const data: ApiResponse = await response.json();
-                console.log('Fetched data:', data);
                 if (!data.data || data.data.length === 0) throw new Error('No product found for this slug');
                 setProduct(data.data[0]);
                 setLoading(false);
             } catch (err: unknown) {
-                console.error('Error fetching product:', err);
-                setError((err instanceof Error ? err.message : 'An error occurred') || 'Error');
+                setError(err instanceof Error ? err.message : 'An error occurred');
                 setLoading(false);
             }
         };
         fetchProduct();
     }, [params]);
 
-    if (loading) return <div className="container mx-auto p-4 text-center" style={{ color: 'var(--foreground)' }}>Loading...</div>;
-    if (error) return <div className="container mx-auto p-4 text-center" style={{ color: 'var(--foreground)' }}>{error}</div>;
+    if (loading) {
+        return (
+            <div className="container mx-auto p-6" style={{ color: 'var(--foreground)' }}>
+                <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2" style={{ borderColor: '#3B82F6' }}></div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="container mx-auto p-6" style={{ color: 'var(--foreground)' }}>
+                <div className="text-center" style={{ color: '#3B82F6' }}>{error}</div>
+            </div>
+        );
+    }
+
     if (!product) return notFound();
 
     const imageUrl = normalizeImageUrl(product.Image) || getFirstImageFromDescription(product.Description);
@@ -229,24 +238,24 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                     <div className="mb-6">
                         <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--foreground)' }}>Pricing Options</h3>
                         {product.Pricemulti && product.Pricemulti.length > 0 ? (
-                            <div className="grid grid-cols-1 gap-3">
+                            <div className="flex flex-wrap gap-3">
                                 {product.Pricemulti.map((priceOption, index) => (
                                     <div
                                         key={index}
-                                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-blue-500 hover:bg-blue-50 transition-colors"
+                                        className="inline-flex items-center p-2 bg-gray-50 rounded-lg border border-blue-500 hover:bg-blue-50 transition-colors"
                                         style={{ backgroundColor: 'var(--background)', borderColor: '#3B82F6' }}
                                     >
-                                        <span className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>
+                                        <span className="text-sm font-medium mr-2" style={{ color: 'var(--foreground)' }}>
                                             {priceOption.quantity} {priceOption.quantity > 1 ? 'units' : 'unit'}
                                         </span>
                                         <span className="text-md font-semibold text-green-600">
-                                            {priceOption.price} {priceOption.currency}
+                                            {priceOption.currency}{priceOption.price}
                                         </span>
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-sm italic" style={{ color: 'var(--foreground)' }}>No pricing options available</p>
+                            <p className="text-sm italic" style={{ color: 'var(--text-secondary)' }}>No pricing options available</p>
                         )}
                     </div>
 
@@ -275,9 +284,9 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                                     <Image
                                         src={normalizedSrc}
                                         alt={alt || 'Product image'}
-                                        width={786} // Max-width cho mobile
-                                        height={0} // Height auto
-                                        style={{ width: '100%', maxWidth: '786px', height: 'auto' }} // Responsive
+                                        width={786}
+                                        height={0}
+                                        style={{ width: '100%', maxWidth: '786px', height: 'auto' }}
                                         className="w-full max-w-[786px] h-auto my-4 rounded-lg shadow-md mx-auto"
                                         unoptimized
                                         loading="lazy"

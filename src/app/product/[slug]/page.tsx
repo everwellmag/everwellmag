@@ -272,7 +272,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             </div>
 
             {/* Description Section */}
-            <div className="mt-8 bg-white rounded-xl p-6 sm:p-6 sm:border sm:border-gray-200 sm:shadow-md" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
+            <div className="mt-8 bg-white rounded-xl p-6 border border-gray-200 shadow-md" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
                 <h3 className="text-xl md:text-2xl font-semibold mb-4" style={{ color: 'var(--foreground)' }}>Description</h3>
                 <div className="prose max-w-none" style={{ color: 'var(--foreground)' }}>
                     <ReactMarkdown

@@ -99,7 +99,7 @@ const extractImageUrls = (body: string): string[] => {
   const matches = body.match(regex) || [];
   return matches.map((match) => {
     const url = match.replace(/!\[.*?\]\((.*?)\)/, '$1');
-    return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`; // Normalize URL
+    return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
   });
 };
 
@@ -109,7 +109,7 @@ const getFirstImageFromBlocks = (blocks: Block[]): string | null => {
     if (block.__component === 'shared.rich-text' && 'body' in block && block.body) {
       const imageUrls = extractImageUrls(block.body);
       if (imageUrls.length > 0) {
-        return imageUrls[0]; // Return the first valid image URL
+        return imageUrls[0];
       }
     }
   }
@@ -127,7 +127,6 @@ export default function DietPlanPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch articles from Strapi API
   useEffect(() => {
     const fetchArticles = async () => {
       try {
@@ -148,12 +147,11 @@ export default function DietPlanPage() {
         if (!data.data || data.data.length === 0) {
           throw new Error('No articles found for category ID 3');
         }
-        // Sort articles by createdAt in descending order (newest first)
         const sortedArticles = data.data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         setArticles(sortedArticles);
         setLoading(false);
       } catch (err: unknown) {
-        setError((err instanceof Error ? err.message : 'An error occurred while fetching articles') || 'An error occurred');
+        setError(err instanceof Error ? err.message : 'An error occurred while fetching articles');
         setLoading(false);
       }
     };
@@ -162,28 +160,44 @@ export default function DietPlanPage() {
   }, []);
 
   if (loading) {
-    return <div className="container mx-auto p-4" style={{ color: 'var(--foreground)' }}>Loading...</div>;
+    return (
+      <div className="container mx-auto p-6" style={{ color: 'var(--foreground)' }}>
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2" style={{ borderColor: 'var(--link-color)' }}></div>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="container mx-auto p-4" style={{ color: 'var(--foreground)' }}>{error}</div>;
+    return (
+      <div className="container mx-auto p-6" style={{ color: 'var(--foreground)' }}>
+        <div className="text-center" style={{ color: 'var(--link-color)' }}>{error}</div>
+      </div>
+    );
   }
 
   if (articles.length === 0) {
-    return <div className="container mx-auto p-4" style={{ color: 'var(--foreground)' }}>No articles available.</div>;
+    return (
+      <div className="container mx-auto p-6" style={{ color: 'var(--foreground)' }}>
+        <div className="text-center">No articles available.</div>
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto p-4" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
-      <h1 className="text-3xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>Diet Plans</h1>
-      <p className="mb-8" style={{ color: 'var(--foreground)' }}>
-        Find tailored diet plans to support your weight loss goals with balanced meals
-        and nutritional advice.
-      </p>
+    <div className="container mx-auto p-6" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
+      {/* Header Section */}
+      <div className="relative text-white rounded-lg p-8 mb-12" style={{ background: 'var(--gradient-primary)' }}>
+        <h1 className="text-4xl font-bold mb-4">Diet Plans</h1>
+        <p className="text-lg max-w-2xl">
+          Discover tailored diet plans to support your weight loss goals with balanced meals and expert nutritional advice.
+        </p>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Articles Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {articles.map((article) => {
-          // Normalize cover URL and fallback to first image from blocks if cover fails
           let thumbnailUrl = normalizeCoverUrl(article.cover);
           if (!thumbnailUrl) {
             thumbnailUrl = getFirstImageFromBlocks(article.blocks);
@@ -192,64 +206,55 @@ export default function DietPlanPage() {
           return (
             <div
               key={article.id}
-              className="border rounded-lg shadow-md p-4 hover:shadow-lg transition h-[450px] flex flex-col justify-between"
-              style={{ borderColor: 'var(--foreground)', color: 'var(--foreground)' }}
+              className="group relative rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden min-h-[400px] flex flex-col"
+              style={{ backgroundColor: 'var(--card-bg)' }}
             >
               {/* Thumbnail Image */}
-              {thumbnailUrl && (
+              {thumbnailUrl ? (
                 <Link href={`/article/${article.slug}`}>
                   <Image
                     src={thumbnailUrl}
                     alt={article.cover?.alternativeText || article.title}
                     width={500}
                     height={300}
-                    className="w-full h-48 object-cover rounded-md mb-4 cursor-pointer"
+                    className="w-full h-56 object-cover rounded-t-lg group-hover:scale-105 transition-transform duration-300"
                     onError={(e) => {
-                      e.currentTarget.style.display = 'none'; // Hide if image fails to load
+                      e.currentTarget.src = 'https://cms.everwellmag.com/Uploads/default-image.jpg';
                     }}
+                    unoptimized
+                    loading="lazy"
                   />
                 </Link>
+              ) : (
+                <div className="w-full h-56 flex items-center justify-center rounded-t-lg" style={{ backgroundColor: 'var(--placeholder-bg)' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>No Image</span>
+                </div>
               )}
 
-              {/* Content Container with fixed height */}
-              <div className="flex-1 overflow-hidden">
-                {/* Title and Description */}
-                <h2 className="text-xl font-semibold mb-2 line-clamp-2">
+              {/* Content */}
+              <div className="p-6 flex flex-col flex-1">
+                <h2 className="text-xl font-semibold mb-3 line-clamp-2">
                   <Link href={`/article/${article.slug}`} className="hover:underline" style={{ color: 'var(--foreground)' }}>
                     {article.title}
                   </Link>
                 </h2>
-                <p className="mb-4 line-clamp-2" style={{ color: 'var(--foreground)' }}>{article.description}</p>
-
-                {/* Author */}
+                <p className="mb-4 line-clamp-3" style={{ color: 'var(--text-secondary)' }}>{article.description}</p>
                 {article.author && (
-                  <p className="text-sm mb-2 line-clamp-1" style={{ color: 'var(--foreground)' }}>
+                  <p className="text-sm mb-4 line-clamp-1" style={{ color: 'var(--text-secondary)' }}>
                     By {article.author.name}
                   </p>
                 )}
-
-                {/* Rich Text Preview (without images, only text) */}
                 {article.blocks.map((block, index) => {
                   if (block.__component === 'shared.rich-text' && 'body' in block && block.body) {
                     return (
-                      <div key={index} className="mb-4 line-clamp-3">
+                      <div key={index} className="mb-4 line-clamp-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
                         <ReactMarkdown
                           components={{
-                            p: ({ ...props }) => (
-                              <p style={{ color: 'var(--foreground)' }} {...props} />
-                            ),
-                            h1: ({ ...props }) => (
-                              <h1 className="text-2xl font-bold" style={{ color: 'var(--foreground)' }} {...props} />
-                            ),
-                            h2: ({ ...props }) => (
-                              <h2 className="text-xl font-semibold" style={{ color: 'var(--foreground)' }} {...props} />
-                            ),
-                            strong: ({ ...props }) => (
-                              <strong className="font-bold" {...props} />
-                            ),
-                            em: ({ ...props }) => (
-                              <em className="italic" {...props} />
-                            ),
+                            p: ({ ...props }) => <p {...props} />,
+                            h1: ({ ...props }) => <h1 className="text-lg font-bold" {...props} />,
+                            h2: ({ ...props }) => <h2 className="text-base font-semibold" {...props} />,
+                            strong: ({ ...props }) => <strong className="font-bold" {...props} />,
+                            em: ({ ...props }) => <em className="italic" {...props} />,
                             img: () => null,
                           }}
                         >
@@ -260,24 +265,23 @@ export default function DietPlanPage() {
                   }
                   if (block.__component === 'shared.quote' && 'title' in block && 'body' in block && block.title && block.body) {
                     return (
-                      <blockquote key={index} className="border-l-4 pl-4 italic mb-4 line-clamp-2" style={{ color: 'var(--foreground)', borderColor: 'var(--foreground)' }}>
-                        <p>{block.body}</p>
-                        <p className="text-sm" style={{ color: 'var(--foreground)' }}>— {block.title}</p>
+                      <blockquote key={index} className="border-l-4 pl-4 italic mb-4 line-clamp-2" style={{ borderColor: 'var(--link-color)' }}>
+                        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{block.body}</p>
+                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>— {block.title}</p>
                       </blockquote>
                     );
                   }
                   return null;
                 })}
+                <div className="mt-auto">
+                  <Link
+                    href={`/article/${article.slug}`}
+                    className="inline-block btn-gradient text-white px-4 py-2 rounded-md"
+                  >
+                    Read More
+                  </Link>
+                </div>
               </div>
-
-              {/* Read More Link (always at bottom) */}
-              <Link
-                href={`/article/${article.slug}`}
-                className="mt-2 block hover:underline"
-                style={{ color: '#3b82f6' }}
-              >
-                Read More
-              </Link>
             </div>
           );
         })}

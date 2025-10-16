@@ -14,6 +14,17 @@ interface PriceMulti {
     currency: string;
 }
 
+interface Category {
+    id: number;
+    name: string;
+    slug: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string;
+    parent_slug?: string | null; // Field mới thêm trong Strapi
+}
+
 interface Product {
     id: number;
     Name: string;
@@ -30,15 +41,7 @@ interface Product {
         width?: number;
         height?: number;
     } | null;
-    category: {
-        id: number;
-        name: string;
-        slug: string;
-        description: string;
-        createdAt: string;
-        updatedAt: string;
-        publishedAt: string;
-    };
+    category: Category;
 }
 
 interface ApiResponse {
@@ -150,6 +153,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     if (!product) return notFound();
 
     const imageUrl = normalizeImageUrl(product.Image) || getFirstImageFromDescription(product.Description);
+    const categoryUrl = product.category.parent_slug ? `/${product.category.parent_slug}/${product.category.slug}` : `/${product.category.slug}`;
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-5xl" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
@@ -157,21 +161,21 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             <nav className="mb-6 text-sm md:text-base flex items-center space-x-2">
                 <Link
                     href="/"
-                    className="relative px-3 py-1 bg-blue-50 text-blue-600 font-medium rounded-l-md hover:bg-blue-100 transition-colors"
+                    className="relative px-3 py-1 bg-gray-50 dark:bg-gray-800 text-blue-600 dark:text-blue-400 font-medium rounded-l-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     style={{ color: '#3B82F6' }}
                 >
                     Home
-                    <span className="absolute right-[-8px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-l-8 border-l-blue-50 border-t-8 border-t-transparent border-b-8 border-b-transparent"></span>
+                    <span className="absolute right-[-8px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-l-8 border-l-gray-50 dark:border-l-gray-800 border-t-8 border-t-transparent border-b-8 border-b-transparent"></span>
                 </Link>
                 <Link
-                    href="/weight-loss-supplements"
-                    className="relative px-3 py-1 bg-blue-50 text-blue-600 font-medium hover:bg-blue-100 transition-colors"
+                    href={categoryUrl}
+                    className="relative px-3 py-1 bg-gray-50 dark:bg-gray-800 text-blue-600 dark:text-blue-400 font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     style={{ color: '#3B82F6' }}
                 >
-                    Weight Loss Supplements
-                    <span className="absolute right-[-8px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-l-8 border-l-blue-50 border-t-8 border-t-transparent border-b-8 border-b-transparent"></span>
+                    {product.category.name}
+                    <span className="absolute right-[-8px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-l-8 border-l-gray-50 dark:border-l-gray-800 border-t-8 border-t-transparent border-b-8 border-b-transparent"></span>
                 </Link>
-                <span className="px-3 py-1 bg-blue-50 text-gray-700 font-medium rounded-r-md">
+                <span className="px-3 py-1 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium rounded-r-md">
                     {product.Name}
                 </span>
             </nav>

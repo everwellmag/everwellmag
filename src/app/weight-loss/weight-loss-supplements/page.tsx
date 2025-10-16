@@ -5,6 +5,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 // Define TypeScript interfaces for the API response from Products
+interface PriceMulti {
+    quantity: number;
+    price: number;
+    currency: string;
+}
+
 interface Product {
     id: number;
     Name: string;
@@ -29,7 +35,8 @@ interface Product {
         updatedAt: string;
         publishedAt: string;
     };
-    rating?: number; // Trường Decimal từ Strapi
+    rating?: number;
+    Pricemulti: PriceMulti[];
 }
 
 interface ApiResponse {
@@ -57,16 +64,44 @@ const normalizeImageUrl = (image?: { url?: string } | null): string | null => {
     return image.url.startsWith('http') ? image.url : `https://cms.everwellmag.com${image.url}`;
 };
 
-// Function to generate star rating
+// Function to generate star rating with decimal support using CSS clip-path
 const getStarRating = (rating?: number): React.ReactNode => {
-    if (rating === undefined || rating < 0) return <span></span>;
-    const fullStars = Math.min(Math.round(rating), 5);
-    const emptyStars = 5 - fullStars;
-    return (
-        <span className="text-yellow-500">
-            {'★'.repeat(fullStars)} {'☆'.repeat(emptyStars)}
-        </span>
-    );
+    if (rating === undefined || rating < 0) return <span>No rating</span>;
+    const fullStars = Math.floor(rating); // Số sao đầy
+    const decimal = rating % 1; // Phần thập phân
+    const stars = [];
+
+    // Thêm sao đầy
+    for (let i = 0; i < fullStars; i++) {
+        stars.push(<span key={`full-${i}`} style={{ color: '#FFD700', fontSize: '1.2em' }}>★</span>);
+    }
+
+    // Thêm sao thập phân (nửa sao hoặc một phần sao)
+    if (decimal > 0 && fullStars < 5) {
+        const clipPercentage = decimal * 100; // Phần trăm đầy của sao
+        stars.push(
+            <span
+                key="decimal"
+                style={{
+                    color: '#FFD700',
+                    fontSize: '1.2em',
+                    display: 'inline-block',
+                    position: 'relative',
+                }}
+            >
+                <span style={{ position: 'absolute', clipPath: `inset(0 ${100 - clipPercentage}% 0 0)` }}>★</span>
+                <span style={{ color: '#D3D3D3' }}>★</span> {/* Sao nền xám */}
+            </span>
+        );
+    }
+
+    // Thêm sao rỗng
+    const emptyStars = 5 - fullStars - (decimal > 0 ? 1 : 0);
+    for (let i = 0; i < emptyStars; i++) {
+        stars.push(<span key={`empty-${i}`} style={{ color: '#D3D3D3', fontSize: '1.2em' }}>★</span>);
+    }
+
+    return <span>{stars}</span>;
 };
 
 export default function WeightLossSupplementsPage() {
@@ -146,12 +181,39 @@ export default function WeightLossSupplementsPage() {
                                     </Link>
                                 </h2>
                                 <div className="space-y-1 mb-2">
-                                    <p className="text-md font-medium">Price: <span className="text-green-600">{product.Price}</span></p>
-                                    <p className="text-sm" style={{ color: 'var(--foreground)' }}>Supplier: {product.Supplier}</p>
-                                    {product.ReleaseYear && <p className="text-sm" style={{ color: 'var(--foreground)' }}>Released: {product.ReleaseYear}</p>}
+                                    {product.Pricemulti && product.Pricemulti.length > 0 ? (
+                                        <div className="flex flex-wrap gap-2 mb-2">
+                                            {product.Pricemulti.map((priceOption, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="px-3 py-1 bg-gray-50 rounded-lg border border-blue-500 text-sm"
+                                                    style={{ backgroundColor: 'var(--background)', borderColor: '#3B82F6' }}
+                                                >
+                                                    <span className="font-medium" style={{ color: 'var(--foreground)' }}>
+                                                        {priceOption.quantity} {priceOption.quantity > 1 ? 'units' : 'unit'}:
+                                                    </span>{' '}
+                                                    <span className="font-semibold text-green-600">
+                                                        {priceOption.price} {priceOption.currency}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm italic mb-2" style={{ color: 'var(--foreground)' }}>
+                                            No pricing options available
+                                        </p>
+                                    )}
+                                    <p className="text-sm" style={{ color: 'var(--foreground)' }}>
+                                        Supplier: {product.Supplier}
+                                    </p>
+                                    {product.ReleaseYear && (
+                                        <p className="text-sm" style={{ color: 'var(--foreground)' }}>
+                                            Released: {product.ReleaseYear}
+                                        </p>
+                                    )}
                                     {product.rating !== undefined && (
-                                        <p className="text-xl" style={{ color: 'var(--foreground)' }}>
-                                            <span>{getStarRating(product.rating)}</span>
+                                        <p className="text-sm" style={{ color: 'var(--foreground)' }}>
+                                            <span className="font-medium">Rating:</span> {getStarRating(product.rating)} ({product.rating}/5)
                                         </p>
                                     )}
                                 </div>

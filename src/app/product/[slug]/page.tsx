@@ -272,12 +272,58 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             </div>
 
             {/* Description Section */}
-            <div className="mt-8 bg-white rounded-xl shadow-md p-6 border border-gray-200" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
+            <div className="mt-8 bg-white rounded-xl p-6 sm:p-6 sm:border sm:border-gray-200 sm:shadow-md" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
                 <h3 className="text-xl md:text-2xl font-semibold mb-4" style={{ color: 'var(--foreground)' }}>Description</h3>
                 <div className="prose max-w-none" style={{ color: 'var(--foreground)' }}>
                     <ReactMarkdown
                         components={{
-                            p: ({ ...props }) => <p className="mb-4 text-sm md:text-base" style={{ color: 'var(--foreground)' }} {...props} />,
+                            p: ({ ...props }) => <p className="mb-4 text-base md:text-lg" style={{ color: 'var(--foreground)' }} {...props} />,
+                            h1: ({ ...props }) => (
+                                <h1 style={{ color: 'var(--foreground)' }} className="text-3xl font-bold mb-4" {...props} />
+                            ),
+                            h2: ({ ...props }) => (
+                                <h2 style={{ color: 'var(--foreground)' }} className="text-2xl font-semibold mb-3" {...props} />
+                            ),
+                            h3: ({ ...props }) => (
+                                <h3 style={{ color: 'var(--foreground)' }} className="text-xl font-semibold mb-2" {...props} />
+                            ),
+                            h4: ({ ...props }) => (
+                                <h4 style={{ color: 'var(--foreground)' }} className="text-lg font-semibold mb-2" {...props} />
+                            ),
+                            h5: ({ ...props }) => (
+                                <h5 style={{ color: 'var(--foreground)' }} className="text-base font-semibold mb-2" {...props} />
+                            ),
+                            h6: ({ ...props }) => (
+                                <h6 style={{ color: 'var(--foreground)' }} className="text-sm font-semibold mb-2" {...props} />
+                            ),
+                            ul: ({ ...props }) => (
+                                <ul style={{ color: 'var(--foreground)' }} className="list-disc list-inside mb-4" {...props} />
+                            ),
+                            ol: ({ ...props }) => (
+                                <ol style={{ color: 'var(--foreground)' }} className="list-decimal list-inside mb-4" {...props} />
+                            ),
+                            li: ({ ...props }) => <li className="mb-2 text-base md:text-lg" style={{ color: 'var(--foreground)' }} {...props} />,
+                            blockquote: ({ ...props }) => (
+                                <blockquote
+                                    style={{ color: 'var(--foreground)', borderColor: 'var(--foreground)' }}
+                                    className="border-l-4 pl-4 italic my-4"
+                                    {...props}
+                                />
+                            ),
+                            code: ({ ...props }) => (
+                                <code
+                                    style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
+                                    className="px-1 rounded text-base md:text-lg"
+                                    {...props}
+                                />
+                            ),
+                            pre: ({ ...props }) => (
+                                <pre
+                                    style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
+                                    className="p-4 rounded overflow-x-auto text-base md:text-lg"
+                                    {...props}
+                                />
+                            ),
                             img: ({ src, alt }) => {
                                 const normalizedSrc = typeof src === 'string' ? (src.startsWith('http') ? src : `https://cms.everwellmag.com${src}`) : '';
                                 return (
@@ -296,12 +342,12 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                             a: ({ ...props }) => (
                                 <a
                                     style={{ color: '#3B82F6' }}
-                                    className="hover:underline hover:text-blue-700 font-medium"
+                                    className="hover:underline hover:text-blue-700 font-medium text-base md:text-lg"
                                     {...props}
                                 />
                             ),
-                            strong: ({ ...props }) => <strong className="font-bold" {...props} />,
-                            em: ({ ...props }) => <em className="italic" {...props} />,
+                            strong: ({ ...props }) => <strong className="font-bold text-base md:text-lg" {...props} />,
+                            em: ({ ...props }) => <em className="italic text-base md:text-lg" {...props} />,
                         }}
                     >
                         {product.Description}

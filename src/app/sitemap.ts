@@ -1,4 +1,4 @@
-import { MetadataRoute } from "next";
+import { MetadataRoute } from 'next';
 
 interface Article {
     id: number;
@@ -12,18 +12,23 @@ interface Category {
     updatedAt?: string;
 }
 
+interface Product {
+    id: number;
+    slug: string;
+    updatedAt?: string;
+}
+
 interface StrapiResponse<T> {
     data: T[];
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = "https://everwellmag.com";
+    const baseUrl = 'https://everwellmag.com';
 
     // Fetch categories
-    const categoryRes = await fetch(
-        "https://cms.everwellmag.com/api/categories",
-        { next: { revalidate: 60 } }
-    );
+    const categoryRes = await fetch('https://cms.everwellmag.com/api/categories', {
+        next: { revalidate: 60 },
+    });
     const categoryJson: StrapiResponse<Category> = await categoryRes.json();
 
     const categoryUrls = categoryJson.data
@@ -34,10 +39,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }));
 
     // Fetch articles
-    const articleRes = await fetch(
-        "https://cms.everwellmag.com/api/articles",
-        { next: { revalidate: 60 } }
-    );
+    const articleRes = await fetch('https://cms.everwellmag.com/api/articles', {
+        next: { revalidate: 60 },
+    });
     const articleJson: StrapiResponse<Article> = await articleRes.json();
 
     const articleUrls = articleJson.data
@@ -47,6 +51,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             lastModified: a.updatedAt || new Date().toISOString(),
         }));
 
+    // Fetch products
+    const productRes = await fetch('https://cms.everwellmag.com/api/products', {
+        next: { revalidate: 60 },
+    });
+    const productJson: StrapiResponse<Product> = await productRes.json();
+
+    const productUrls = productJson.data
+        .filter((p) => p.slug)
+        .map((p) => ({
+            url: `${baseUrl}/product/${p.slug}`,
+            lastModified: p.updatedAt || new Date().toISOString(),
+        }));
+
     return [
         {
             url: baseUrl,
@@ -54,5 +71,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
         ...categoryUrls,
         ...articleUrls,
+        ...productUrls,
     ];
 }

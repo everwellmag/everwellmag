@@ -190,8 +190,8 @@ export default function CategoryProduct({ categoryId, title, description }: Cate
                     return (
                         <div
                             key={product.id}
-                            className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl hover:-translate-y-2 border border-blue-500"
-                            style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
+                            className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl hover:-translate-y-2 border border-blue-500 flex flex-col"
+                            style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)', minHeight: '450px' }}
                         >
                             {imageUrl && (
                                 <Link href={`/product/${productSlug}`} aria-label={`View details for ${product.Name}`}>
@@ -208,13 +208,13 @@ export default function CategoryProduct({ categoryId, title, description }: Cate
                                 </Link>
                             )}
 
-                            <div className="px-6 pt-6 pb-3">
+                            <div className="px-6 pt-6 pb-3 flex flex-col flex-1">
                                 <h2 className="text-lg font-semibold mb-2 line-clamp-2" style={{ color: 'var(--foreground)' }}>
                                     <Link href={`/product/${productSlug}`} className="hover:text-blue-600" aria-label={`View details for ${product.Name}`}>
                                         {product.Name}
                                     </Link>
                                 </h2>
-                                <div className="space-y-1 mb-2">
+                                <div className="space-y-1 mb-2 flex-1">
                                     {product.Pricemulti && product.Pricemulti.length > 0 ? (
                                         <div className="flex flex-wrap gap-2 mb-2">
                                             {product.Pricemulti.map((priceOption, index) => (
@@ -253,7 +253,7 @@ export default function CategoryProduct({ categoryId, title, description }: Cate
                                 </div>
                             </div>
 
-                            <div className="pt-2 pb-4 px-4 bg-gray-50 flex gap-3" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
+                            <div className="pt-2 pb-4 px-4 bg-gray-50 flex gap-3 mt-auto" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
                                 <Link
                                     href={`/product/${productSlug}`}
                                     className="flex-1 text-center py-2 rounded-lg border border-blue-500 text-blue-600 hover:bg-blue-50 transition-colors"

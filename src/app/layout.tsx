@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "EverWell Magazine",
   description: "Your source for wellness content",
   verification: {
-    google: "E5RD3D753jQq557Fg3lZTj1BYRwNTDV-mgF-3goTXBs", // ✅ Google Search Console
+    google: "E5RD3D753jQq557Fg3lZTj1BYRwNTDV-mgF-3goTXBs",
   },
 };
 
@@ -30,7 +30,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* ✅ Google Analytics */}
         <Script
           async
           src="https://www.googletagmanager.com/gtag/js?id=G-9CYT8WFQCV"
@@ -49,7 +48,7 @@ export default function RootLayout({
       >
         <Navbar />
         <main className="flex-grow pt-16">{children}</main>
-        <footer className="bg-blue-900 text-white py-6 w-full mx-0">
+        <footer className="bg-[linear-gradient(to_right,_#3B82F6,_#9333EA)] text-white py-6 w-full mx-0">
           <div className="px-4 sm:px-6 lg:px-8 text-center">
             <p className="mb-4">
               © 2025 EverWell Magazine. All rights reserved.
@@ -57,24 +56,24 @@ export default function RootLayout({
             <div className="flex justify-center gap-6 flex-wrap">
               <a
                 href="#"
-                className="text-blue-200 hover:text-white transition"
+                className="text-white hover:text-gray-200 transition"
               >
                 Facebook
               </a>
               <a
                 href="#"
-                className="text-blue-200 hover:text-white transition"
+                className="text-white hover:text-gray-200 transition"
               >
                 Twitter
               </a>
               <a
                 href="#"
-                className="text-blue-200 hover:text-white transition"
+                className="text-white hover:text-gray-200 transition"
               >
                 Instagram
               </a>
             </div>
-            <p className="mt-4 text-sm text-gray-400">
+            <p className="mt-4 text-sm text-white">
               Contact us: support@everwellmag.com | Terms | Privacy
             </p>
           </div>

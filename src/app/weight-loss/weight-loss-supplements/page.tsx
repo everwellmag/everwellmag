@@ -7,7 +7,7 @@ export default function WeightLossSupplementsPage() {
         <CategoryProduct
             categoryId={2}
             title="Weight Loss Supplements"
-            description="Discover top-tier weight loss supplements from trusted providers. Click to shop via our affiliate links!"
+            description="Discover the best weight loss supplements backed by clinical studies and certifications. Explore safe, effective options to support your weight management goals naturally"
         />
     );
 }

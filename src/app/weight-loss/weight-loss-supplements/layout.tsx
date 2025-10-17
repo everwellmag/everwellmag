@@ -1,10 +1,23 @@
-import { ReactNode } from 'react';
+import { Metadata } from 'next';
 
-export const metadata = {
-    title: 'Weight Loss Supplements - Everwell Magazine',
-    description: 'Discover nutritious, low-calorie foods that support healthy weight loss without compromising on taste or essential nutrients.',
-};
+interface WeightLossSupplementsLayoutProps {
+    children: React.ReactNode;
+}
 
-export default function WeightLossFoodsLayout({ children }: { children: ReactNode }) {
+export async function generateMetadata(): Promise<Metadata> {
+    return {
+        title: 'Top Weight Loss Supplements Certified for Safety & Effectiveness',
+        description: 'Discover the best weight loss supplements backed by clinical studies and certifications. Explore safe, effective options to support your weight management goals naturally',
+        openGraph: {
+            title: 'Top Weight Loss Supplements Certified for Safety & Effectiveness',
+            description: 'Discover the best weight loss supplements backed by clinical studies and certifications. Explore safe, effective options to support your weight management goals naturally',
+            images: ['https://cms.everwellmag.com/uploads/weight_loss_supplements_c5f8cbdcec.webp'],
+            url: 'https://www.everwellmag.com/weight-loss/weight-loss-supplements',
+            type: 'website',
+        },
+    };
+}
+
+export default function WeightLossSupplementsLayout({ children }: WeightLossSupplementsLayoutProps) {
     return <>{children}</>;
 }

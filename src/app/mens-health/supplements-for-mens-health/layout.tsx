@@ -1,10 +1,23 @@
-import { ReactNode } from 'react';
+import { Metadata } from 'next';
 
-export const metadata = {
-    title: "Supplements for Men's Health - Everwell Magazine",
-    description: 'Explore supplements that support men’s health, with insights on essential nutrients, benefits, and expert recommendations for overall wellness.',
-};
+interface SupplementsForMensHealthLayoutProps {
+    children: React.ReactNode;
+}
 
-export default function SupplementsForMensHealthLayout({ children }: { children: ReactNode }) {
+export async function generateMetadata(): Promise<Metadata> {
+    return {
+        title: "Supplements for Men's Health - Everwell Magazine",
+        description: "Discover premium supplements to support men's health and vitality from trusted providers. Click to shop now!",
+        openGraph: {
+            title: "Supplements for Men's Health - Everwell Magazine",
+            description: "Discover premium supplements to support men's health and vitality from trusted providers. Click to shop now!",
+            images: ['https://cms.everwellmag.com/uploads/Supplements_For_Mens_Health_56c3718864.webp'],
+            url: 'https://www.everwellmag.com/mens-health/supplements-for-mens-health',
+            type: 'website',
+        },
+    };
+}
+
+export default function SupplementsForMensHealthLayout({ children }: SupplementsForMensHealthLayoutProps) {
     return <>{children}</>;
 }

@@ -21,6 +21,7 @@ interface Product {
     ReleaseYear?: string;
     AffiliateLink: string;
     slug: string | null;
+    Priority?: number;
     Image: {
         url: string;
         alternativeText?: string;
@@ -38,6 +39,7 @@ interface Product {
     };
     rating?: number;
     Pricemulti: PriceMulti[];
+    createdAt: string;
 }
 
 interface ApiResponse {
@@ -112,30 +114,61 @@ export default function CategoryProduct({ categoryId, title, description }: Cate
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [page, setPage] = useState<number>(1);
+    const [pagination, setPagination] = useState<{
+        page: number;
+        pageSize: number;
+        pageCount: number;
+        total: number;
+    }>({ page: 1, pageSize: 10, pageCount: 1, total: 0 });
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
                 const response = await fetch(
-                    `https://cms.everwellmag.com/api/products?filters[category][id]=${categoryId}&pagination[page]=1&pagination[pageSize]=10&populate=*`,
-                    { headers: { 'Content-Type': 'application/json' } }
+                    `https://cms.everwellmag.com/api/products?filters[category][id]=${categoryId}&pagination[page]=${page}&pagination[pageSize]=10&populate=*`,
+                    {
+                        headers: { 'Content-Type': 'application/json' },
+                        next: { revalidate: 3600 }
+                    }
                 );
-                if (!response.ok) throw new Error(`Failed to fetch products: ${response.statusText}`);
+                if (!response.ok) {
+                    console.error(`API error: ${response.status} ${response.statusText}, URL: ${response.url}`);
+                    throw new Error(`Failed to fetch products: ${response.statusText}`);
+                }
                 const data: ApiResponse = await response.json();
-                if (!data.data || data.data.length === 0) throw new Error(`No products found for category ID ${categoryId}`);
-                setProducts(data.data);
+                const sortedProducts = data.data.sort((a, b) => {
+                    const priorityA = a.Priority ?? Infinity;
+                    const priorityB = b.Priority ?? Infinity;
+                    if (priorityA !== priorityB) {
+                        return priorityA - priorityB;
+                    }
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                });
+
+                setProducts(sortedProducts);
+                setPagination(data.meta.pagination);
                 setLoading(false);
             } catch (err: unknown) {
+                console.error(`Fetch error: ${err instanceof Error ? err.message : 'Unknown error'}`);
                 setError((err instanceof Error ? err.message : 'An error occurred') || 'Error');
                 setLoading(false);
             }
         };
         fetchProducts();
-    }, [categoryId]);
+    }, [categoryId, page]);
 
     if (loading) return <Loading />;
     if (error) return <div className="container mx-auto p-4 text-center" style={{ color: 'var(--foreground)' }}>{error}</div>;
-    if (products.length === 0) return <div className="container mx-auto p-4 text-center" style={{ color: 'var(--foreground)' }}>No products available.</div>;
+    if (products.length === 0) return (
+        <div className="container mx-auto p-4 text-center" style={{ color: 'var(--foreground)' }}>
+            No products found in this category yet. Explore our{' '}
+            <Link href="/" className="text-blue-600 hover:underline">
+                Home page
+            </Link>{' '}
+            for great options!
+        </div>
+    );
 
     return (
         <div className="container mx-auto p-4 py-8" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
@@ -147,7 +180,7 @@ export default function CategoryProduct({ categoryId, title, description }: Cate
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {products.map((product) => {
+                {products.map((product, index) => {
                     let imageUrl = normalizeImageUrl(product.Image);
                     if (!imageUrl) {
                         imageUrl = getFirstImageFromDescription(product.Description);
@@ -161,14 +194,15 @@ export default function CategoryProduct({ categoryId, title, description }: Cate
                             style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
                         >
                             {imageUrl && (
-                                <Link href={`/product/${productSlug}`}>
+                                <Link href={`/product/${productSlug}`} aria-label={`View details for ${product.Name}`}>
                                     <div className="relative w-full h-56">
                                         <Image
                                             src={imageUrl}
-                                            alt={product.Image?.alternativeText || product.Name}
+                                            alt={`${product.Name} - ${title} supplement`}
                                             width={400}
                                             height={400}
                                             className="w-full h-full object-cover hover:opacity-90 transition-opacity"
+                                            priority={index === 0 || !products[index - 1]}
                                         />
                                     </div>
                                 </Link>
@@ -176,7 +210,7 @@ export default function CategoryProduct({ categoryId, title, description }: Cate
 
                             <div className="px-6 pt-6 pb-3">
                                 <h2 className="text-lg font-semibold mb-2 line-clamp-2" style={{ color: 'var(--foreground)' }}>
-                                    <Link href={`/product/${productSlug}`} className="hover:text-blue-600">
+                                    <Link href={`/product/${productSlug}`} className="hover:text-blue-600" aria-label={`View details for ${product.Name}`}>
                                         {product.Name}
                                     </Link>
                                 </h2>
@@ -224,6 +258,7 @@ export default function CategoryProduct({ categoryId, title, description }: Cate
                                     href={`/product/${productSlug}`}
                                     className="flex-1 text-center py-2 rounded-lg border border-blue-500 text-blue-600 hover:bg-blue-50 transition-colors"
                                     style={{ color: 'var(--foreground)' }}
+                                    aria-label={`View details for ${product.Name}`}
                                 >
                                     Detail
                                 </Link>
@@ -232,6 +267,7 @@ export default function CategoryProduct({ categoryId, title, description }: Cate
                                     target="_blank"
                                     rel="nofollow noopener noreferrer"
                                     className="flex-1 block text-center py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200"
+                                    aria-label={`Purchase ${product.Name}`}
                                 >
                                     Buy Now
                                 </a>
@@ -240,6 +276,28 @@ export default function CategoryProduct({ categoryId, title, description }: Cate
                     );
                 })}
             </div>
+
+            {pagination.pageCount > 1 && (
+                <div className="flex justify-center items-center mt-8 gap-4">
+                    <button
+                        onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={page === 1}
+                        className={`px-4 py-2 rounded-lg bg-blue-500 text-white font-medium transition-all duration-200 ${page === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
+                    >
+                        Previous
+                    </button>
+                    <span className="text-lg" style={{ color: 'var(--foreground)' }}>
+                        Page {pagination.page} of {pagination.pageCount} (Total: {pagination.total} products)
+                    </span>
+                    <button
+                        onClick={() => setPage((prev) => Math.min(prev + 1, pagination.pageCount))}
+                        disabled={page === pagination.pageCount}
+                        className={`px-4 py-2 rounded-lg bg-blue-500 text-white font-medium transition-all duration-200 ${page === pagination.pageCount ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

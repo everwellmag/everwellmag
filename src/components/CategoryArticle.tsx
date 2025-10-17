@@ -80,6 +80,7 @@ interface Article {
     author?: Author | null;
     category: Category;
     blocks: Block[];
+    Priority?: number;
 }
 
 interface ApiResponse {
@@ -133,58 +134,66 @@ export default function CategoryArticle({ categoryId, title, description }: Cate
     const [articles, setArticles] = useState<Article[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [page, setPage] = useState<number>(1);
+    const [pagination, setPagination] = useState<{
+        page: number;
+        pageSize: number;
+        pageCount: number;
+        total: number;
+    }>({ page: 1, pageSize: 10, pageCount: 1, total: 0 });
 
     useEffect(() => {
         const fetchArticles = async () => {
             try {
                 const response = await fetch(
-                    `https://cms.everwellmag.com/api/articles?filters[category][id]=${categoryId}&pagination[page]=1&pagination[pageSize]=10&populate=*`,
+                    `https://cms.everwellmag.com/api/articles?filters[category][id]=${categoryId}&pagination[page]=${page}&pagination[pageSize]=10&populate=*`,
                     {
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
+                        headers: { 'Content-Type': 'application/json' },
+                        next: { revalidate: 3600 }
                     }
                 );
-
                 if (!response.ok) {
+                    console.error(`API error: ${response.status} ${response.statusText}, URL: ${response.url}`);
                     throw new Error('Failed to fetch articles');
                 }
-
                 const data: ApiResponse = await response.json();
-                if (!data.data || data.data.length === 0) {
-                    throw new Error(`No articles found for category ID ${categoryId}`);
-                }
-                const sortedArticles = data.data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+                const sortedArticles = data.data.sort((a, b) => {
+                    const priorityA = a.Priority ?? Infinity;
+                    const priorityB = b.Priority ?? Infinity;
+                    if (priorityA !== priorityB) {
+                        return priorityA - priorityB;
+                    }
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                });
                 setArticles(sortedArticles);
+                setPagination(data.meta.pagination);
                 setLoading(false);
             } catch (err: unknown) {
+                console.error(`Fetch error: ${err instanceof Error ? err.message : 'Unknown error'}`);
                 setError(err instanceof Error ? err.message : 'An error occurred while fetching articles');
                 setLoading(false);
             }
         };
-
         fetchArticles();
-    }, [categoryId]);
+    }, [categoryId, page]);
 
-    if (loading) {
-        return <Loading />;
-    }
-
-    if (error) {
-        return (
-            <div className="container mx-auto p-6" style={{ color: 'var(--foreground)' }}>
-                <div className="text-center" style={{ color: 'var(--link-color)' }}>{error}</div>
+    if (loading) return <Loading />;
+    if (error) return (
+        <div className="container mx-auto p-6" style={{ color: 'var(--foreground)' }}>
+            <div className="text-center" style={{ color: 'var(--link-color)' }}>{error}</div>
+        </div>
+    );
+    if (articles.length === 0) return (
+        <div className="container mx-auto p-6" style={{ color: 'var(--foreground)' }}>
+            <div className="text-center">
+                No articles found in this category yet. Explore our{' '}
+                <Link href="/weight-loss/weight-loss-articles" className="text-blue-600 hover:underline">
+                    Weight Loss Articles
+                </Link>{' '}
+                for more insights!
             </div>
-        );
-    }
-
-    if (articles.length === 0) {
-        return (
-            <div className="container mx-auto p-6" style={{ color: 'var(--foreground)' }}>
-                <div className="text-center">No articles available.</div>
-            </div>
-        );
-    }
+        </div>
+    );
 
     return (
         <div className="container mx-auto p-6" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
@@ -196,7 +205,7 @@ export default function CategoryArticle({ categoryId, title, description }: Cate
 
             {/* Articles Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {articles.map((article) => {
+                {articles.map((article, index) => {
                     let thumbnailUrl = normalizeCoverUrl(article.cover);
                     if (!thumbnailUrl) {
                         thumbnailUrl = getFirstImageFromBlocks(article.blocks);
@@ -220,8 +229,7 @@ export default function CategoryArticle({ categoryId, title, description }: Cate
                                         onError={(e) => {
                                             e.currentTarget.src = 'https://cms.everwellmag.com/Uploads/default-image.jpg';
                                         }}
-                                        unoptimized
-                                        loading="lazy"
+                                        priority={index === 0 || !articles[index - 1]}
                                     />
                                 </Link>
                             ) : (
@@ -285,6 +293,28 @@ export default function CategoryArticle({ categoryId, title, description }: Cate
                     );
                 })}
             </div>
+
+            {pagination.pageCount > 1 && (
+                <div className="flex justify-center items-center mt-8 gap-4">
+                    <button
+                        onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={page === 1}
+                        className={`px-4 py-2 rounded-lg bg-blue-500 text-white font-medium transition-all duration-200 ${page === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
+                    >
+                        Previous
+                    </button>
+                    <span className="text-lg" style={{ color: 'var(--foreground)' }}>
+                        Page {pagination.page} of {pagination.pageCount} (Total: {pagination.total} articles)
+                    </span>
+                    <button
+                        onClick={() => setPage((prev) => Math.min(prev + 1, pagination.pageCount))}
+                        disabled={page === pagination.pageCount}
+                        className={`px-4 py-2 rounded-lg bg-blue-500 text-white font-medium transition-all duration-200 ${page === pagination.pageCount ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

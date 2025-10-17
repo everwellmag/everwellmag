@@ -1,13 +1,13 @@
 'use client';
 
-import CategoryProduct from '@/components/CategoryProduct';
+import CategoryArticle from '@/components/CategoryArticle';
 
-export default function SupplementsForWomensHealthPage() {
+export default function WomensCareTipsPage() {
     return (
-        <CategoryProduct
-            categoryId={24}
-            title="Supplements for Women's Health"
-            description="Discover premium supplements to support women's health and wellness from trusted providers. Click to shop now!"
+        <CategoryArticle
+            categoryId={23}
+            title="Women's Care Tips"
+            description="Discover practical women's care tips to enhance your health, vitality, and overall well-being."
         />
     );
 }

@@ -94,26 +94,16 @@ export default function Navbar() {
       label: "Women's Health",
       subItems: [
         { href: "/womens-health/common-womens-health-issues", label: "Common Women’s Health Issues" },
+        { href: "/womens-health/supplements-for-womens-health", label: "Supplements for Women’s Health" },
         { href: "/womens-health/womens-care-tips", label: "Women’s Care Tips" },
-        { href: "/womens-health/womens-health/wellness", label: "Wellness Tips" },
       ],
     },
     {
       href: "/mind-sleep",
       label: "Mind & Sleep",
       subItems: [
-        { href: "/mind-sleep/mind-sleep/meditation", label: "Meditation Techniques" },
-        { href: "/mind-sleep/mind-sleep/sleep-hygiene", label: "Sleep Hygiene" },
-        { href: "/mind-sleep/mind-sleep/stress-relief", label: "Stress Relief" },
-      ],
-    },
-    {
-      href: "/supplements",
-      label: "Supplements",
-      subItems: [
-        { href: "/supplements/vitamins", label: "Essential Vitamins" },
-        { href: "/supplements/minerals", label: "Key Minerals" },
-        { href: "/supplements/herbal", label: "Herbal Supplements" },
+        { href: "/mind-sleep/common-mind-sleep", label: "Common Mind & Sleep" },
+        { href: "/mind-sleep/supplements-mind-sleep", label: "Supplements for Mind & Sleep" },
       ],
     },
     { href: "/about", label: "About" },

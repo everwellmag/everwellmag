@@ -187,8 +187,8 @@ export default function CategoryArticle({ categoryId, title, description }: Cate
         <div className="container mx-auto p-6" style={{ color: 'var(--foreground)' }}>
             <div className="text-center">
                 No articles found in this category yet. Explore our{' '}
-                <Link href="/weight-loss/weight-loss-articles" className="text-blue-600 hover:underline">
-                    Weight Loss Articles
+                <Link href="/" className="text-blue-600 hover:underline">
+                    Home page
                 </Link>{' '}
                 for more insights!
             </div>

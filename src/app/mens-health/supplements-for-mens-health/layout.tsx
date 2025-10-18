@@ -1,23 +1,38 @@
+// C:\Users\Kathay\everwellmag\src\app\mens-health\supplements-for-mens-health\layout.tsx
 import { Metadata } from 'next';
+import CategoryLayout, { generateCategoryMetadata } from '@/components/CategoryLayout';
 
-interface SupplementsForMensHealthLayoutProps {
-    children: React.ReactNode;
-}
-
+// Generate metadata using CategoryLayout's function
 export async function generateMetadata(): Promise<Metadata> {
-    return {
-        title: "Supplements for Men's Health - Everwell Magazine",
-        description: "Discover premium supplements to support men's health and vitality from trusted providers. Click to shop now!",
-        openGraph: {
+    return generateCategoryMetadata({
+        slug: 'supplements-for-mens-health',
+        parentSlug: 'mens-health',
+        categoryType: 'product',
+        defaultMetadata: {
             title: "Supplements for Men's Health - Everwell Magazine",
             description: "Discover premium supplements to support men's health and vitality from trusted providers. Click to shop now!",
-            images: ['https://cms.everwellmag.com/uploads/Supplements_For_Mens_Health_56c3718864.webp'],
-            url: 'https://www.everwellmag.com/mens-health/supplements-for-mens-health',
-            type: 'website',
         },
-    };
+        defaultImage: {
+            url: 'https://cms.everwellmag.com/uploads/Supplements_For_Mens_Health_56c3718864.webp',
+            width: 1200,
+            height: 630,
+            alt: "Men's Health Supplements",
+        },
+    });
 }
 
-export default function SupplementsForMensHealthLayout({ children }: SupplementsForMensHealthLayoutProps) {
-    return <>{children}</>;
+export default async function SupplementsForMensHealthLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <CategoryLayout
+            slug="supplements-for-mens-health"
+            parentSlug="mens-health"
+            categoryType="product"
+            defaultMetadata={{
+                title: "Supplements for Men's Health - Everwell Magazine",
+                description: "Discover premium supplements to support men's health and vitality from trusted providers. Click to shop now!",
+            }}
+        >
+            {children}
+        </CategoryLayout>
+    );
 }

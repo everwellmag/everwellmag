@@ -241,7 +241,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     <a
                         href={`https://x.com/intent/tweet?url=https://www.everwellmag.com/article/${slug}&text=Check out "${title || 'this article'}" on Everwell Magazine!`}
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener noreferrer nofollow"
                         className="flex items-center gap-2 px-4 py-2 bg-[var(--background)] text-[var(--foreground)] rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-200 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
                     >
                         <ShareIcon className="w-5 h-5 text-blue-500" />
@@ -250,7 +250,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     <a
                         href={`https://www.facebook.com/sharer/sharer.php?u=https://www.everwellmag.com/article/${slug}`}
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener noreferrer nofollow"
                         className="flex items-center gap-2 px-4 py-2 bg-[var(--background)] text-[var(--foreground)] rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-200 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
                     >
                         <ShareIcon className="w-5 h-5 text-blue-700" />
@@ -259,7 +259,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     <a
                         href={`https://www.instagram.com/?url=https://www.everwellmag.com/article/${slug}`}
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener noreferrer nofollow"
                         className="flex items-center gap-2 px-4 py-2 bg-[var(--background)] text-[var(--foreground)] rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-transform duration-200 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
                     >
                         <ShareIcon className="w-5 h-5 text-pink-500" />

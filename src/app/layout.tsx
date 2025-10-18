@@ -1,32 +1,64 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import Navbar from "../components/Navbar";
-import Script from "next/script";
+// C:\Users\Kathay\everwellmag\src\app\layout.tsx
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
+import './globals.css';
+import Navbar from '../components/Navbar';
+import Script from 'next/script';
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: "EverWell Magazine",
-  description: "Your source for wellness content",
+  title: 'Everwell Magazine - Health & Wellness',
+  description: 'Discover expert health and wellness tips, diet plans, and products at Everwell Magazine.',
   verification: {
-    google: "E5RD3D753jQq557Fg3lZTj1BYRwNTDV-mgF-3goTXBs",
+    google: 'E5RD3D753jQq557Fg3lZTj1BYRwNTDV-mgF-3goTXBs',
+  },
+  // Xóa alternates.canonical để tránh xung đột với sub-layout
+  openGraph: {
+    title: 'Everwell Magazine - Health & Wellness',
+    description: 'Discover expert health and wellness tips, diet plans, and products at Everwell Magazine.',
+    url: 'https://www.everwellmag.com',
+    type: 'website',
+    images: [
+      {
+        url: 'https://cms.everwellmag.com/Uploads/default-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Everwell Magazine',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Everwell Magazine - Health & Wellness',
+    description: 'Discover expert health and wellness tips, diet plans, and products at Everwell Magazine.',
+    images: ['https://cms.everwellmag.com/Uploads/default-image.jpg'],
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+// Schema Organization cho trang chủ
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Everwell Magazine',
+  url: 'https://www.everwellmag.com',
+  logo: 'https://cms.everwellmag.com/Uploads/logo.jpg', // Thay bằng URL logo thực tế
+  sameAs: [
+    'https://www.facebook.com/everwellmag', // Thay bằng URL thực tế
+    'https://x.com/everwellmag', // Thay bằng URL thực tế
+    'https://www.instagram.com/everwellmag', // Thay bằng URL thực tế
+  ],
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -42,6 +74,11 @@ export default function RootLayout({
             gtag('config', 'G-9CYT8WFQCV');
           `}
         </Script>
+        <Script
+          id="organization-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
@@ -51,30 +88,37 @@ export default function RootLayout({
         <footer className="bg-[linear-gradient(to_right,_#3B82F6,_#9333EA)] text-white py-6 w-full mx-0">
           <div className="px-4 sm:px-6 lg:px-8 text-center">
             <p className="mb-4">
-              © 2025 EverWell Magazine. All rights reserved.
+              © 2025 Everwell Magazine. All rights reserved.
             </p>
             <div className="flex justify-center gap-6 flex-wrap">
               <a
-                href="#"
+                href="https://www.facebook.com/everwellmag" // Thay bằng URL thực tế
                 className="text-white hover:text-gray-200 transition"
               >
                 Facebook
               </a>
               <a
-                href="#"
+                href="https://x.com/everwellmag" // Thay bằng URL thực tế
                 className="text-white hover:text-gray-200 transition"
               >
-                Twitter
+                X
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/everwellmag" // Thay bằng URL thực tế
                 className="text-white hover:text-gray-200 transition"
               >
                 Instagram
               </a>
             </div>
             <p className="mt-4 text-sm text-white">
-              Contact us: support@everwellmag.com | Terms | Privacy
+              Contact us: support@everwellmag.com |{' '}
+              <a href="/terms" className="hover:underline">
+                Terms
+              </a>{' '}
+              |{' '}
+              <a href="/privacy" className="hover:underline">
+                Privacy
+              </a>
             </p>
           </div>
         </footer>

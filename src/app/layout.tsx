@@ -110,16 +110,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 Instagram
               </a>
             </div>
-            <p className="mt-4 text-sm text-white">
-              Contact us: support@everwellmag.com |{' '}
-              <a href="/terms" className="hover:underline">
-                Terms
-              </a>{' '}
-              |{' '}
-              <a href="/privacy" className="hover:underline">
-                Privacy
-              </a>
+            <p className="mt-4 text-sm text-white flex flex-wrap justify-center gap-x-2 gap-y-1">
+              Contact us: <a href="mailto:support@everwellmag.com" className="hover:underline">support@everwellmag.com</a> |
+              <a href="/terms" className="hover:underline">Terms</a> |
+              <a href="/privacy" className="hover:underline">Privacy</a> |
+              <a href="/affiliate-disclosure" className="hover:underline">Affiliate Disclosure</a> |
+              <a href="/medical-disclaimer" className="hover:underline">Medical Disclaimer</a>
             </p>
+
           </div>
         </footer>
       </body>

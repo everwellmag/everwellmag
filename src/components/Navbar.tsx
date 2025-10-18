@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
 import Head from "next/head";
+import Image from "next/image";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -124,9 +125,18 @@ export default function Navbar() {
       <nav className="bg-gradient-to-r from-blue-500 to-purple-600 text-white fixed top-0 left-0 w-full z-50 shadow-lg">
         <div className="px-6 sm:px-8 lg:px-12 mx-auto flex justify-between items-center py-4">
           {/* Logo */}
-          <Link href="/" className="text-3xl font-bold tracking-tight">
-            EverWell Magazine
+          <Link href="/" className="flex items-center space-x-2">
+            <Image
+              src="https://cms.everwellmag.com/uploads/logo_everwell_magazine_156480b913.svg"
+              alt="EverWell Magazine Logo"
+              width={240}
+              height={0}
+              style={{ height: 'auto' }}
+              priority
+            />
+            <span className="sr-only">EverWell Magazine</span>
           </Link>
+
 
           {/* Menu Desktop */}
           <div className="hidden md:flex gap-8">

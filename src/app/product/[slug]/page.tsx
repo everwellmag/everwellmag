@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import React from 'react';
 
 // Define TypeScript interfaces for the API response
@@ -41,7 +42,7 @@ interface Product {
         width?: number;
         height?: number;
     } | null;
-    categories: Category[]; // Changed to array
+    categories: Category[];
 }
 
 interface ApiResponse {
@@ -162,13 +163,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     if (!product) return notFound();
 
     const imageUrl = normalizeImageUrl(product.Image) || getFirstImageFromDescription(product.Description);
-    // Use the first category for breadcrumb, or adjust based on your needs
     const primaryCategory = product.categories[0] || { slug: '', parent_slug: null, name: 'Uncategorized' };
     const categoryUrl = primaryCategory.parent_slug ? `/${primaryCategory.parent_slug}/${primaryCategory.slug}` : `/${primaryCategory.slug}`;
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-5xl" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
-            {/* Breadcrumb */}
             <nav className="mb-6 text-sm md:text-base flex items-center space-x-2">
                 <Link
                     href="/"
@@ -191,14 +190,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 </span>
             </nav>
 
-            {/* Product Title */}
             <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
                 {product.Name}
             </h1>
 
-            {/* Main Content */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                {/* Image Section */}
                 <div className="flex justify-center">
                     {imageUrl ? (
                         <Image
@@ -217,7 +213,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                     )}
                 </div>
 
-                {/* Product Details Section */}
                 <div className="bg-white rounded-xl shadow-md p-6 border border-blue-500" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
                     <h2 className="text-xl md:text-2xl font-semibold mb-4" style={{ color: 'var(--foreground)' }}>{product.Name}</h2>
                     <div className="space-y-3 mb-6">
@@ -234,13 +229,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                                 <span className="font-medium">Rating:</span> {getStarRating(product.rating)} ({product.rating}/5)
                             </p>
                         )}
-                        {/* Display all categories */}
                         <p className="text-sm" style={{ color: 'var(--foreground)' }}>
                             <span className="font-medium">Categories:</span> {product.categories.map(c => c.name).join(', ') || 'Uncategorized'}
                         </p>
                     </div>
 
-                    {/* Pricing Options */}
                     <div className="mb-6">
                         <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--foreground)' }}>Pricing Options</h3>
                         {product.Pricemulti && product.Pricemulti.length > 0 ? (
@@ -265,7 +258,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                         )}
                     </div>
 
-                    {/* Action Button */}
                     <a
                         href={product.AffiliateLink}
                         target="_blank"
@@ -277,87 +269,115 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 </div>
             </div>
 
-            {/* Description Section */}
             <div className="mt-8 bg-white rounded-xl p-6 border border-gray-200 shadow-md" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
                 <h3 className="text-xl md:text-2xl font-semibold mb-4" style={{ color: 'var(--foreground)' }}>Description</h3>
                 <div className="prose max-w-none" style={{ color: 'var(--foreground)' }}>
-                    <ReactMarkdown
-                        components={{
-                            p: ({ ...props }) => <p className="mb-4 text-base md:text-lg" style={{ color: 'var(--foreground)' }} {...props} />,
-                            h1: ({ ...props }) => (
-                                <h1 style={{ color: 'var(--foreground)' }} className="text-3xl font-bold mb-4" {...props} />
-                            ),
-                            h2: ({ ...props }) => (
-                                <h2 style={{ color: 'var(--foreground)' }} className="text-2xl font-semibold mb-3" {...props} />
-                            ),
-                            h3: ({ ...props }) => (
-                                <h3 style={{ color: 'var(--foreground)' }} className="text-xl font-semibold mb-2" {...props} />
-                            ),
-                            h4: ({ ...props }) => (
-                                <h4 style={{ color: 'var(--foreground)' }} className="text-lg font-semibold mb-2" {...props} />
-                            ),
-                            h5: ({ ...props }) => (
-                                <h5 style={{ color: 'var(--foreground)' }} className="text-base font-semibold mb-2" {...props} />
-                            ),
-                            h6: ({ ...props }) => (
-                                <h6 style={{ color: 'var(--foreground)' }} className="text-sm font-semibold mb-2" {...props} />
-                            ),
-                            ul: ({ ...props }) => (
-                                <ul style={{ color: 'var(--foreground)' }} className="list-disc list-inside mb-4" {...props} />
-                            ),
-                            ol: ({ ...props }) => (
-                                <ol style={{ color: 'var(--foreground)' }} className="list-decimal list-inside mb-4" {...props} />
-                            ),
-                            li: ({ ...props }) => <li className="mb-2 text-base md:text-lg" style={{ color: 'var(--foreground)' }} {...props} />,
-                            blockquote: ({ ...props }) => (
-                                <blockquote
-                                    style={{ color: 'var(--foreground)', borderColor: 'var(--foreground)' }}
-                                    className="border-l-4 pl-4 italic my-4"
-                                    {...props}
-                                />
-                            ),
-                            code: ({ ...props }) => (
-                                <code
-                                    style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
-                                    className="px-1 rounded text-base md:text-lg"
-                                    {...props}
-                                />
-                            ),
-                            pre: ({ ...props }) => (
-                                <pre
-                                    style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
-                                    className="p-4 rounded overflow-x-auto text-base md:text-lg"
-                                    {...props}
-                                />
-                            ),
-                            img: ({ src, alt }) => {
-                                const normalizedSrc = typeof src === 'string' ? (src.startsWith('http') ? src : `https://cms.everwellmag.com${src}`) : '';
-                                return (
-                                    <Image
-                                        src={normalizedSrc}
-                                        alt={alt || 'Product image'}
-                                        width={786}
-                                        height={0}
-                                        style={{ width: '100%', maxWidth: '786px', height: 'auto' }}
-                                        className="w-full max-w-[786px] h-auto my-4 rounded-lg shadow-md mx-auto"
-                                        unoptimized
-                                        loading="lazy"
+                    {product.Description ? (
+                        <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                                p: ({ ...props }) => <p className="mb-4 text-base md:text-lg" style={{ color: 'var(--foreground)' }} {...props} />,
+                                h1: ({ ...props }) => <h1 style={{ color: 'var(--foreground)' }} className="text-3xl font-bold mb-4" {...props} />,
+                                h2: ({ ...props }) => <h2 style={{ color: 'var(--foreground)' }} className="text-2xl font-semibold mb-3" {...props} />,
+                                h3: ({ ...props }) => <h3 style={{ color: 'var(--foreground)' }} className="text-xl font-semibold mb-2" {...props} />,
+                                h4: ({ ...props }) => <h4 style={{ color: 'var(--foreground)' }} className="text-lg font-semibold mb-2" {...props} />,
+                                h5: ({ ...props }) => <h5 style={{ color: 'var(--foreground)' }} className="text-base font-semibold mb-2" {...props} />,
+                                h6: ({ ...props }) => <h6 style={{ color: 'var(--foreground)' }} className="text-sm font-semibold mb-2" {...props} />,
+                                ul: ({ ...props }) => <ul style={{ color: 'var(--foreground)' }} className="list-disc list-inside mb-4" {...props} />,
+                                ol: ({ ...props }) => <ol style={{ color: 'var(--foreground)' }} className="list-decimal list-inside mb-4" {...props} />,
+                                li: ({ ...props }) => <li className="mb-2 text-base md:text-lg" style={{ color: 'var(--foreground)' }} {...props} />,
+                                blockquote: ({ ...props }) => (
+                                    <blockquote
+                                        style={{ color: 'var(--foreground)', borderColor: 'var(--foreground)' }}
+                                        className="border-l-4 pl-4 italic my-4"
+                                        {...props}
                                     />
-                                );
-                            },
-                            a: ({ ...props }) => (
-                                <a
-                                    style={{ color: '#3B82F6' }}
-                                    className="hover:underline hover:text-blue-700 font-medium text-base md:text-lg"
-                                    {...props}
-                                />
-                            ),
-                            strong: ({ ...props }) => <strong className="font-bold text-base md:text-lg" {...props} />,
-                            em: ({ ...props }) => <em className="italic text-base md:text-lg" {...props} />,
-                        }}
-                    >
-                        {product.Description}
-                    </ReactMarkdown>
+                                ),
+                                code: ({ ...props }) => (
+                                    <code
+                                        style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
+                                        className="px-1 rounded text-base md:text-lg"
+                                        {...props}
+                                    />
+                                ),
+                                pre: ({ ...props }) => (
+                                    <pre
+                                        style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
+                                        className="p-4 rounded overflow-x-auto text-base md:text-lg"
+                                        {...props}
+                                    />
+                                ),
+                                img: ({ src, alt }) => {
+                                    const normalizedSrc = typeof src === 'string' ? (src.startsWith('http') ? src : `https://cms.everwellmag.com${src}`) : '';
+                                    return (
+                                        <Image
+                                            src={normalizedSrc}
+                                            alt={alt || 'Product image'}
+                                            width={786}
+                                            height={0}
+                                            style={{ width: '100%', maxWidth: '786px', height: 'auto' }}
+                                            className="w-full max-w-[786px] h-auto my-4 rounded-lg shadow-md mx-auto"
+                                            unoptimized
+                                            loading="lazy"
+                                        />
+                                    );
+                                },
+                                a: ({ ...props }) => (
+                                    <a
+                                        style={{ color: '#3B82F6' }}
+                                        className="hover:underline hover:text-blue-700 font-medium text-base md:text-lg"
+                                        {...props}
+                                    />
+                                ),
+                                strong: ({ ...props }) => <strong className="font-bold text-base md:text-lg" {...props} />,
+                                em: ({ ...props }) => <em className="italic text-base md:text-lg" {...props} />,
+                                table: ({ ...props }) => (
+                                    <div className="overflow-x-auto my-4">
+                                        <table
+                                            className="min-w-full border-collapse border border-gray-300"
+                                            style={{ color: 'var(--foreground)', borderColor: 'var(--foreground)' }}
+                                            {...props}
+                                        />
+                                    </div>
+                                ),
+                                thead: ({ ...props }) => (
+                                    <thead
+                                        className="bg-gray-100 dark:bg-gray-800"
+                                        style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
+                                        {...props}
+                                    />
+                                ),
+                                tbody: ({ ...props }) => <tbody {...props} />,
+                                tr: ({ ...props }) => (
+                                    <tr
+                                        className="border-b border-gray-300"
+                                        style={{ borderColor: 'var(--foreground)' }}
+                                        {...props}
+                                    />
+                                ),
+                                th: ({ ...props }) => (
+                                    <th
+                                        className="px-4 py-2 text-left font-semibold text-sm md:text-base"
+                                        style={{ color: 'var(--foreground)' }}
+                                        {...props}
+                                    />
+                                ),
+                                td: ({ ...props }) => (
+                                    <td
+                                        className="px-4 py-2 text-sm md:text-base"
+                                        style={{ color: 'var(--foreground)' }}
+                                        {...props}
+                                    />
+                                ),
+                            }}
+                        >
+                            {product.Description}
+                        </ReactMarkdown>
+                    ) : (
+                        <p className="text-sm italic" style={{ color: 'var(--text-secondary)' }}>
+                            No description available
+                        </p>
+                    )}
                 </div>
             </div>
         </div>

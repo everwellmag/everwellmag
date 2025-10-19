@@ -60,8 +60,8 @@ interface Product {
 }
 
 interface Article {
-    Title: string;
-    Description: string;
+    title: string;
+    description: string;
     slug: string | null;
     Image?: {
         url: string | Blob;
@@ -93,7 +93,7 @@ interface CategoryLayoutProps {
 const getCategoryData = async (slug: string): Promise<Category | null> => {
     try {
         const data = await fetchFromStrapi(
-            `categories?filters[slug][$eq]=${slug}&populate=*`
+            `categories?filters[slug][$eq]=${slug}&populate[products][populate]=Image&populate[articles][populate]=cover`
         );
         console.log('Category API response:', JSON.stringify(data, null, 2)); // Log để debug
         return data.data?.[0] || null;

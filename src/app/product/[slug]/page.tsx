@@ -41,7 +41,7 @@ interface Product {
         width?: number;
         height?: number;
     } | null;
-    category: Category;
+    categories: Category[]; // Changed to array
 }
 
 interface ApiResponse {
@@ -162,7 +162,9 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     if (!product) return notFound();
 
     const imageUrl = normalizeImageUrl(product.Image) || getFirstImageFromDescription(product.Description);
-    const categoryUrl = product.category.parent_slug ? `/${product.category.parent_slug}/${product.category.slug}` : `/${product.category.slug}`;
+    // Use the first category for breadcrumb, or adjust based on your needs
+    const primaryCategory = product.categories[0] || { slug: '', parent_slug: null, name: 'Uncategorized' };
+    const categoryUrl = primaryCategory.parent_slug ? `/${primaryCategory.parent_slug}/${primaryCategory.slug}` : `/${primaryCategory.slug}`;
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-5xl" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
@@ -181,7 +183,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                     className="relative px-3 py-1 bg-gray-50 dark:bg-gray-800 text-blue-600 dark:text-blue-400 font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     style={{ color: '#3B82F6' }}
                 >
-                    {product.category.name}
+                    {primaryCategory.name}
                     <span className="absolute right-[-8px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-l-8 border-l-gray-50 dark:border-l-gray-800 border-t-8 border-t-transparent border-b-8 border-b-transparent"></span>
                 </Link>
                 <span className="px-3 py-1 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium rounded-r-md">
@@ -232,6 +234,10 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                                 <span className="font-medium">Rating:</span> {getStarRating(product.rating)} ({product.rating}/5)
                             </p>
                         )}
+                        {/* Display all categories */}
+                        <p className="text-sm" style={{ color: 'var(--foreground)' }}>
+                            <span className="font-medium">Categories:</span> {product.categories.map(c => c.name).join(', ') || 'Uncategorized'}
+                        </p>
                     </div>
 
                     {/* Pricing Options */}

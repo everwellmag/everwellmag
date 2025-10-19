@@ -12,6 +12,16 @@ interface PriceMulti {
     currency: string;
 }
 
+interface Category {
+    id: number;
+    name: string;
+    slug: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string;
+}
+
 interface Product {
     id: number;
     Name: string;
@@ -28,15 +38,7 @@ interface Product {
         width?: number;
         height?: number;
     } | null;
-    category: {
-        id: number;
-        name: string;
-        slug: string;
-        description: string;
-        createdAt: string;
-        updatedAt: string;
-        publishedAt: string;
-    };
+    categories: Category[]; // Changed from category to categories (array)
     rating?: number;
     Pricemulti: PriceMulti[];
     createdAt: string;
@@ -126,7 +128,7 @@ export default function CategoryProduct({ categoryId, title, description }: Cate
         const fetchProducts = async () => {
             try {
                 const response = await fetch(
-                    `https://cms.everwellmag.com/api/products?filters[category][id]=${categoryId}&pagination[page]=${page}&pagination[pageSize]=10&populate=*`,
+                    `https://cms.everwellmag.com/api/products?filters[categories][id][$in]=${categoryId}&pagination[page]=${page}&pagination[pageSize]=10&populate=*`,
                     {
                         headers: { 'Content-Type': 'application/json' },
                         next: { revalidate: 3600 }

@@ -1,4 +1,3 @@
-// C:\Users\Kathay\everwellmag\src\app\product\[slug]\layout.tsx
 import { PropsWithChildren } from 'react';
 import { fetchFromStrapi } from '@/lib/strapi';
 import { notFound } from 'next/navigation';
@@ -10,6 +9,34 @@ interface PriceMulti {
     quantity: number;
     price: number;
     currency: string;
+}
+
+interface Category {
+    id: number;
+    name: string;
+    slug: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string;
+    parent_slug?: string | null;
+}
+
+interface Product {
+    id: number;
+    Name: string;
+    Description: string;
+    Supplier: string;
+    AffiliateLink: string;
+    slug: string | null;
+    Pricemulti?: PriceMulti[];
+    Image?: {
+        url: string | Blob;
+        alternativeText?: string;
+        width?: number;
+        height?: number;
+    } | null;
+    categories: Category[];
 }
 
 // Function to normalize image URL
@@ -32,11 +59,12 @@ const cleanDescription = (text: string): string => {
 };
 
 // Fetch product data
-const getProductData = async (slug: string) => {
+const getProductData = async (slug: string): Promise<Product | null> => {
     const data = await fetchFromStrapi(
         `products?filters[slug][$eq]=${slug}&populate=*`
     );
-    return data.data?.[0] || null;
+    const product: Product | null = data.data?.[0] || null;
+    return product;
 };
 
 // Generate dynamic metadata for SEO
@@ -45,6 +73,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const product = await getProductData(resolvedParams.slug);
 
     if (!product) {
+        console.warn('Product not found, using fallback metadata');
         return {
             title: 'Product Not Found - Everwell Magazine',
             description: 'Discover health and wellness products on Everwell Magazine.',
@@ -141,7 +170,7 @@ export default async function ProductLayout({
             '@type': 'Brand',
             name: product.Supplier || 'Unknown',
         },
-        offers: product.Pricemulti?.length > 0
+        offers: product.Pricemulti && product.Pricemulti.length > 0
             ? product.Pricemulti.map((priceOption: PriceMulti) => ({
                 '@type': 'Offer',
                 priceCurrency: priceOption.currency === '$' ? 'USD' : priceOption.currency,
@@ -156,7 +185,7 @@ export default async function ProductLayout({
             : undefined,
         url: `https://www.everwellmag.com/product/${resolvedParams.slug}`,
         sku: product.id.toString(),
-        category: product.category.name,
+        category: product.categories[0]?.name || 'Uncategorized',
     };
 
     // Schema for BreadcrumbList
@@ -173,8 +202,8 @@ export default async function ProductLayout({
             {
                 '@type': 'ListItem',
                 position: 2,
-                name: product.category.name,
-                item: `https://www.everwellmag.com${product.category.parent_slug ? `/${product.category.parent_slug}` : ''}/${product.category.slug}`,
+                name: product.categories[0]?.name || 'Uncategorized',
+                item: `https://www.everwellmag.com${product.categories[0]?.parent_slug ? `/${product.categories[0].parent_slug}` : ''}/${product.categories[0]?.slug || ''}`,
             },
             {
                 '@type': 'ListItem',

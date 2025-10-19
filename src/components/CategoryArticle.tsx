@@ -33,7 +33,7 @@ interface Author {
 
 interface Category {
     id: number;
-    documentId: string;
+    documentId: string; // Kept as per original code
     name: string;
     slug: string;
     description: string;
@@ -78,7 +78,7 @@ interface Article {
     publishedAt: string;
     cover?: Media | null;
     author?: Author | null;
-    category: Category;
+    categories: Category[]; // Changed from category to categories (array)
     blocks: Block[];
     Priority?: number;
 }
@@ -146,7 +146,7 @@ export default function CategoryArticle({ categoryId, title, description }: Cate
         const fetchArticles = async () => {
             try {
                 const response = await fetch(
-                    `https://cms.everwellmag.com/api/articles?filters[category][id]=${categoryId}&pagination[page]=${page}&pagination[pageSize]=10&populate=*`,
+                    `https://cms.everwellmag.com/api/articles?filters[categories][id][$in]=${categoryId}&pagination[page]=${page}&pagination[pageSize]=10&populate=*`,
                     {
                         headers: { 'Content-Type': 'application/json' },
                         next: { revalidate: 3600 }

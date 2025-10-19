@@ -1,4 +1,3 @@
-// C:\Users\Kathay\everwellmag\src\app\article\[slug]\page.tsx
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import { fetchFromStrapi } from '@/lib/strapi';
@@ -36,6 +35,17 @@ interface StrapiBlock {
     };
 }
 
+interface Category {
+    id: number;
+    documentId: string;
+    name: string;
+    slug: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string;
+}
+
 interface StrapiArticle {
     title?: string;
     description?: string;
@@ -45,6 +55,7 @@ interface StrapiArticle {
         width?: number | string;
         height?: number | string;
     };
+    categories: Category[]; // Changed from category to categories (array)
     blocks?: StrapiBlock[];
 }
 

@@ -18,14 +18,23 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Everwell Magazine - Health & Wellness',
   description: 'Discover expert health and wellness tips, diet plans, and products at Everwell Magazine.',
+  robots: {
+    index: true,
+    follow: true,
+    'max-image-preview': 'large', // Hỗ trợ preview hình ảnh lớn
+  },
   verification: {
     google: 'E5RD3D753jQq557Fg3lZTj1BYRwNTDV-mgF-3goTXBs',
   },
-  // Xóa alternates.canonical để tránh xung đột với sub-layout
+  alternates: {
+    canonical: 'https://www.everwellmag.com', // Canonical rõ ràng cho trang chủ
+  },
   openGraph: {
     title: 'Everwell Magazine - Health & Wellness',
     description: 'Discover expert health and wellness tips, diet plans, and products at Everwell Magazine.',
     url: 'https://www.everwellmag.com',
+    siteName: 'Everwell Magazine', // Thêm site_name
+    locale: 'en_US', // Thêm locale
     type: 'website',
     images: [
       {
@@ -41,20 +50,56 @@ export const metadata: Metadata = {
     title: 'Everwell Magazine - Health & Wellness',
     description: 'Discover expert health and wellness tips, diet plans, and products at Everwell Magazine.',
     images: ['https://cms.everwellmag.com/Uploads/default-image.jpg'],
+    site: '@everwellmag', // Thêm Twitter handle site
+    creator: '@everwellmag', // Thêm Twitter handle creator
   },
 };
 
-// Schema Organization cho trang chủ
-const organizationSchema = {
+// Schema Organization, WebPage, và BreadcrumbList cho trang chủ
+const schema = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'Everwell Magazine',
-  url: 'https://www.everwellmag.com',
-  logo: 'https://cms.everwellmag.com/Uploads/logo.jpg', // Thay bằng URL logo thực tế
-  sameAs: [
-    'https://www.facebook.com/everwellmag', // Thay bằng URL thực tế
-    'https://x.com/everwellmag', // Thay bằng URL thực tế
-    'https://www.instagram.com/everwellmag', // Thay bằng URL thực tế
+  '@graph': [
+    {
+      '@type': 'Organization',
+      name: 'Everwell Magazine',
+      url: 'https://www.everwellmag.com',
+      logo: 'https://cms.everwellmag.com/Uploads/logo.jpg', // Thay bằng URL logo thực tế
+      sameAs: [
+        'https://www.facebook.com/everwellmag', // Thay bằng URL thực tế
+        'https://x.com/everwellmag', // Thay bằng URL thực tế
+        'https://www.instagram.com/everwellmag', // Thay bằng URL thực tế
+      ],
+    },
+    {
+      '@type': 'WebPage',
+      '@id': 'https://www.everwellmag.com#webpage',
+      url: 'https://www.everwellmag.com',
+      name: 'Everwell Magazine - Health & Wellness',
+      description: 'Discover expert health and wellness tips, diet plans, and products at Everwell Magazine.',
+      publisher: {
+        '@type': 'Organization',
+        name: 'Everwell Magazine',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://cms.everwellmag.com/Uploads/logo.jpg', // Thay bằng URL logo thực tế
+        },
+      },
+      inLanguage: 'en',
+      isPartOf: {
+        '@id': 'https://www.everwellmag.com#website',
+      },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: 'https://www.everwellmag.com',
+        },
+      ],
+    },
   ],
 };
 
@@ -75,9 +120,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           `}
         </Script>
         <Script
-          id="organization-schema"
+          id="schema-jsonld"
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
       </head>
       <body
@@ -117,7 +162,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <a href="/affiliate-disclosure" className="hover:underline">Affiliate Disclosure</a> |
               <a href="/medical-disclaimer" className="hover:underline">Medical Disclaimer</a>
             </p>
-
           </div>
         </footer>
       </body>

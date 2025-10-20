@@ -12,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
             description: 'Discover practical eye care tips to maintain healthy vision, prevent eye strain, and protect your eyes from common issues.',
         },
         defaultImage: {
-            url: 'https://cms.everwellmag.com/uploads/eye_care_tips_default.jpg',
+            url: 'https://cms.everwellmag.com/uploads/Eye_Care_Tips_2ee9493fc1.webp',
             width: 1200,
             height: 630,
             alt: 'Eye Care Tips',

@@ -1,287 +1,160 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import ReactMarkdown from 'react-markdown';
+import { useEffect, useState } from 'react';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 
-// Define TypeScript interfaces for the API response
-interface Media {
-    url: string;
-    alternativeText?: string;
-    caption?: string;
-    width?: number;
-    height?: number;
-    formats?: {
-        thumbnail?: { url: string };
-        small?: { url: string };
-        medium?: { url: string };
-        large?: { url: string };
-    };
-}
+// Danh mục con của Heart Health
+const categories = [
+    {
+        name: 'Common Heart Conditions',
+        slug: '/heart-health/common-heart-conditions',
+        title: 'Common Heart Conditions',
+        description: 'Learn about common heart conditions, their symptoms, causes, and effective strategies for maintaining a healthy heart.',
+        image: { url: 'https://cms.everwellmag.com/uploads/Common_Heart_Conditions_2c0c553a9c.webp', alt: 'Common Heart Conditions', width: 400, height: 400, shape: 'square' },
+    },
+    {
+        name: 'Heart Care Tips',
+        slug: '/heart-health/heart-care-tips',
+        title: 'Heart Care Tips',
+        description: 'Discover practical heart care tips to maintain cardiovascular health, prevent heart disease, and support a healthy lifestyle.',
+        image: { url: 'https://cms.everwellmag.com/uploads/Heart_Care_Tips_1de013ba8b.webp', alt: 'Heart Care Tips', width: 800, height: 400, shape: 'horizontal' },
+    },
+    {
+        name: 'Supplements for Heart Health',
+        slug: '/heart-health/supplements-for-heart-health',
+        title: 'Supplements for Heart Health',
+        description: 'Discover premium supplements to support optimal heart health from trusted providers. Click to shop now!',
+        image: { url: 'https://cms.everwellmag.com/uploads/Heart_Health_supplements_332b733a62.webp', alt: 'Heart Health Supplements', width: 400, height: 500, shape: 'rectangle' },
+    },
+];
 
-interface Author {
-    id: number;
-    documentId: string;
-    name: string;
-    email: string;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-}
+// Dữ liệu mẫu cho bài viết full (thay bằng API Strapi sau)
+const fullArticle = {
+    title: 'The Comprehensive Guide to Heart Health',
+    description: 'A detailed guide to maintaining and improving heart health with care tips, condition management, and supplements.',
+    body: `## Understanding Heart Health Basics  
+A healthy heart is vital for overall well-being. Learn how lifestyle and nutrition impact cardiovascular health.
 
-interface Category {
-    id: number;
-    documentId: string;
-    name: string;
-    slug: string;
-    description: string;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-}
+## Common Heart Conditions  
+### Hypertension  
+High blood pressure can be managed with diet and exercise.
+### Arrhythmia  
+Irregular heartbeats may require medical attention.
 
-interface RichTextBlock {
-    __component: 'shared.rich-text';
-    id: number;
-    body: string;
-}
+## Heart Care Strategies  
+### Regular Exercise  
+Aim for 30 minutes of cardio most days.
+### Healthy Diet  
+Focus on fruits, vegetables, and lean proteins.
 
-interface QuoteBlock {
-    __component: 'shared.quote';
-    id: number;
-    title: string;
-    body: string;
-}
+## Supplements for Heart Support  
+### Omega-3  
+Supports heart rhythm and reduces inflammation.
+### CoQ10  
+Boosts energy production in heart cells.
+Consult a doctor before use.
 
-interface MediaBlock {
-    __component: 'shared.media';
-    id: number;
-}
+## Lifestyle Tips  
+### Stress Reduction  
+Practice meditation to lower heart strain.
+### Sleep  
+Get 7-9 hours nightly for heart recovery.
 
-interface SliderBlock {
-    __component: 'shared.slider';
-    id: number;
-}
+## Monitoring and Next Steps  
+Check blood pressure regularly and consult a cardiologist for personalized advice.
 
-type Block = RichTextBlock | QuoteBlock | MediaBlock | SliderBlock;
-
-interface Article {
-    id: number;
-    documentId: string;
-    title: string;
-    description: string;
-    slug: string;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-    cover?: Media | null;
-    author?: Author | null;
-    category: Category;
-    blocks: Block[];
-}
-
-interface ApiResponse {
-    data: Article[];
-    meta: {
-        pagination: {
-            page: number;
-            pageSize: number;
-            pageCount: number;
-            total: number;
-        };
-    };
-}
-
-// Function to extract image URLs from rich-text body
-const extractImageUrls = (body: string): string[] => {
-    const regex = /!\[.*?\]\((.*?)\)/g;
-    const matches = body.match(regex) || [];
-    return matches.map((match) => {
-        const url = match.replace(/!\[.*?\]\((.*?)\)/, '$1');
-        return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`; // Normalize URL
-    });
+This guide offers a roadmap to maintaining heart health effectively. Start today!  
+`,
+    image: { url: 'https://cms.everwellmag.com/uploads/Common_Heart_Conditions_2c0c553a9c.webp', alt: 'Heart Health Guide', width: 800, height: 400 },
 };
 
-// Function to get the first image from blocks
-const getFirstImageFromBlocks = (blocks: Block[]): string | null => {
-    for (const block of blocks) {
-        if (block.__component === 'shared.rich-text' && 'body' in block && block.body) {
-            const imageUrls = extractImageUrls(block.body);
-            if (imageUrls.length > 0) {
-                return imageUrls[0]; // Return the first valid image URL
-            }
-        }
-    }
-    return null;
-};
+export default function HeartHealthPage() {
+    const [loading, setLoading] = useState(true);
 
-// Function to normalize and validate cover URL
-const normalizeCoverUrl = (media?: Media | null): string | null => {
-    if (!media || !media.url) return null;
-    return media.url.startsWith('http') ? media.url : `https://cms.everwellmag.com${media.url}`;
-};
-
-export default function CommonHeartConditionsPage() {
-    const [articles, setArticles] = useState<Article[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
-
-    // Fetch articles from Strapi API
     useEffect(() => {
-        const fetchArticles = async () => {
-            try {
-                const response = await fetch(
-                    'https://cms.everwellmag.com/api/articles?filters[category][id]=15&pagination[page]=1&pagination[pageSize]=10&populate=*',
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    }
-                );
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch articles');
-                }
-
-                const data: ApiResponse = await response.json();
-                if (!data.data || data.data.length === 0) {
-                    throw new Error('No articles found for category ID 15');
-                }
-                // Sort articles by createdAt in descending order (newest first)
-                const sortedArticles = data.data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-                setArticles(sortedArticles);
-                setLoading(false);
-            } catch (err: unknown) {
-                setError((err instanceof Error ? err.message : 'An error occurred while fetching articles') || 'An error occurred');
-                setLoading(false);
-            }
-        };
-
-        fetchArticles();
+        setLoading(false); // Tắt delay, load ngay
     }, []);
 
     if (loading) {
-        return <div className="container mx-auto p-4" style={{ color: 'var(--foreground)' }}>Loading...</div>;
-    }
-
-    if (error) {
-        return <div className="container mx-auto p-4" style={{ color: 'var(--foreground)' }}>{error}</div>;
-    }
-
-    if (articles.length === 0) {
-        return <div className="container mx-auto p-4" style={{ color: 'var(--foreground)' }}>No articles available.</div>;
+        return (
+            <div className="container mx-auto p-6" style={{ color: 'var(--foreground)' }}>
+                <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2" style={{ borderColor: '#3B82F6' }}></div>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className="container mx-auto p-4" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
-            <h1 className="text-3xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>Common Heart Conditions</h1>
-            <p className="mb-8" style={{ color: 'var(--foreground)' }}>
-                Learn about common heart conditions, their symptoms, and management strategies
-                with expert insights.
-            </p>
+        <div className="min-h-screen" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
+            {/* Bỏ hoàn toàn banner/header */}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {articles.map((article) => {
-                    // Normalize cover URL and fallback to first image from blocks if cover fails
-                    let thumbnailUrl = normalizeCoverUrl(article.cover);
-                    if (!thumbnailUrl) {
-                        thumbnailUrl = getFirstImageFromBlocks(article.blocks);
-                    }
-
-                    return (
-                        <div
-                            key={article.id}
-                            className="border rounded-lg shadow-md p-4 hover:shadow-lg transition h-[450px] flex flex-col justify-between"
-                            style={{ borderColor: 'var(--foreground)', color: 'var(--foreground)' }}
+            {/* Module Grid Section */}
+            <section className="container mx-auto p-8 w-full">
+                <h1 className="text-2xl font-semibold mb-4" style={{ color: 'var(--foreground)' }}>
+                    Explore Heart Health Categories
+                </h1>
+                <p className="text-base mb-8" style={{ color: 'var(--text-secondary)' }}>
+                    Dive into expert advice tailored for maintaining heart health.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {categories.map((category) => (
+                        <Link
+                            key={category.slug}
+                            href={category.slug}
+                            className="group block rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
                         >
-                            {/* Thumbnail Image */}
-                            {thumbnailUrl && (
-                                <Link href={`/article/${article.slug}`}>
-                                    <Image
-                                        src={thumbnailUrl}
-                                        alt={article.cover?.alternativeText || article.title}
-                                        width={500}
-                                        height={300}
-                                        className="w-full h-48 object-cover rounded-md mb-4 cursor-pointer"
-                                        onError={(e) => {
-                                            e.currentTarget.style.display = 'none'; // Hide if image fails to load
-                                        }}
-                                    />
-                                </Link>
-                            )}
-
-                            {/* Content Container with fixed height */}
-                            <div className="flex-1 overflow-hidden">
-                                {/* Title and Description */}
-                                <h2 className="text-xl font-semibold mb-2 line-clamp-2">
-                                    <Link href={`/article/${article.slug}`} className="hover:underline" style={{ color: 'var(--foreground)' }}>
-                                        {article.title}
-                                    </Link>
-                                </h2>
-                                <p className="mb-4 line-clamp-2" style={{ color: 'var(--foreground)' }}>{article.description}</p>
-
-                                {/* Author */}
-                                {article.author && (
-                                    <p className="text-sm mb-2 line-clamp-1" style={{ color: 'var(--foreground)' }}>
-                                        By {article.author.name}
-                                    </p>
-                                )}
-
-                                {/* Rich Text Preview (without images, only text) */}
-                                {article.blocks.map((block, index) => {
-                                    if (block.__component === 'shared.rich-text' && 'body' in block && block.body) {
-                                        return (
-                                            <div key={index} className="mb-4 line-clamp-3">
-                                                <ReactMarkdown
-                                                    components={{
-                                                        p: ({ ...props }) => (
-                                                            <p style={{ color: 'var(--foreground)' }} {...props} />
-                                                        ),
-                                                        h1: ({ ...props }) => (
-                                                            <h1 className="text-2xl font-bold" style={{ color: 'var(--foreground)' }} {...props} />
-                                                        ),
-                                                        h2: ({ ...props }) => (
-                                                            <h2 className="text-xl font-semibold" style={{ color: 'var(--foreground)' }} {...props} />
-                                                        ),
-                                                        strong: ({ ...props }) => (
-                                                            <strong className="font-bold" {...props} />
-                                                        ),
-                                                        em: ({ ...props }) => (
-                                                            <em className="italic" {...props} />
-                                                        ),
-                                                        img: () => null,
-                                                    }}
-                                                >
-                                                    {block.body}
-                                                </ReactMarkdown>
-                                            </div>
-                                        );
-                                    }
-                                    if (block.__component === 'shared.quote' && 'title' in block && 'body' in block && block.title && block.body) {
-                                        return (
-                                            <blockquote key={index} className="border-l-4 pl-4 italic mb-4 line-clamp-2" style={{ color: 'var(--foreground)', borderColor: 'var(--foreground)' }}>
-                                                <p>{block.body}</p>
-                                                <p className="text-sm" style={{ color: 'var(--foreground)' }}>— {block.title}</p>
-                                            </blockquote>
-                                        );
-                                    }
-                                    return null;
-                                })}
+                            <div className="relative">
+                                <Image
+                                    src={category.image.url}
+                                    alt={category.image.alt}
+                                    width={category.image.width}
+                                    height={category.image.height}
+                                    className={`w-full h-64 object-cover ${category.image.shape === 'circle' ? 'rounded-full' : 'rounded-t-lg'} group-hover:scale-105 transition-transform duration-300`}
+                                    unoptimized
+                                    loading="lazy"
+                                    onError={(e) => (e.currentTarget.src = 'https://cms.everwellmag.com/uploads/Common_Heart_Conditions_2c0c553a9c.webp')}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-50 group-hover:opacity-60 transition-opacity duration-300 rounded-t-lg"></div>
                             </div>
+                            <div className="p-6 text-center" style={{ backgroundColor: 'var(--card-bg)', color: 'var(--foreground)' }}>
+                                <h3 className="text-xl font-semibold mb-2">{category.title}</h3>
+                                <p className="text-base line-clamp-2" style={{ color: 'var(--text-secondary)' }}>
+                                    {category.description}
+                                </p>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </section>
 
-                            {/* Read More Link (always at bottom) */}
-                            <Link
-                                href={`/article/${article.slug}`}
-                                className="mt-2 block hover:underline"
-                                style={{ color: '#3b82f6' }}
-                            >
-                                Read More
-                            </Link>
-                        </div>
-                    );
-                })}
-            </div>
+            {/* Article Section */}
+            <section className="max-w-5xl mx-auto p-8 w-full">
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--foreground)' }}>
+                    Comprehensive Heart Health Guide
+                </h2>
+                <div className="bg-[var(--card-bg)] rounded-lg shadow-md p-6 border" style={{ borderColor: 'var(--link-color)' }}>
+                    {fullArticle.image && (
+                        <Image
+                            src={fullArticle.image.url}
+                            alt={fullArticle.image.alt}
+                            width={fullArticle.image.width}
+                            height={fullArticle.image.height}
+                            className="w-full h-64 object-cover rounded-lg mb-6"
+                            unoptimized
+                            loading="lazy"
+                            onError={(e) => (e.currentTarget.src = 'https://cms.everwellmag.com/uploads/Common_Heart_Conditions_2c0c553a9c.webp')}
+                        />
+                    )}
+                    <h3 className="text-xl font-semibold mb-2">{fullArticle.title}</h3>
+                    <p className="text-base mb-4" style={{ color: 'var(--text-secondary)' }}>
+                        {fullArticle.description}
+                    </p>
+                    <MarkdownRenderer content={fullArticle.body} />
+                </div>
+            </section>
         </div>
     );
 }

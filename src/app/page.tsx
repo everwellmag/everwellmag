@@ -96,7 +96,7 @@ export default function HomePage() {
       <section className="container mx-auto p-8 w-full">
         <div className="relative text-white rounded-xl p-10 bg-transparent shadow-lg">
           <Image
-            src="https://cms.everwellmag.com/uploads/weight_loss_diet_plan_tip_c17ccc9a5d.webp"
+            src="https://cms.everwellmag.com/uploads/everwell_magazine_banner_91a7caaa15.webp"
             alt="Weight Loss Banner"
             width={1200}
             height={480}
@@ -104,7 +104,7 @@ export default function HomePage() {
             style={{ filter: 'brightness(0.95)' }}
             unoptimized
             priority
-            onError={(e) => (e.currentTarget.src = 'https://cms.everwellmag.com/Uploads/default-image.jpg')}
+            onError={(e) => (e.currentTarget.src = 'https://cms.everwellmag.com/uploads/Cardio_Exercises_to_Burn_Belly_Fat_and_Total_Body_Fat_d602f584ca.webp')}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-40 rounded-xl"></div>
           <div className="relative z-10">
@@ -141,7 +141,7 @@ export default function HomePage() {
                   className={`w-full h-64 object-cover ${category.image.shape === 'circle' ? 'rounded-full' : 'rounded-t-xl'} group-hover:scale-105 transition-transform duration-300`}
                   unoptimized
                   loading="lazy"
-                  onError={(e) => (e.currentTarget.src = 'https://cms.everwellmag.com/Uploads/default-image.jpg')}
+                  onError={(e) => (e.currentTarget.src = 'https://cms.everwellmag.com/uploads/Cardio_Exercises_to_Burn_Belly_Fat_and_Total_Body_Fat_d602f584ca.webp')}
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-50 group-hover:opacity-60 transition-opacity duration-300 rounded-t-xl"></div>
               </div>
@@ -194,7 +194,7 @@ export default function HomePage() {
                 className="w-12 h-12 object-contain mb-4"
                 unoptimized
                 loading="lazy"
-                onError={(e) => (e.currentTarget.src = 'https://cms.everwellmag.com/Uploads/default-icon.png')}
+                onError={(e) => (e.currentTarget.src = 'https://cms.everwellmag.com/uploads/Heart_Health_e51e0ca5cd.webp')}
               />
               <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
                 {tip.title}

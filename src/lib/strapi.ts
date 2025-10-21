@@ -1,7 +1,6 @@
-// src/lib/strapi.ts
 export async function fetchFromStrapi(endpoint: string) {
-  const strapiUrl = process.env.STRAPI_URL || 'http://15.235.208.94:1337';
-  const url = `${strapiUrl}/api/${endpoint}`;
+  const strapiUrl = process.env.STRAPI_URL || 'https://cms.everwellmag.com';
+  const url = endpoint.startsWith('http') ? endpoint : `${strapiUrl}/api/${endpoint}`;
   console.log('Fetching from:', url);
   const response = await fetch(url, {
     next: { revalidate: 60 },

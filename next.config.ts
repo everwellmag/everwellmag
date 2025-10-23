@@ -4,10 +4,12 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'cms.everwellmag.com',
-        pathname: '/uploads/**',
+        hostname: 'cms.everwellmag.com', // ✅ Thêm hostname Strapi
+        port: '',
+        pathname: '/uploads/**', // Cho phép uploads từ Strapi
       },
     ],
   },
 };
+
 module.exports = nextConfig;

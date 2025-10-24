@@ -16,7 +16,7 @@ export default function CommentCard({ comment }: CommentCardProps) {
     };
 
     return (
-        <div className="border-b py-4 last:border-b-0" style={{ borderColor: 'var(--foreground)' }}>
+        <div className="border-b py-4 last:border-b-0" style={{ borderColor: 'var(--border-color)' }}>
             <div className="flex justify-between items-start mb-2">
                 <p className="font-bold" style={{ color: 'var(--link-color)' }}>{comment.author.name}</p>
                 <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{formatDate(comment.createdAt)}</p>

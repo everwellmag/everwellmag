@@ -80,7 +80,7 @@ export default function CommentForm({ articleSlug, productSlug }: CommentFormPro
         <form
             onSubmit={handleSubmit}
             className="mb-8 p-6 rounded-lg border"
-            style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--foreground)' }}
+            style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)' }}
         >
             {success && (
                 <p
@@ -103,7 +103,7 @@ export default function CommentForm({ articleSlug, productSlug }: CommentFormPro
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Share your thoughts..."
                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[var(--link-color)] focus:border-transparent resize-y"
-                style={{ borderColor: 'var(--foreground)' }}
+                style={{ borderColor: 'var(--border-color)' }}
                 rows={5}
                 required
             />
@@ -114,7 +114,7 @@ export default function CommentForm({ articleSlug, productSlug }: CommentFormPro
                     onChange={(e) => setAuthorName(e.target.value)}
                     placeholder="Your name"
                     className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[var(--link-color)] focus:border-transparent"
-                    style={{ borderColor: 'var(--foreground)' }}
+                    style={{ borderColor: 'var(--border-color)' }}
                     required
                 />
                 <input
@@ -123,7 +123,7 @@ export default function CommentForm({ articleSlug, productSlug }: CommentFormPro
                     onChange={(e) => setAuthorEmail(e.target.value)}
                     placeholder="Your email (optional)"
                     className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[var(--link-color)] focus:border-transparent"
-                    style={{ borderColor: 'var(--foreground)' }}
+                    style={{ borderColor: 'var(--border-color)' }}
                 />
             </div>
             <button

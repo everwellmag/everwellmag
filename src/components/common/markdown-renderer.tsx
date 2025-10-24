@@ -2,13 +2,14 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Node } from 'unist';
 import { MarkdownImage } from './image-renderer';
 
 // Plugin để loại bỏ hoặc thay thế :contentReference[oaicite:X]{index=X} thành footnote
 const remarkContentReference = () => {
-    return (tree: any) => {
-        const visit = (node: any, parent: any, index: number | null) => {
-            if (node.type === 'text') {
+    return (tree: Node) => {
+        const visit = (node: Node) => {
+            if (node.type === 'text' && 'value' in node && typeof node.value === 'string') {
                 const regex = /:contentReference\[oaicite:\d+\]\{index=\d+\}/g;
                 if (regex.test(node.value)) {
                     node.value = node.value.replace(regex, (match: string) => {
@@ -17,11 +18,11 @@ const remarkContentReference = () => {
                     });
                 }
             }
-            if (node.children) {
-                node.children.forEach((child: any, i: number) => visit(child, node, i));
+            if ('children' in node && Array.isArray(node.children)) {
+                node.children.forEach((child: Node) => visit(child));
             }
         };
-        visit(tree, null, null);
+        visit(tree);
     };
 };
 

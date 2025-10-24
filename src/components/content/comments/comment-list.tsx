@@ -24,7 +24,7 @@ export default function CommentList({ comments }: CommentListProps) {
                     <div
                         key={comment.id}
                         className="p-4 rounded-lg shadow-sm border"
-                        style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--foreground)' }}
+                        style={{ backgroundColor: 'var(--card-bg)', border: 'none' }}
                     >
                         <div className="flex items-start space-x-3">
                             <div

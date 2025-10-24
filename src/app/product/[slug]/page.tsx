@@ -7,13 +7,13 @@ import Image from 'next/image';
 import { CustomMarkdown } from '@/components/common/markdown-renderer';
 import CommentSection from '@/components/content/comments/comment-section';
 
-// Hàm chuẩn hóa URL ảnh (giữ inline nếu không có trong utils)
+// Hàm chuẩn hóa URL ảnh
 const normalizeImageUrl = (url?: string): string => {
     if (!url) return 'https://cms.everwellmag.com/Uploads/default-image.jpg';
     return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
 };
 
-// Function to extract the first image URL from description
+// Hàm lấy ảnh đầu tiên từ description
 const getFirstImageFromDescription = (description: string): string | null => {
     const regex = /!\[.*?\]\((.*?)\)/;
     const match = description.match(regex);
@@ -23,7 +23,7 @@ const getFirstImageFromDescription = (description: string): string | null => {
     return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
 };
 
-// Function to generate star rating with decimal support
+// Hàm tạo star rating
 const getStarRating = (rating?: number): React.ReactNode => {
     if (rating === undefined || rating < 0) return <span className="text-gray-500 text-sm">No rating</span>;
     const fullStars = Math.floor(rating);
@@ -157,7 +157,7 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
                 </div>
 
                 {/* Info box */}
-                <div className="rounded-lg shadow-md p-6 border" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--foreground)' }}>
+                <div className="rounded-lg shadow-md p-6 border border-[var(--border-color)]" style={{ backgroundColor: 'var(--card-bg)' }}>
                     <h2 className="text-xl md:text-2xl font-semibold mb-4" style={{ color: 'var(--foreground)' }}>{title}</h2>
                     <div className="space-y-3 mb-6">
                         <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
@@ -180,8 +180,8 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
                                 {pricemulti.map((price, index) => (
                                     <div
                                         key={index}
-                                        className="flex items-center px-4 py-2 rounded-full border transition-all duration-200"
-                                        style={{ backgroundColor: 'var(--placeholder-bg)', borderColor: 'var(--link-color)' }}
+                                        className="flex items-center px-4 py-2 rounded-full border border-[var(--border-color)] transition-all duration-200"
+                                        style={{ backgroundColor: 'var(--placeholder-bg)' }}
                                     >
                                         <span className="text-sm font-medium mr-2" style={{ color: 'var(--foreground)' }}>
                                             {price.quantity} {price.quantity > 1 ? 'Units' : 'Unit'}
@@ -196,36 +196,23 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
                             <p className="text-sm italic" style={{ color: 'var(--text-secondary)' }}>No pricing options available</p>
                         )}
                     </div>
-                    <a
+                    <Link
                         href={affiliateLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-gradient block w-full text-center py-3 px-6 rounded-lg text-white font-semibold text-base shadow-md hover:shadow-lg"
+                        className="inline-block px-6 py-3 rounded-lg text-white font-semibold text-center transition duration-200 btn-gradient"
                     >
                         Buy Now from Official Site
-                    </a>
+                    </Link>
                 </div>
             </div>
 
-            {/* Description Section */}
-            {description && (
-                <section className="max-w-3xl md:max-w-4xl mx-auto mb-10 rounded-lg p-6 md:p-8 border shadow-md" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--foreground)' }}>
-                    <h2 className="text-xl md:text-2xl font-semibold mb-4 bg-gradient-blue-purple bg-clip-text text-transparent">
-                        Description
-                    </h2>
-                    <CustomMarkdown content={description} />
-                </section>
-            )}
-
-            {/* Comment Section */}
-            <section className="max-w-3xl md:max-w-4xl mx-auto">
-                <CommentSection
-                    productSlug={slug}
-                    comments={comments}
-                    totalComments={totalComments}
-                    currentPage={pageNumber}
-                />
+            {/* Description section */}
+            <section className="mb-12 border border-[var(--border-color)] rounded-lg shadow-md p-6" style={{ backgroundColor: 'var(--card-bg)' }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--foreground)' }}>Description</h2>
+                <CustomMarkdown content={description} />
             </section>
+
+            {/* Comment section */}
+            <CommentSection productSlug={slug} comments={comments} totalComments={totalComments} currentPage={pageNumber} />
         </main>
     );
 }

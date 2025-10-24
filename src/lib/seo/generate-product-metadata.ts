@@ -16,15 +16,13 @@ export async function generateProductMetadata({ slug, subcategory }: GeneratePro
         };
     }
 
-    const mainPrice = product.Pricemulti?.[0]?.price || 0;
-
     return {
         title: `${product.Name} | Best ${product.Supplier} Supplement | Everwell Magazine`,
         description: `${product.Description.substring(0, 160)}...`,
         openGraph: {
             title: `${product.Name} Review`,
             description: `${product.Description.substring(0, 160)}...`,
-            type: 'website', // ✅ Fix: Đổi từ 'product' sang 'website' (Next.js OpenGraph không hỗ trợ 'product')
+            type: 'website',
             images: product.Image?.url ? [{ url: product.Image.url }] : [],
         },
         alternates: {

@@ -11,6 +11,7 @@ export interface ArticleBlock {
 
 export interface Article {
     id: number;
+    documentId: string;
     title: string;
     description?: string; // Excerpt ngắn
     slug: string;

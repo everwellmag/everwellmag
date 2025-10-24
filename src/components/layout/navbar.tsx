@@ -58,7 +58,7 @@ export default function Navbar() {
             href: "/blood-sugar",
             label: "Blood Sugar",
             subItems: [
-                { href: "/blood-sugar/diet-tips", label: "Diet Tips" },
+                { href: "/blood-sugar/diet-plan-for-blood-sugar", label: "Diet Tips" },
                 { href: "/blood-sugar/common-blood-sugar-issues", label: "Common Blood Sugar Issues" },
                 { href: "/blood-sugar/supplements-for-blood-sugar", label: "Blood Sugar Supplements" },
             ],

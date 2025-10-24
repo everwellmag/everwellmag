@@ -64,6 +64,14 @@ footer {
     }
 }
 
+/* Thêm define cho gradient background ở utilities layer */
+@layer utilities {
+    .bg-gradient-blue-purple {
+        background-image: var(--gradient-primary);
+        /* Sử dụng variable sẵn có */
+    }
+}
+
 @layer components {
     .spinner {
         @apply animate-spin rounded-full h-12 w-12 border-t-2 border-b-2;

@@ -1,5 +1,12 @@
 import type { Product } from '@/lib/types/product';
 import Link from 'next/link';
+import Image from 'next/image';
+
+// Hàm chuẩn hóa URL ảnh
+const normalizeImageUrl = (url?: string): string => {
+    if (!url) return 'https://cms.everwellmag.com/Uploads/default-image.jpg';
+    return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
+};
 
 interface ProductCardProps {
     product: Product;
@@ -12,31 +19,24 @@ export default function ProductCard({ product }: ProductCardProps) {
     const slug = product.slug || '';
     const description = product.Description || '';
     const excerpt = description.length > 100 ? description.slice(0, 100) + '...' : description;
-    const imageUrl = product.Image?.url ? `https://cms.everwellmag.com${product.Image.url}` : '/placeholder.webp';
+    const imageUrl = normalizeImageUrl(product.Image?.url);
 
     return (
         <div className="border p-4 mb-4 rounded-lg shadow">
-            {imageUrl && (
-                <img
-                    src={imageUrl}
-                    alt={product.Image?.alternativeText || title}
-                    className="w-full h-48 object-cover mb-2 rounded"
-                />
-            )}
+            <Image
+                src={imageUrl}
+                alt={title}
+                width={400}
+                height={300}
+                className="w-full h-48 object-cover mb-2 rounded"
+                style={{ width: 'auto', height: 'auto' }}
+            />
             <h2 className="text-xl font-bold">
                 <Link href={`/product/${slug}`}>{title}</Link>
             </h2>
             <p className="text-gray-600">{excerpt}</p>
-            {product.rating && (
-                <p className="text-sm text-yellow-500">Rating: {product.rating}/5</p>
-            )}
-            {product.Pricemulti && product.Pricemulti.length > 0 && (
-                <p className="text-sm font-semibold text-green-600">
-                    From {product.Pricemulti[0].currency}{product.Pricemulti[0].price}
-                </p>
-            )}
             <Link href={`/product/${slug}`} className="text-blue-500 hover:underline">
-                View Details
+                Read More
             </Link>
         </div>
     );

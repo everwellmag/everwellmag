@@ -42,13 +42,13 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             )}
             {articles.length > 0 && (
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold mb-4">Bài viết</h2>
+                    <h2 className="text-2xl font-semibold mb-4">New articles</h2>
                     <ArticleList articles={articles} category={category} subcategory="" />
                 </section>
             )}
             {products.length > 0 && (
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">Sản phẩm</h2>
+                    <h2 className="text-2xl font-semibold mb-4">Supplements</h2>
                     <ProductList products={products} category={category} subcategory="" />
                 </section>
             )}

@@ -1,47 +1,40 @@
-'use client';
-
-import React, { useState } from 'react';
+import { Comment } from '@/lib/types/comment';
+import CommentForm from './comment-form';
+import CommentList from './comment-list';
+import Pagination from '@/components/ui/pagination';
 
 interface CommentSectionProps {
-    contentId: number | string; // ✅ Fix: Hỗ trợ number hoặc string cho ID
-    contentType: 'article' | 'product'; // ✅ Giữ union type, nhưng đảm bảo match khi gọi
+    articleSlug?: string;
+    productSlug?: string;
+    comments: Comment[];
+    totalComments?: number;
+    currentPage?: number;
 }
 
-export default function CommentSection({ contentId, contentType }: CommentSectionProps) {
-    const [comments] = useState<
-        { id: number; author: string; content: string; date: string }[]
-    >([
-        { id: 1, author: 'Everwell Reader', content: 'Bài viết rất hay!', date: '2025-10-22' },
-    ]);
+export default function CommentSection({
+    articleSlug,
+    productSlug,
+    comments,
+    totalComments = comments.length,
+    currentPage = 1,
+}: CommentSectionProps) {
+    const baseUrl = articleSlug ? `/article/${articleSlug}` : `/product/${productSlug}`;
+    const pageSize = 10;
 
     return (
-        <section>
-            <h3 className="text-xl font-semibold mb-4">
-                Bình luận ({contentType} #{contentId}) {/* ✅ Sử dụng props mới */}
-            </h3>
-            <ul className="space-y-3">
-                {comments.map((c) => (
-                    <li key={c.id} className="border rounded-lg p-3">
-                        <p className="font-semibold">{c.author}</p>
-                        <p className="text-gray-700">{c.content}</p>
-                        <p className="text-sm text-gray-500 mt-1">{c.date}</p>
-                    </li>
-                ))}
-            </ul>
-
-            <form className="mt-6 border-t pt-4">
-                <textarea
-                    className="w-full p-3 border rounded-lg focus:outline-none focus:ring"
-                    rows={3}
-                    placeholder="Viết bình luận của bạn..."
-                />
-                <button
-                    type="button"
-                    className="mt-2 px-4 py-2 bg-black text-white rounded-lg hover:opacity-90"
-                >
-                    Gửi bình luận
-                </button>
-            </form>
+        <section
+            className="mt-12 max-w-3xl mx-auto rounded-lg shadow-md p-6"
+            style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--foreground)' }}
+        >
+            <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>Comments ({totalComments})</h2>
+            <CommentForm articleSlug={articleSlug} productSlug={productSlug} />
+            <CommentList comments={comments} />
+            <Pagination
+                currentPage={currentPage}
+                totalComments={totalComments}
+                pageSize={pageSize}
+                baseUrl={baseUrl}
+            />
         </section>
     );
 }

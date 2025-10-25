@@ -122,7 +122,7 @@ export default function Navbar() {
           }
         `}</style>
             </Head>
-            <nav className="bg-gradient-to-r from-blue-500 to-purple-600 text-white fixed top-0 left-0 w-full z-50 shadow-lg">
+            <nav className="bg-gradient-blue-purple text-white fixed top-0 left-0 w-full z-50 shadow-lg">
                 <div className="px-6 sm:px-8 lg:px-12 mx-auto flex justify-between items-center py-4">
                     {/* Logo */}
                     <Link href="/" className="flex items-center space-x-2">
@@ -149,7 +149,7 @@ export default function Navbar() {
                                     {item.label}
                                 </Link>
                                 {item.subItems && (
-                                    <div className="dropdown-menu absolute top-full left-0 bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg rounded-lg p-2 min-w-[300px] invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-300">
+                                    <div className="dropdown-menu absolute top-full left-0 bg-gradient-blue-purple-hover text-white shadow-lg rounded-lg p-2 min-w-[300px] invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-300">
                                         {item.subItems.map((subItem) => (
                                             <Link
                                                 key={subItem.href}
@@ -179,7 +179,7 @@ export default function Navbar() {
 
                 {/* Mobile Menu */}
                 <div
-                    className={`md:hidden fixed top-0 right-0 w-full h-full max-h-[100vh] bg-gradient-to-b from-blue-500 to-purple-600 overflow-y-auto transform ${isMenuOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
+                    className={`md:hidden fixed top-0 right-0 w-full h-full max-h-[100vh] bg-gradient-blue-purple overflow-y-auto transform ${isMenuOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
                         } transition-all duration-300 ease-in-out`}
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}

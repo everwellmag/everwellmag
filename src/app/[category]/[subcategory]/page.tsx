@@ -12,10 +12,15 @@ interface SubCategoryPageProps {
         category: string;
         subcategory: string;
     }>;
+    searchParams: Promise<{ page?: string }>;
 }
 
-export default async function SubCategoryPage({ params }: SubCategoryPageProps) {
-    const { category, subcategory } = await params; // Await params
+export default async function SubCategoryPage({ params, searchParams }: SubCategoryPageProps) {
+    const { category, subcategory } = await params;
+    const { page = '1' } = await searchParams;
+    const pageNumber = parseInt(page, 10) || 1;
+    const pageSize = 12; // Đồng bộ với get-products.ts, get-articles.ts
+
     const subcategoryData = await getCategoryBySlug(subcategory);
     if (!subcategoryData) {
         console.log('Không tìm thấy danh mục con:', subcategory);
@@ -27,14 +32,25 @@ export default async function SubCategoryPage({ params }: SubCategoryPageProps) 
 
     let articles: Article[] = [];
     let products: Product[] = [];
+    let totalItems = 0;
 
     try {
         if (type === 'article') {
-            articles = await getArticles(subcategorySlug);
-            console.log('Danh sách bài viết:', articles);
+            const response = await getArticles(subcategorySlug, {
+                'pagination[page]': pageNumber,
+                'pagination[pageSize]': pageSize,
+                sort: 'priority:asc,createdAt:desc',
+            });
+            articles = response.data;
+            totalItems = response.meta?.pagination?.total || articles.length;
         } else if (type === 'product') {
-            products = await getProducts(subcategorySlug);
-            console.log('Danh sách sản phẩm:', products);
+            const response = await getProducts(subcategorySlug, {
+                'pagination[page]': pageNumber,
+                'pagination[pageSize]': pageSize,
+                sort: 'priority:asc,createdAt:desc',
+            });
+            products = response.data;
+            totalItems = response.meta?.pagination?.total || products.length;
         } else {
             console.log('Type không hợp lệ:', type);
         }
@@ -44,11 +60,27 @@ export default async function SubCategoryPage({ params }: SubCategoryPageProps) 
 
     return (
         <main className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-4">{subcategoryData.name || subcategory}</h1>
+            <h1 className="text-3xl font-bold mb-4 bg-gradient-blue-purple-hover bg-clip-text text-transparent">
+                {subcategoryData.name || subcategory}
+            </h1>
             {type === 'article' ? (
-                <ArticleList articles={articles} category={category} subcategory={subcategory} />
+                <ArticleList
+                    articles={articles}
+                    category={category}
+                    subcategory={subcategory}
+                    currentPage={pageNumber}
+                    totalItems={totalItems}
+                    pageSize={pageSize}
+                />
             ) : (
-                <ProductList products={products} category={category} subcategory={subcategory} />
+                <ProductList
+                    products={products}
+                    category={category}
+                    subcategory={subcategory}
+                    currentPage={pageNumber}
+                    totalItems={totalItems}
+                    pageSize={pageSize}
+                />
             )}
         </main>
     );

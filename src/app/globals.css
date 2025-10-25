@@ -1,45 +1,81 @@
 @import "tailwindcss";
 
+/* ========== ROOT VARIABLES ========== */
 :root {
     --background: #ffffff;
     --foreground: #171717;
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-    --font-sans: var(--font-geist-sans);
-    --font-mono: var(--font-geist-mono);
-    --gradient-primary: linear-gradient(to right, #3B82F6, #9333EA);
-    /* blue-500 to purple-600 */
-    --gradient-primary-hover: linear-gradient(to right, #2563EB, #7E22CE);
-    /* blue-600 to purple-700 */
+    --title-color: #1a1375;
     --link-color: #3B82F6;
-    /* blue-500 */
     --link-hover: #1D4ED8;
     --border-color: #9a35e3;
-    /* blue-700 */
+    --border-color2: #dec2f4;
     --text-secondary: #4B5563;
-    /* gray-600 */
-    --text-secondary-dark: #D1D5DB;
-    /* gray-300 */
     --placeholder-bg: #E5E7EB;
-    /* gray-200 */
-    --placeholder-bg-dark: #374151;
-    /* gray-700 */
     --card-bg: #ffffff;
-    --card-bg-dark: #1F2937;
-    /* gray-800 */
+    --gradient-primary: linear-gradient(to right, #3B82F6, #9333EA);
+    --gradient-primary-hover: linear-gradient(to right, #2563EB, #7E22CE);
+    --gradient-primary-vertical: linear-gradient(to bottom, #3B82F6, #9333EA);
+    --nav-foreground: #ffffff;
 }
 
+/* Dark mode: khi không có data-theme hoặc data-theme="auto" và hệ thống ở dark mode */
 @media (prefers-color-scheme: dark) {
-    :root {
-        --background: #1b1919;
+    :root:not([data-theme="light"]) {
+        --background: #16130d;
         --foreground: #c8bc97;
+        --title-color: #b18e22;
+        --link-color: #245a9d;
+        --link-hover: #688beb;
         --text-secondary: #D1D5DB;
-        /* gray-300 */
         --placeholder-bg: #374151;
-        /* gray-700 */
-        --card-bg: #1F2937;
-        /* gray-800 */
+        --card-bg: #0e0c1a;
+        --border-color: #a855f7;
+        --gradient-primary: linear-gradient(to right, #1e3356, #603389);
+        --gradient-primary-hover: linear-gradient(to right, #2e4b89, #7736ac);
+        --gradient-primary-vertical: linear-gradient(to bottom, #1e3356, #603389);
+        --nav-foreground: #ffffff;
     }
+}
+
+/* Buộc dark mode khi data-theme="dark" */
+:root[data-theme="dark"] {
+    --background: #16130d;
+    --foreground: #c8bc97;
+    --title-color: #b18e22;
+    --link-color: #245a9d;
+    --link-hover: #2a4ca8;
+    --text-secondary: #D1D5DB;
+    --placeholder-bg: #374151;
+    --card-bg: #0e0c1a;
+    --border-color: #a855f7;
+    --gradient-primary: linear-gradient(to right, #1e3356, #603389);
+    --gradient-primary-hover: linear-gradient(to right, #2e4b89, #7736ac);
+    --gradient-primary-vertical: linear-gradient(to bottom, #1e3356, #603389);
+    --nav-foreground: #ffffff;
+}
+
+/* Buộc light mode khi data-theme="light" */
+:root[data-theme="light"] {
+    --background: #ffffff;
+    --foreground: #171717;
+    --title-color: #1a1375;
+    --link-color: #3B82F6;
+    --link-hover: #1D4ED8;
+    --border-color: #9a35e3;
+    --border-color2: #dec2f4;
+    --text-secondary: #4B5563;
+    --placeholder-bg: #E5E7EB;
+    --card-bg: #ffffff;
+    --gradient-primary: linear-gradient(to right, #3B82F6, #9333EA);
+    --gradient-primary-hover: linear-gradient(to right, #2563EB, #7E22CE);
+    --gradient-primary-vertical: linear-gradient(to bottom, #3B82F6, #9333EA);
+    --nav-foreground: #ffffff;
+}
+
+/* ========== BASE STYLES ========== */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
 }
 
 body {
@@ -53,7 +89,7 @@ footer {
     width: 100% !important;
 }
 
-/* Custom Tailwind class for gradient button */
+/* ========== COMPONENTS ========== */
 @layer components {
     .btn-gradient {
         background: var(--gradient-primary);
@@ -63,17 +99,7 @@ footer {
     .btn-gradient:hover {
         background: var(--gradient-primary-hover);
     }
-}
 
-/* Thêm define cho gradient background ở utilities layer */
-@layer utilities {
-    .bg-gradient-blue-purple {
-        background-image: var(--gradient-primary);
-        /* Sử dụng variable sẵn có */
-    }
-}
-
-@layer components {
     .spinner {
         @apply animate-spin rounded-full h-12 w-12 border-t-2 border-b-2;
         border-color: var(--link-color);
@@ -82,5 +108,27 @@ footer {
     .loading-container {
         @apply container mx-auto p-6 flex justify-center items-center h-64;
         color: var(--foreground);
+    }
+}
+
+/* ========== UTILITIES ========== */
+@layer utilities {
+    .bg-gradient-blue-purple {
+        background-image: var(--gradient-primary);
+    }
+
+    .bg-gradient-blue-purple-hover {
+        background-image: var(--gradient-primary-hover);
+    }
+
+    .focus-glow {
+        @apply focus:outline-none focus:ring-0;
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--link-color) 5%, transparent);
+        transition: box-shadow 0.2s ease;
+    }
+
+    .focus-glow:focus {
+        box-shadow: 0 0 0 5px color-mix(in srgb, var(--link-color) 15%, transparent),
+            0 10px 25px -5px color-mix(in srgb, var(--link-color) 20%, transparent);
     }
 }

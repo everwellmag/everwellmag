@@ -28,13 +28,16 @@
     "react-dom": "^19.0.0",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
-    "styled-components": "^6.1.19"
+    "remark-parse": "^11.0.0",
+    "styled-components": "^6.1.19",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/dompurify": "^3.0.5",
     "@types/jsdom": "^21.1.7",
+    "@types/mdast": "^4.0.4",
     "@types/node": "^20.19.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",

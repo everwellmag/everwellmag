@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+/* ========== ROOT VARIABLES ========== */
+:root {
+    --background: #ffffff;
+    --foreground: #171717;
+    --link-color: #3B82F6;
+    --link-hover: #1D4ED8;
+    --border-color: #9a35e3;
+    --border-color2: #dec2f4;
+    --text-secondary: #4B5563;
+    --placeholder-bg: #E5E7EB;
+    --card-bg: #ffffff;
+    --gradient-primary: linear-gradient(to right, #3B82F6, #9333EA);
+    --gradient-primary-hover: linear-gradient(to right, #2563EB, #7E22CE);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #291e0e;
+        --foreground: #c8bc97;
+        --link-color: #60A5FA;
+        /* XANH NHẠT TRONG DARK MODE */
+        --text-secondary: #D1D5DB;
+        --placeholder-bg: #374151;
+        --card-bg: #141226;
+        --border-color: #a855f7;
+    }
+}
+
+/* ========== BASE STYLES ========== */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+}
+
+body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+footer {
+    max-width: none !important;
+    width: 100% !important;
+}
+
+/* ========== COMPONENTS ========== */
+@layer components {
+    .btn-gradient {
+        background: var(--gradient-primary);
+        @apply transition-all duration-300;
+    }
+
+    .btn-gradient:hover {
+        background: var(--gradient-primary-hover);
+    }
+
+    .spinner {
+        @apply animate-spin rounded-full h-12 w-12 border-t-2 border-b-2;
+        border-color: var(--link-color);
+    }
+
+    .loading-container {
+        @apply container mx-auto p-6 flex justify-center items-center h-64;
+        color: var(--foreground);
+    }
+}
+
+/* ========== UTILITIES ========== */
+@layer utilities {
+    .bg-gradient-blue-purple {
+        background-image: var(--gradient-primary);
+    }
+
+
+    .focus-glow {
+        @apply focus:outline-none focus:ring-0;
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--link-color) 5%, transparent);
+        transition: box-shadow 0.2s ease;
+    }
+
+    .focus-glow:focus {
+        box-shadow: 0 0 0 5px color-mix(in srgb, var(--link-color) 15%, transparent),
+            0 10px 25px -5px color-mix(in srgb, var(--link-color) 20%, transparent);
+    }
+}

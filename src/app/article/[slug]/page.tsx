@@ -3,30 +3,8 @@ import type { Article } from '@/lib/types/article';
 import type { Comment } from '@/lib/types/comment';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import ReactMarkdown from 'react-markdown';
-import Image from 'next/image';
 import CommentSection from '@/components/content/comments/comment-section';
-
-// Hàm lấy URL ảnh đầu tiên từ blocks.body
-const getFirstImageFromBlocks = (blocks: Article['blocks']): string | null => {
-    for (const block of blocks || []) {
-        if (block.__component === 'shared.rich-text' && block.body) {
-            const regex = /!\[.*?\]\((.*?)\)/g;
-            const matches = block.body.match(regex);
-            if (matches) {
-                const url = matches[0].replace(/!\[.*?\]\((.*?)\)/, '$1');
-                return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
-            }
-        }
-    }
-    return null;
-};
-
-// Hàm chuẩn hóa URL ảnh
-const normalizeImageUrl = (url?: string): string | null => {
-    if (!url) return null;
-    return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
-};
+import ArticleContent from '@/components/content/articles/article-content';
 
 interface ArticlePageProps {
     params: Promise<{ slug: string }>;
@@ -49,7 +27,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
     let totalComments = 0;
 
     try {
-        // Lấy bài viết bằng slug
+        // Fetch article by slug
         const articleResponse = await fetchStrapi('articles', {
             'filters[slug][$eq]': slug,
             'populate': '*',
@@ -62,7 +40,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
             notFound();
         }
 
-        // Lấy bình luận với phân trang
+        // Fetch comments with pagination
         if (article.documentId) {
             console.log('Fetching comments for article documentId:', article.documentId);
             const commentsResponse = await fetchStrapi('comments', {
@@ -91,71 +69,31 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
     const title = article.title || 'Untitled';
     const description = article.description || '';
     const blocks = article.blocks || [];
-    const imageUrl = normalizeImageUrl(article.image?.url) || getFirstImageFromBlocks(blocks) || 'https://cms.everwellmag.com/Uploads/default-image.jpg';
 
     return (
-        <main className="container mx-auto p-4">
-            <Link href="/" className="text-blue-500 hover:underline mb-4 inline-block">
+        <main className="container mx-auto px-4 py-8 max-w-4xl rounded-md">
+            <Link href="/" className="text-[var(--link-color)] hover:text-[var(--link-hover)] mb-6 inline-block font-[var(--font-sans)] transition-colors">
                 Back to Home
             </Link>
-            <h1 className="text-3xl font-bold mb-4">{title}</h1>
-            <Image
-                src={imageUrl}
-                alt={title}
-                width={800}
-                height={600}
-                className="w-full max-w-2xl mx-auto mb-4 rounded"
-                style={{ width: 'auto', height: 'auto' }}
-            />
-            {description && <p className="mb-4 text-gray-600">{description}</p>}
-            <div className="prose max-w-3xl mx-auto">
-                {blocks.length > 0 ? (
-                    blocks.map((block, index) => (
-                        <div key={index}>
-                            {block.__component === 'shared.rich-text' && block.body ? (
-                                <ReactMarkdown
-                                    components={{
-                                        img: ({ src, alt }) => {
-                                            const imageSrc = typeof src === 'string' ? normalizeImageUrl(src) || 'https://cms.everwellmag.com/Uploads/default-image.jpg' : 'https://cms.everwellmag.com/Uploads/default-image.jpg';
-                                            return (
-                                                <Image
-                                                    src={imageSrc}
-                                                    alt={alt || 'Article image'}
-                                                    width={800}
-                                                    height={600}
-                                                    className="w-full max-w-2xl mx-auto mb-4 rounded"
-                                                    style={{ width: 'auto', height: 'auto' }}
-                                                />
-                                            );
-                                        },
-                                    }}
-                                >
-                                    {block.body}
-                                </ReactMarkdown>
-                            ) : block.__component === 'shared.media' && block.file?.url ? (
-                                <Image
-                                    src={normalizeImageUrl(block.file.url) || 'https://cms.everwellmag.com/Uploads/default-image.jpg'}
-                                    alt={block.file.alternativeText || 'Article media'}
-                                    width={800}
-                                    height={600}
-                                    className="w-full max-w-2xl mx-auto mb-4 rounded"
-                                    style={{ width: 'auto', height: 'auto' }}
-                                />
-                            ) : (
-                                <p>No content in block</p>
-                            )}
-                        </div>
-                    ))
-                ) : (
-                    <p>Không có nội dung.</p>
+            <article className="bg-[var(--card-bg)] rounded-lg shadow-lg p-6 dark:bg-[var(--card-bg)]">
+                <h1 className="text-3xl md:text-4xl font-bold mb-4 text-[var(--foreground)] font-[var(--font-sans)] leading-tight">
+                    {title}
+                </h1>
+                {description && (
+                    <p className="text-[var(--text-secondary)] mb-6 text-lg italic font-[var(--font-sans)] line-clamp-3">
+                        {description}
+                    </p>
                 )}
-            </div>
-            <CommentSection
-                articleSlug={slug}
-                comments={comments}
-                totalComments={totalComments}
-                currentPage={pageNumber}
-            />
+                <ArticleContent blocks={blocks} />
+            </article>
+            <section className="mt-12">
+                <CommentSection
+                    articleSlug={slug}
+                    comments={comments}
+                    totalComments={totalComments}
+                    currentPage={pageNumber}
+                />
+            </section>
         </main>
     );
 }

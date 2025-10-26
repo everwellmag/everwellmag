@@ -28,12 +28,12 @@ export function generateProductMetadata({ Name, slug, Description, metaDescripti
             'everwell magazine',
         ],
         alternates: {
-            canonical: `https://everwellmag.com/product/${slug}`,
+            canonical: `https://www.everwellmag.com/product/${slug}`,
         },
         openGraph: {
             title,
             description: productDescription,
-            url: `https://everwellmag.com/product/${slug}`,
+            url: `https://www.everwellmag.com/product/${slug}`,
             type: 'website',
             images: [
                 {

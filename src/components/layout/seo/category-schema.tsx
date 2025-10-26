@@ -11,13 +11,13 @@ export default function CategorySchema({ category }: CategorySchemaProps) {
         '@type': 'CollectionPage',
         name: category.name,
         description: category.description || `Explore ${category.name} content on Everwell Magazine.`,
-        url: `https://everwellmag.com/${category.slug}`,
+        url: `https://www.everwellmag.com/${category.slug}`,
         publisher: {
             '@type': 'Organization',
             name: 'Everwell Magazine',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://everwellmag.com/images/logo.svg',
+                url: 'https://cms.everwellmag.com/uploads/logo_everwell_magazine_156480b913.svg',
             },
         },
     };

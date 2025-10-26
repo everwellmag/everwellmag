@@ -33,12 +33,12 @@ export function generateArticleMetadata({ title, slug, description, blocks, imag
             'everwell magazine',
         ],
         alternates: {
-            canonical: `https://everwellmag.com/article/${slug}`,
+            canonical: `https://www.everwellmag.com/article/${slug}`,
         },
         openGraph: {
             title: metaTitle,
             description: metaDescription,
-            url: `https://everwellmag.com/article/${slug}`,
+            url: `https://www.everwellmag.com/article/${slug}`,
             type: 'article',
             images: [
                 {

@@ -30,12 +30,12 @@ export function generateCategoryMetadata({ name, slug, description, type, image 
             'everwell magazine',
         ],
         alternates: {
-            canonical: `https://everwellmag.com/${slug}`, // Canonical URL để tránh duplicate content
+            canonical: `https://www.everwellmag.com/${slug}`, // Canonical URL để tránh duplicate content
         },
         openGraph: { // Open Graph tags cho Facebook, LinkedIn, và X (Twitter)
             title,
             description: categoryDescription,
-            url: `https://everwellmag.com/${slug}`,
+            url: `https://www.everwellmag.com/${slug}`,
             type: 'website',
             images: [
                 {

@@ -15,14 +15,14 @@ export default function ProductSchema({ product }: ProductSchemaProps) {
                 ? product.Description.replace(/[#*`[\]()]+/g, '').trim().substring(0, 160).replace(/\s+\S*$/, '...')
                 : `Discover ${product.Name} on Everwell Magazine.`
         ),
-        url: `https://everwellmag.com/product/${product.slug}`,
+        url: `https://www.everwellmag.com/${product.slug}`,
         image: product.image?.url || 'https://everwellmag.com/images/og/default.jpg',
         publisher: {
             '@type': 'Organization',
             name: 'Everwell Magazine',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://everwellmag.com/images/logo.svg',
+                url: 'https://cms.everwellmag.com/uploads/logo_everwell_magazine_156480b913.svg',
             },
         },
     };

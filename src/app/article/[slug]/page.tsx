@@ -77,7 +77,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
                 Back to Home
             </Link>
             <article className="bg-[var(--card-bg)] rounded-lg shadow-lg p-6 dark:bg-[var(--card-bg)]">
-                <h1 className="text-3xl md:text-4xl font-bold mb-4 text-[var(--foreground)] font-[var(--font-sans)] leading-tight">
+                <h1 className="text-3xl md:text-3xl font-bold mb-4 text-[var(--foreground)] font-[var(--font-sans)] leading-tight">
                     {title}
                 </h1>
                 {description && (

@@ -30,7 +30,7 @@ export default function ArticleSchema({ article }: ArticleSchemaProps) {
             name: 'Everwell Magazine',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://everwellmag.com/images/logo.svg',
+                url: 'https://cms.everwellmag.com/uploads/logo_everwell_magazine_156480b913.svg',
             },
         },
     };

@@ -23,6 +23,12 @@ export function generateArticleMetadata({ title, slug, description, blocks, imag
             : `Read more about ${title} on Everwell Magazine.`
     );
 
+    const articleImage = image
+        ? image.startsWith('http')
+            ? image
+            : `https://cms.everwellmag.com${image.startsWith('/') ? '' : '/'}${image}`
+        : 'https://cms.everwellmag.com/uploads/default_image_0295f000e6.jpg';
+
     return {
         title: metaTitle,
         description: metaDescription,
@@ -42,10 +48,11 @@ export function generateArticleMetadata({ title, slug, description, blocks, imag
             type: 'article',
             images: [
                 {
-                    url: image || '/images/og/default.jpg',
-                    width: 1200,
+                    url: articleImage,
+                    width: 1200, // Chuẩn OG
                     height: 630,
                     alt: `${title} - Everwell Magazine`,
+                    type: 'image/webp', // Giả định WebP từ Strapi
                 },
             ],
             siteName: 'Everwell Magazine',
@@ -56,7 +63,14 @@ export function generateArticleMetadata({ title, slug, description, blocks, imag
             creator: '@everwellmag',
             title: metaTitle,
             description: metaDescription,
-            images: image || '/images/og/default.jpg',
+            images: articleImage,
+        },
+        other: {
+            'og:image:secure_url': articleImage,
+            'og:image:type': 'image/webp',
+            'og:image:alt': `${title} - Everwell Magazine`,
+            'og:image:width': '1200',
+            'og:image:height': '630',
         },
     };
 }

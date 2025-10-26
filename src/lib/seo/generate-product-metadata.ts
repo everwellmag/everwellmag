@@ -17,6 +17,12 @@ export function generateProductMetadata({ Name, slug, Description, metaDescripti
             : `Discover ${Name} on Everwell Magazine.`
     );
 
+    const productImage = image
+        ? image.startsWith('http')
+            ? image
+            : `https://cms.everwellmag.com${image.startsWith('/') ? '' : '/'}${image}`
+        : 'https://cms.everwellmag.com/uploads/default_image_0295f000e6.jpg';
+
     return {
         title,
         description: productDescription,
@@ -37,10 +43,11 @@ export function generateProductMetadata({ Name, slug, Description, metaDescripti
             type: 'website',
             images: [
                 {
-                    url: image || '/images/og/default.jpg',
-                    width: 1200,
+                    url: productImage,
+                    width: 1200, // Chuẩn OG
                     height: 630,
                     alt: `${Name} - Everwell Magazine`,
+                    type: 'image/webp', // Giả định WebP từ Strapi
                 },
             ],
             siteName: 'Everwell Magazine',
@@ -51,7 +58,14 @@ export function generateProductMetadata({ Name, slug, Description, metaDescripti
             creator: '@everwellmag',
             title,
             description: productDescription,
-            images: image || '/images/og/default.jpg',
+            images: productImage,
+        },
+        other: {
+            'og:image:secure_url': productImage,
+            'og:image:type': 'image/webp',
+            'og:image:alt': `${Name} - Everwell Magazine`,
+            'og:image:width': '1200',
+            'og:image:height': '630',
         },
     };
 }

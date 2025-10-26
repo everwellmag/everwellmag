@@ -1,6 +1,7 @@
 // src/lib/seo/generate-article-metadata.ts
 import type { Metadata } from 'next';
 import type { Article } from '@/lib/types/article';
+import { SITE_DOMAIN, CMS_DOMAIN, DEFAULT_OG_IMAGE } from '@/lib/config';
 
 interface ArticleMetadataOptions {
     title: string;
@@ -26,8 +27,8 @@ export function generateArticleMetadata({ title, slug, description, blocks, imag
     const articleImage = image
         ? image.startsWith('http')
             ? image
-            : `https://cms.everwellmag.com${image.startsWith('/') ? '' : '/'}${image}`
-        : 'https://cms.everwellmag.com/uploads/default_image_0295f000e6.jpg';
+            : `${CMS_DOMAIN}${image.startsWith('/') ? '' : '/'}${image}`
+        : DEFAULT_OG_IMAGE;
 
     return {
         title: metaTitle,
@@ -39,20 +40,20 @@ export function generateArticleMetadata({ title, slug, description, blocks, imag
             'everwell magazine',
         ],
         alternates: {
-            canonical: `https://www.everwellmag.com/article/${slug}`,
+            canonical: `${SITE_DOMAIN}/article/${slug}`,
         },
         openGraph: {
             title: metaTitle,
             description: metaDescription,
-            url: `https://www.everwellmag.com/article/${slug}`,
+            url: `${SITE_DOMAIN}/article/${slug}`,
             type: 'article',
             images: [
                 {
                     url: articleImage,
-                    width: 1200, // Chuẩn OG
+                    width: 1200,
                     height: 630,
                     alt: `${title} - Everwell Magazine`,
-                    type: 'image/webp', // Giả định WebP từ Strapi
+                    type: 'image/webp',
                 },
             ],
             siteName: 'Everwell Magazine',

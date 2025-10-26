@@ -1,5 +1,6 @@
 // src/lib/seo/generate-product-metadata.ts
 import type { Metadata } from 'next';
+import { SITE_DOMAIN, CMS_DOMAIN, DEFAULT_OG_IMAGE } from '@/lib/config';
 
 interface ProductMetadataOptions {
     Name: string;
@@ -20,8 +21,8 @@ export function generateProductMetadata({ Name, slug, Description, metaDescripti
     const productImage = image
         ? image.startsWith('http')
             ? image
-            : `https://cms.everwellmag.com${image.startsWith('/') ? '' : '/'}${image}`
-        : 'https://cms.everwellmag.com/uploads/default_image_0295f000e6.jpg';
+            : `${CMS_DOMAIN}${image.startsWith('/') ? '' : '/'}${image}`
+        : DEFAULT_OG_IMAGE;
 
     return {
         title,
@@ -34,20 +35,20 @@ export function generateProductMetadata({ Name, slug, Description, metaDescripti
             'everwell magazine',
         ],
         alternates: {
-            canonical: `https://www.everwellmag.com/product/${slug}`,
+            canonical: `${SITE_DOMAIN}/product/${slug}`,
         },
         openGraph: {
             title,
             description: productDescription,
-            url: `https://www.everwellmag.com/product/${slug}`,
+            url: `${SITE_DOMAIN}/product/${slug}`,
             type: 'website',
             images: [
                 {
                     url: productImage,
-                    width: 1200, // Chuẩn OG
+                    width: 1200,
                     height: 630,
                     alt: `${Name} - Everwell Magazine`,
-                    type: 'image/webp', // Giả định WebP từ Strapi
+                    type: 'image/webp',
                 },
             ],
             siteName: 'Everwell Magazine',

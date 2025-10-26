@@ -1,12 +1,13 @@
 // src/lib/seo/generate-category-metadata.ts
 import type { Metadata } from 'next';
+import { SITE_DOMAIN, CMS_DOMAIN, DEFAULT_OG_IMAGE } from '@/lib/config';
 
 interface CategoryMetadataOptions {
     name: string;
     slug: string;
     description?: string;
     type?: 'article' | 'product' | 'mixed';
-    image?: string; // URL ảnh OG từ Strapi hoặc default
+    image?: string;
 }
 
 export function generateCategoryMetadata({ name, slug, description, type, image }: CategoryMetadataOptions): Metadata {
@@ -21,8 +22,8 @@ export function generateCategoryMetadata({ name, slug, description, type, image 
     const categoryImage = image
         ? image.startsWith('http')
             ? image
-            : `https://cms.everwellmag.com${image.startsWith('/') ? '' : '/'}${image}`
-        : 'https://cms.everwellmag.com/uploads/default_image_0295f000e6.jpg';
+            : `${CMS_DOMAIN}${image.startsWith('/') ? '' : '/'}${image}`
+        : DEFAULT_OG_IMAGE;
 
     return {
         title,
@@ -34,20 +35,20 @@ export function generateCategoryMetadata({ name, slug, description, type, image 
             'everwell magazine',
         ],
         alternates: {
-            canonical: `https://www.everwellmag.com/${slug}`,
+            canonical: `${SITE_DOMAIN}/${slug}`,
         },
         openGraph: {
             title,
             description: categoryDescription,
-            url: `https://www.everwellmag.com/${slug}`,
+            url: `${SITE_DOMAIN}/${slug}`,
             type: 'website',
             images: [
                 {
                     url: categoryImage,
-                    width: 1200, // Dùng kích thước thực từ API
+                    width: 1200,
                     height: 630,
                     alt: `${name} - Everwell Magazine`,
-                    type: 'image/webp', // Dùng mime từ API
+                    type: 'image/webp',
                 },
             ],
             siteName: 'Everwell Magazine',

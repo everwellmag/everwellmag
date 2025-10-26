@@ -147,7 +147,7 @@ export default function ProductDetail({ product, comments, totalComments, curren
                                     <div
                                         key={index}
                                         className="flex items-center px-4 py-2 rounded-full border border-[var(--border-color)] transition-all duration-200"
-                                        style={{ backgroundColor: 'var(--placeholder-bg)' }}
+                                        style={{ backgroundColor: 'var(--background)' }}
                                     >
                                         <span className="text-sm font-medium mr-2" style={{ color: 'var(--foreground)' }}>
                                             {price.quantity} {price.quantity > 1 ? 'Units' : 'Unit'}

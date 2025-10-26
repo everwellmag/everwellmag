@@ -88,7 +88,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                             <div
                                 key={index}
                                 className="flex items-center px-3 py-1 rounded-full border border-[var(--border-color)]"
-                                style={{ backgroundColor: 'var(--placeholder-bg)' }}
+                                style={{ backgroundColor: 'var(--background)' }}
                             >
                                 <span className="text-sm font-medium mr-2" style={{ color: 'var(--foreground)' }}>
                                     {price.quantity} {price.quantity > 1 ? 'Units' : 'Unit'}
@@ -115,8 +115,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 </Link>
                 <Link
                     href={`/product/${slug}`}
-                    className="flex-1 px-4 py-2 rounded-lg font-semibold text-center transition duration-200 text-sm border border-[var(--border-color)]"
-                    style={{ color: 'var(--foreground)', backgroundColor: 'var(--placeholder-bg)' }}
+                    className="flex-1 px-4 py-2 rounded-lg font-semibold text-center transition duration-200 text-sm border border-[var(--border-color)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--placeholder-bg)]"
                 >
                     Detail
                 </Link>

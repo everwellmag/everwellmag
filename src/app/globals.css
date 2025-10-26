@@ -10,8 +10,9 @@
     --border-color: #9a35e3;
     --border-color2: #dec2f4;
     --text-secondary: #4B5563;
-    --placeholder-bg: #E5E7EB;
+    --placeholder-bg: #f7f8f9;
     --card-bg: #ffffff;
+    --buttom-hover: #ebe2e2;
     --gradient-primary: linear-gradient(to right, #3B82F6, #9333EA);
     --gradient-primary-hover: linear-gradient(to right, #2563EB, #7E22CE);
     --gradient-primary-vertical: linear-gradient(to bottom, #3B82F6, #9333EA);
@@ -29,6 +30,7 @@
         --text-secondary: #D1D5DB;
         --placeholder-bg: #374151;
         --card-bg: #0e0c1a;
+        --buttom-hover: #282626;
         --border-color: #a855f7;
         --gradient-primary: linear-gradient(to right, #1e3356, #603389);
         --gradient-primary-hover: linear-gradient(to right, #2e4b89, #7736ac);

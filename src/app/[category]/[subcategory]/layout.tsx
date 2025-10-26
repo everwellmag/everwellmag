@@ -1,14 +1,56 @@
-import { Metadata } from 'next';
+// src/app/[category]/[subcategory]/layout.tsx
+import { notFound } from 'next/navigation';
+import { getCategoryBySlug } from '@/lib/api/strapi/get-category';
+import CategorySchema from '@/components/layout/seo/category-schema';
+import BreadcrumbSchema from '@/components/layout/seo/breadcrumb-schema';
+import { generateCategoryMetadata } from '@/lib/seo/generate-category-metadata';
 
-export const metadata: Metadata = {
-    title: 'Everwell Magazine',
-    description: 'Your trusted source for health and wellness insights.',
-};
+interface SubcategoryLayoutProps {
+    children: React.ReactNode;
+    params: Promise<{ category: string; subcategory: string }>;
+}
 
-export default function CategoryLayout({ children }: { children: React.ReactNode }) {
+export async function generateMetadata({ params }: SubcategoryLayoutProps) {
+    const { category, subcategory } = await params;
+    const subcategoryData = await getCategoryBySlug(subcategory);
+
+    if (!subcategoryData) {
+        return generateCategoryMetadata({
+            name: 'Not Found',
+            slug: `${category}/${subcategory}`,
+            description: '',
+            type: 'mixed',
+        });
+    }
+
+    return generateCategoryMetadata({
+        name: subcategoryData.name,
+        slug: `${category}/${subcategory}`,
+        description: subcategoryData.description,
+        type: subcategoryData.type || 'mixed',
+        image: subcategoryData.image?.url,
+    });
+}
+
+export default async function SubcategoryLayout({ children, params }: SubcategoryLayoutProps) {
+    const { category, subcategory } = await params;
+    const subcategoryData = await getCategoryBySlug(subcategory);
+
+    if (!subcategoryData) {
+        notFound();
+    }
+
     return (
         <>
-            <main>{children}</main>
+            <CategorySchema category={subcategoryData} />
+            <BreadcrumbSchema
+                items={[ // Sửa từ items= thành items={}
+                    { name: 'Home', url: '/' },
+                    { name: category, url: `/${category}` },
+                    { name: subcategoryData.name, url: `/${category}/${subcategory}` },
+                ]}
+            />
+            {children}
         </>
     );
 }

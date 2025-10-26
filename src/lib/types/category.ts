@@ -7,4 +7,9 @@ export interface Category {
     createdAt: string;
     updatedAt: string;
     publishedAt?: string;
+    image?: {
+        url: string;
+        alternativeText?: string;
+        caption?: string;
+    };
 }

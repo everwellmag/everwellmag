@@ -1,33 +1,31 @@
-import Script from 'next/script';
+// src/components/layout/seo/category-schema.tsx
+import type { Category } from '@/lib/types/category';
 
 interface CategorySchemaProps {
-    categoryName: string;
-    description: string;
-    baseUrl: string;
+    category: Category;
 }
 
-export function CategorySchema({ categoryName, description, baseUrl }: CategorySchemaProps) {
-    const collectionSchema = {
+export default function CategorySchema({ category }: CategorySchemaProps) {
+    const schema = {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
-        name: categoryName,
-        description,
-        url: baseUrl,
+        name: category.name,
+        description: category.description || `Explore ${category.name} content on Everwell Magazine.`,
+        url: `https://everwellmag.com/${category.slug}`,
         publisher: {
             '@type': 'Organization',
             name: 'Everwell Magazine',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://cms.everwellmag.com/Uploads/logo.jpg',
+                url: 'https://everwellmag.com/images/logo.svg',
             },
         },
     };
 
     return (
-        <Script
-            id="collection-schema"
+        <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
     );
 }

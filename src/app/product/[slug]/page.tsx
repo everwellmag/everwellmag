@@ -1,3 +1,4 @@
+// src/app/product/[slug]/page.tsx
 import { fetchStrapi } from '@/lib/api/strapi/fetch-strapi';
 import type { Product } from '@/lib/types/product';
 import type { Comment } from '@/lib/types/comment';
@@ -25,7 +26,7 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
     let totalComments = 0;
 
     try {
-        const response = await fetchStrapi(`products?filters[slug][$eq]=${slug}&populate=*`);
+        const response = await fetchStrapi(`products?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`);
         console.log('Product detail API response:', JSON.stringify(response, null, 2));
         product = response.data[0] as Product;
 

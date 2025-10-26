@@ -1,42 +1,29 @@
-import Script from 'next/script';
-
-interface BreadcrumbSchemaProps {
-    categoryName: string;
-    baseUrl: string;
-    parentSlug?: string;
+// src/components/layout/seo/breadcrumb-schema.tsx
+interface BreadcrumbItem {
+    name: string;
+    url: string;
 }
 
-export function BreadcrumbSchema({ categoryName, baseUrl, parentSlug }: BreadcrumbSchemaProps) {
-    const breadcrumbSchema = {
+interface BreadcrumbSchemaProps {
+    items: BreadcrumbItem[];
+}
+
+export default function BreadcrumbSchema({ items }: BreadcrumbSchemaProps) {
+    const schema = {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
-        itemListElement: [
-            {
-                '@type': 'ListItem',
-                position: 1,
-                name: 'Home',
-                item: 'https://www.everwellmag.com',
-            },
-            parentSlug && {
-                '@type': 'ListItem',
-                position: 2,
-                name: parentSlug.replace('-', ' '),
-                item: `https://www.everwellmag.com/${parentSlug}`,
-            },
-            {
-                '@type': 'ListItem',
-                position: parentSlug ? 3 : 2,
-                name: categoryName,
-                item: baseUrl,
-            },
-        ].filter(Boolean),
+        itemListElement: items.map((item, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: item.name,
+            item: `https://everwellmag.com${item.url}`,
+        })),
     };
 
     return (
-        <Script
-            id="breadcrumb-schema"
+        <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
     );
 }

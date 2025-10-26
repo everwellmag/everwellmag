@@ -9,6 +9,7 @@ export interface Product {
     documentId: string;
     Name: string; // Tiêu đề sản phẩm (không phải title)
     Description: string; // Mô tả dài với Markdown
+    metaDescription?: string;
     slug: string;
     supplier?: string;
     ReleaseYear?: string;

@@ -1,39 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchStrapi } from '@/lib/api/strapi/fetch-strapi';
-import type { Article } from '@/lib/types/article';
-import type { Product } from '@/lib/types/product';
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
-    const query = searchParams.get('q')?.trim();
+    const q = searchParams.get('q') || '';
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const pageSize = 10;
 
-    if (!query) {
-        return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 });
+    if (!q) {
+        return NextResponse.json({ articles: [], products: [], totalArticles: 0, totalProducts: 0 });
     }
 
+    // Query cho articles (giữ nguyên: lọc title, description, slug)
+    const articlesParams = new URLSearchParams({
+        'filters[$or][0][title][$containsi]': q,
+        'filters[$or][1][description][$containsi]': q,
+        'filters[$or][2][slug][$containsi]': q,
+        'pagination[page]': page.toString(),
+        'pagination[pageSize]': pageSize.toString(),
+        'populate': '*',
+        'sort': 'createdAt:desc',
+    });
+
+    // Query cho products (chỉ lọc Name)
+    const productsParams = new URLSearchParams({
+        'filters[Name][$containsi]': q,
+        'pagination[page]': page.toString(),
+        'pagination[pageSize]': pageSize.toString(),
+        'populate': '*',
+        'sort': 'createdAt:desc',
+    });
+
     try {
-        // Tìm kiếm articles
-        const articleResponse = await fetchStrapi('articles', {
-            'filters[$or][0][title][$containsi]': query,
-            'filters[$or][1][description][$containsi]': query,
-            'populate': 'image',
+        const [articlesRes, productsRes] = await Promise.all([
+            fetch(`https://cms.everwellmag.com/api/articles?${articlesParams}`),
+            fetch(`https://cms.everwellmag.com/api/products?${productsParams}`),
+        ]);
+
+        const articlesData = await articlesRes.json();
+        const productsData = await productsRes.json();
+
+        // Log để debug
+        console.log('Articles response:', { status: articlesRes.status, data: articlesData.data?.length || 0 });
+        console.log('Products response:', { status: productsRes.status, data: productsData.data?.length || 0 });
+
+        return NextResponse.json({
+            articles: articlesData.data || [],
+            totalArticles: articlesData.meta?.pagination?.total || 0,
+            products: productsData.data || [],
+            totalProducts: productsData.meta?.pagination?.total || 0,
         });
-
-        // Tìm kiếm products
-        const productResponse = await fetchStrapi('products', {
-            'filters[$or][0][Name][$containsi]': query,
-            'filters[$or][1][Description][$containsi]': query,
-            'populate': 'Image',
-        });
-
-        const results = {
-            articles: (articleResponse.data || []) as Article[],
-            products: (productResponse.data || []) as Product[],
-        };
-
-        return NextResponse.json(results, { status: 200 });
     } catch (error) {
-        console.error('Error searching:', error);
-        return NextResponse.json({ error: 'Failed to search' }, { status: 500 });
+        console.error('Search API error:', error);
+        return NextResponse.json({ articles: [], products: [], totalArticles: 0, totalProducts: 0 }, { status: 500 });
     }
 }

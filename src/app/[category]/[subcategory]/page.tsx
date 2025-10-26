@@ -1,9 +1,10 @@
+// src/app/[category]/[subcategory]/page.tsx
+import { notFound } from 'next/navigation';
 import { getCategoryBySlug } from '@/lib/api/strapi/get-category';
 import { getArticles } from '@/lib/api/strapi/get-articles';
 import { getProducts } from '@/lib/api/strapi/get-products';
 import ArticleList from '@/components/content/articles/article-list';
 import ProductList from '@/components/content/products/product-list';
-import { notFound } from 'next/navigation';
 import type { Article } from '@/lib/types/article';
 import type { Product } from '@/lib/types/product';
 
@@ -19,7 +20,7 @@ export default async function SubCategoryPage({ params, searchParams }: SubCateg
     const { category, subcategory } = await params;
     const { page = '1' } = await searchParams;
     const pageNumber = parseInt(page, 10) || 1;
-    const pageSize = 12; // Đồng bộ với get-products.ts, get-articles.ts
+    const pageSize = 12;
 
     const subcategoryData = await getCategoryBySlug(subcategory);
     if (!subcategoryData) {
@@ -63,6 +64,11 @@ export default async function SubCategoryPage({ params, searchParams }: SubCateg
             <h1 className="text-3xl font-bold mb-4 bg-gradient-blue-purple-hover bg-clip-text text-transparent">
                 {subcategoryData.name || subcategory}
             </h1>
+            {subcategoryData.description && (
+                <div className="prose mb-6">
+                    <p>{subcategoryData.description}</p>
+                </div>
+            )}
             {type === 'article' ? (
                 <ArticleList
                     articles={articles}
@@ -81,6 +87,9 @@ export default async function SubCategoryPage({ params, searchParams }: SubCateg
                     totalItems={totalItems}
                     pageSize={pageSize}
                 />
+            )}
+            {articles.length === 0 && products.length === 0 && (
+                <p>No content available for this subcategory.</p>
             )}
         </main>
     );

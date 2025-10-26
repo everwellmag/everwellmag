@@ -1,91 +1,59 @@
-import { Metadata } from 'next';
-import { getCategoryBySlug } from '../api/strapi/get-category'; // Import từ lib/api/strapi
-import { Category } from '../types/category'; // Import types
+// src/lib/seo/generate-category-metadata.ts
+import type { Metadata } from 'next';
 
-interface GenerateCategoryMetadataProps {
+interface CategoryMetadataOptions {
+    name: string;
     slug: string;
-    parentSlug?: string;
-    categoryType?: 'product' | 'article';
-    defaultMetadata?: Partial<Metadata>;
-    defaultImage?: {
-        url: string;
-        width?: number;
-        height?: number;
-        alt?: string;
-    };
+    description?: string;
+    type?: 'article' | 'product' | 'mixed';
+    image?: string; // URL ảnh OG từ Strapi hoặc default
 }
 
-export async function generateCategoryMetadata({
-    slug,
-    parentSlug = '',
-    categoryType = 'product',
-    defaultMetadata = {},
-    defaultImage = { url: 'https://cms.everwellmag.com/uploads/default-image.jpg', width: 1200, height: 630, alt: 'Everwell Magazine' },
-}: GenerateCategoryMetadataProps): Promise<Metadata> {
-    const category: Category | null = await getCategoryBySlug(slug);
-    const baseUrl = `https://www.everwellmag.com${parentSlug ? `/${parentSlug}` : ''}/${slug}`;
-    const fallbackTitle = defaultMetadata.title || `${slug.replace('-', ' ').toUpperCase()} - Everwell Magazine`;
-    const fallbackDescription = defaultMetadata.description || `Explore ${categoryType === 'product' ? 'top products' : 'informative articles'} in ${slug.replace('-', ' ')} on Everwell Magazine.`;
+export function generateCategoryMetadata({ name, slug, description, type, image }: CategoryMetadataOptions): Metadata {
+    const title = `${name} | Everwell Magazine`;
+    const defaultDescription = type === 'article'
+        ? `Khám phá các bài viết về ${name} trên Everwell Magazine.`
+        : type === 'product'
+            ? `Khám phá các sản phẩm và bổ sung ${name} trên Everwell Magazine.`
+            : `Khám phá các bài viết và sản phẩm về ${name} trên Everwell Magazine.`;
 
-    if (!category) {
-        return {
-            title: fallbackTitle,
-            description: fallbackDescription,
-            robots: { index: true, follow: true },
-            alternates: { canonical: baseUrl },
-            openGraph: {
-                title: fallbackTitle,
-                description: fallbackDescription,
-                images: [
-                    {
-                        url: defaultImage.url,
-                        width: defaultImage.width || 1200,
-                        height: defaultImage.height || 630,
-                        alt: defaultImage.alt || slug.replace('-', ' '),
-                    },
-                ],
-                url: baseUrl,
-                type: 'website',
-            },
-            twitter: {
-                card: 'summary_large_image',
-                title: fallbackTitle,
-                description: fallbackDescription,
-                images: [defaultImage.url],
-            },
-            ...defaultMetadata,
-        };
-    }
-
-    const description = category.description || fallbackDescription;
-    let imageUrl: string | undefined;
-    if (categoryType === 'product') {
-        imageUrl = category.products?.[0]?.Image?.url; // Flat structure cho Strapi v5
-    } else {
-        imageUrl = category.articles?.[0]?.cover?.url; // Flat structure
-    }
-    const finalImageUrl = imageUrl || defaultImage.url; // Ensure string
+    const categoryDescription = description || defaultDescription;
+    const categoryImage = image || '/images/og/default.jpg';
 
     return {
-        title: category.name || fallbackTitle,
-        description,
-        robots: { index: true, follow: true },
-        alternates: { canonical: baseUrl },
-        openGraph: {
-            title: category.name || fallbackTitle,
-            description,
-            images: [
-                { url: finalImageUrl, width: 1200, height: 630, alt: category.name || defaultImage.alt },
-            ],
-            url: baseUrl,
+        title,
+        description: categoryDescription,
+        keywords: [
+            name.toLowerCase(),
+            type || 'health',
+            'wellness',
+            'everwell magazine',
+        ],
+        alternates: {
+            canonical: `https://everwellmag.com/${slug}`, // Canonical URL để tránh duplicate content
+        },
+        openGraph: { // Open Graph tags cho Facebook, LinkedIn, và X (Twitter)
+            title,
+            description: categoryDescription,
+            url: `https://everwellmag.com/${slug}`,
             type: 'website',
+            images: [
+                {
+                    url: categoryImage,
+                    width: 1200,
+                    height: 630,
+                    alt: `${name} - Everwell Magazine`,
+                },
+            ],
+            siteName: 'Everwell Magazine',
         },
-        twitter: {
+        twitter: { // Twitter Card tags (X dùng OG nhưng hỗ trợ twitter-specific để tối ưu)
             card: 'summary_large_image',
-            title: category.name || fallbackTitle,
-            description,
-            images: [finalImageUrl],
+            site: '@everwellmag', // Handle X của bạn
+            creator: '@everwellmag',
+            title,
+            description: categoryDescription,
+            images: categoryImage,
         },
-        ...defaultMetadata,
     };
 }

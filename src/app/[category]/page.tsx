@@ -1,9 +1,10 @@
+// src/app/[category]/page.tsx
+import { notFound } from 'next/navigation';
 import { getCategoryBySlug } from '@/lib/api/strapi/get-category';
 import { getArticles } from '@/lib/api/strapi/get-articles';
 import { getProducts } from '@/lib/api/strapi/get-products';
 import ArticleList from '@/components/content/articles/article-list';
 import ProductList from '@/components/content/products/product-list';
-import { notFound } from 'next/navigation';
 import type { Article } from '@/lib/types/article';
 import type { Product } from '@/lib/types/product';
 
@@ -16,7 +17,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     const { category } = await params;
     const { page = '1' } = await searchParams;
     const pageNumber = parseInt(page, 10) || 1;
-    const pageSize = 12; // Đồng bộ với [subcategory]
+    const pageSize = 12;
 
     const categoryData = await getCategoryBySlug(category);
 
@@ -57,13 +58,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             <h1 className="text-3xl font-bold mb-4 bg-gradient-blue-purple-hover bg-clip-text text-transparent">
                 {categoryData.name || category}
             </h1>
-
             {categoryData.description && (
                 <div className="prose mb-6">
                     <p>{categoryData.description}</p>
                 </div>
             )}
-
             {articles.length > 0 && (
                 <section className="mb-8">
                     <h2 className="text-2xl font-semibold mb-4">New Articles</h2>
@@ -77,7 +76,6 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                     />
                 </section>
             )}
-
             {products.length > 0 && (
                 <section>
                     <h2 className="text-2xl font-semibold mb-4">Supplements</h2>
@@ -91,7 +89,6 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                     />
                 </section>
             )}
-
             {articles.length === 0 && products.length === 0 && (
                 <p>No content available for this category.</p>
             )}

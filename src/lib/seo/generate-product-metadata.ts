@@ -1,32 +1,57 @@
-import { Metadata } from 'next';
-import { getProductBySlug } from '../api/strapi/get-product';
+// src/lib/seo/generate-product-metadata.ts
+import type { Metadata } from 'next';
 
-interface GenerateProductMetadataProps {
+interface ProductMetadataOptions {
+    Name: string;
     slug: string;
-    subcategory?: string;
+    Description?: string;
+    metaDescription?: string;
+    image?: string;
 }
 
-export async function generateProductMetadata({ slug, subcategory }: GenerateProductMetadataProps): Promise<Metadata> {
-    const product = await getProductBySlug(slug);
-
-    if (!product) {
-        return {
-            title: 'Product Not Found | Everwell Magazine',
-            description: 'The product you are looking for does not exist.',
-        };
-    }
+export function generateProductMetadata({ Name, slug, Description, metaDescription, image }: ProductMetadataOptions): Metadata {
+    const title = `${Name} | Everwell Magazine`;
+    const productDescription = metaDescription || (
+        Description
+            ? Description.replace(/[#*`[\]()]+/g, '').trim().substring(0, 160).replace(/\s+\S*$/, '...')
+            : `Discover ${Name} on Everwell Magazine.`
+    );
 
     return {
-        title: `${product.Name} | Best ${product.Supplier} Supplement | Everwell Magazine`,
-        description: `${product.Description.substring(0, 160)}...`,
-        openGraph: {
-            title: `${product.Name} Review`,
-            description: `${product.Description.substring(0, 160)}...`,
-            type: 'website',
-            images: product.Image?.url ? [{ url: product.Image.url }] : [],
-        },
+        title,
+        description: productDescription,
+        keywords: [
+            Name.toLowerCase(),
+            'supplement',
+            'health',
+            'wellness',
+            'everwell magazine',
+        ],
         alternates: {
-            canonical: `/weight-loss/${subcategory}/${slug}`,
+            canonical: `https://everwellmag.com/product/${slug}`,
+        },
+        openGraph: {
+            title,
+            description: productDescription,
+            url: `https://everwellmag.com/product/${slug}`,
+            type: 'website',
+            images: [
+                {
+                    url: image || '/images/og/default.jpg',
+                    width: 1200,
+                    height: 630,
+                    alt: `${Name} - Everwell Magazine`,
+                },
+            ],
+            siteName: 'Everwell Magazine',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            site: '@everwellmag',
+            creator: '@everwellmag',
+            title,
+            description: productDescription,
+            images: image || '/images/og/default.jpg',
         },
     };
 }

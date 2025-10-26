@@ -1,3 +1,4 @@
+// src/components/content/products/product-list.tsx
 import ProductCard from './product-card';
 import Pagination from '@/components/ui/pagination';
 import type { Product } from '@/lib/types/product';
@@ -9,6 +10,7 @@ interface ProductListProps {
     currentPage: number;
     totalItems: number;
     pageSize: number;
+    q?: string; // Thêm prop q
 }
 
 export default function ProductList({
@@ -18,8 +20,9 @@ export default function ProductList({
     currentPage,
     totalItems,
     pageSize,
+    q,
 }: ProductListProps) {
-    // Sort client-side (optional, có thể bỏ nếu API đã sort)
+    // Sort client-side (giữ nguyên)
     const sortedProducts = [...products].sort((a, b) => {
         const priorityA = a.priority ?? Number.MAX_SAFE_INTEGER;
         const priorityB = b.priority ?? Number.MAX_SAFE_INTEGER;
@@ -28,6 +31,9 @@ export default function ProductList({
         }
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
+
+    // Điều chỉnh baseUrl để hỗ trợ search
+    const baseUrl = q ? `/search?q=${encodeURIComponent(q)}` : `/${category}/${subcategory}`.replace(/\/$/, '');
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -47,7 +53,7 @@ export default function ProductList({
                         currentPage={currentPage}
                         totalItems={totalItems}
                         pageSize={pageSize}
-                        baseUrl={`/${category}/${subcategory}`}
+                        baseUrl={baseUrl}
                     />
                 </div>
             )}

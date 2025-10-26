@@ -1,3 +1,4 @@
+// src/app/article/[slug]/page.tsx
 import { fetchStrapi } from '@/lib/api/strapi/fetch-strapi';
 import type { Article } from '@/lib/types/article';
 import type { Comment } from '@/lib/types/comment';
@@ -29,7 +30,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
     try {
         // Fetch article by slug
         const articleResponse = await fetchStrapi('articles', {
-            'filters[slug][$eq]': slug,
+            'filters[slug][$eq]': encodeURIComponent(slug),
             'populate': '*',
         });
         console.log('Article detail API response:', JSON.stringify(articleResponse, null, 2));

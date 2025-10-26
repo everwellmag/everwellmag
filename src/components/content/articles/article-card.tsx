@@ -27,9 +27,17 @@ const normalizeImageUrl = (url?: string): string | null => {
 
 interface ArticleCardProps {
     article: Article;
+    category: string;
+    subcategory: string;
 }
 
-export default function ArticleCard({ article }: ArticleCardProps) {
+export default function ArticleCard({
+    article,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    category,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    subcategory,
+}: ArticleCardProps) {
     const title = article.title || 'Untitled';
     const slug = article.slug || '';
     const description = article.description || '';
@@ -40,13 +48,16 @@ export default function ArticleCard({ article }: ArticleCardProps) {
         getFirstImageFromBlocks(article.blocks) ||
         'https://cms.everwellmag.com/Uploads/default-image.jpg';
 
+    // URL bài viết giữ nguyên
+    const articleUrl = `/article/${slug}`;
+
     return (
         <div
             className="group bg-[var(--card-bg)] border border-[var(--border-color)] rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-[var(--card-bg-dark)] flex h-48"
         >
             {/* Left: Image */}
             <div className="relative w-1/2 h-full overflow-hidden">
-                <Link href={`/article/${slug}`}>
+                <Link href={articleUrl}>
                     <Image
                         src={imageUrl}
                         alt={title}
@@ -62,7 +73,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
                     <h2
                         className="text-lg font-bold text-[var(--foreground)] font-[var(--font-sans)] line-clamp-2"
                     >
-                        <Link href={`/article/${slug}`} className="hover:text-[var(--link-hover)] transition-colors">
+                        <Link href={articleUrl} className="hover:text-[var(--link-hover)] transition-colors">
                             {title}
                         </Link>
                     </h2>
@@ -71,7 +82,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
                     </p>
                 </div>
                 <Link
-                    href={`/article/${slug}`}
+                    href={articleUrl}
                     className="btn-gradient text-white font-[var(--font-sans)] px-3 py-1.5 rounded-md text-sm inline-block w-fit"
                 >
                     Read More

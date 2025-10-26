@@ -141,8 +141,8 @@ export default function Footer() {
                     <button
                         onClick={() => handleThemeChange("light")}
                         className={`px-4 py-2 rounded-md font-medium transition-colors duration-200 flex items-center gap-2 ${theme === "light"
-                            ? "bg-gradient-blue-purple-hover text-[var(--nav-foreground)]"
-                            : "bg-gradient-blue-purple text-[var(--nav-foreground)] hover:bg-gradient-blue-purple-hover"
+                            ? "bg-white/40 text-[var(--nav-foreground)]"
+                            : "bg-white/10 text-[var(--nav-foreground)] hover:bg-white/30"
                             }`}
                     >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -153,8 +153,8 @@ export default function Footer() {
                     <button
                         onClick={() => handleThemeChange("dark")}
                         className={`px-4 py-2 rounded-md font-medium transition-colors duration-200 flex items-center gap-2 ${theme === "dark"
-                            ? "bg-gradient-blue-purple-hover text-[var(--nav-foreground)]"
-                            : "bg-gradient-blue-purple text-[var(--nav-foreground)] hover:bg-gradient-blue-purple-hover"
+                            ? "bg-white/40 text-[var(--nav-foreground)]"
+                            : "bg-white/10 text-[var(--nav-foreground)] hover:bg-white/30"
                             }`}
                     >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -165,8 +165,8 @@ export default function Footer() {
                     <button
                         onClick={() => handleThemeChange("auto")}
                         className={`px-4 py-2 rounded-md font-medium transition-colors duration-200 flex items-center gap-2 ${theme === "auto"
-                            ? "bg-gradient-blue-purple-hover text-[var(--nav-foreground)]"
-                            : "bg-gradient-blue-purple text-[var(--nav-foreground)] hover:bg-gradient-blue-purple-hover"
+                            ? "bg-white/40 text-[var(--nav-foreground)]"
+                            : "bg-white/10 text-[var(--nav-foreground)] hover:bg-gradient-blue-purple-hover"
                             }`}
                     >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

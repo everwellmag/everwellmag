@@ -2,11 +2,11 @@ import type { Article } from '@/lib/types/article';
 import { CustomMarkdown } from '@/components/common/markdown-renderer';
 import Image from 'next/image';
 import TableOfContents from './TableOfContents';
-
+import { CMS_DOMAIN, DEFAULT_OG_IMAGE } from '@/lib/config';
 // Normalize image URL
 const normalizeImageUrl = (url?: string): string | null => {
     if (!url) return null;
-    return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
+    return url.startsWith('http') ? url : `${CMS_DOMAIN}${url}`;
 };
 
 interface ArticleContentProps {
@@ -27,7 +27,7 @@ export default function ArticleContent({ blocks }: ArticleContentProps) {
                                 <CustomMarkdown content={block.body} />
                             ) : block.__component === 'shared.media' && block.file?.url ? (
                                 <Image
-                                    src={normalizeImageUrl(block.file.url) || 'https://cms.everwellmag.com/Uploads/default-image.jpg'}
+                                    src={normalizeImageUrl(block.file.url) || DEFAULT_OG_IMAGE}
                                     alt={block.file.alternativeText || 'Article media'}
                                     width={800}
                                     height={600}

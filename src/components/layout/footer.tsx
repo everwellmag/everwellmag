@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react";
 import Link from 'next/link';
 import Image from 'next/image';
+import { DEFAULT_OG_LOGO } from '@/lib/config';
 
 export default function Footer() {
-    const logoUrl = 'https://cms.everwellmag.com/uploads/logo_everwell_magazine_156480b913.svg';
+    const logoUrl = DEFAULT_OG_LOGO;
     const [theme, setTheme] = useState<"light" | "dark" | "auto">("auto");
 
     // Khởi tạo theme từ localStorage hoặc mặc định là "auto"
@@ -75,36 +76,36 @@ export default function Footer() {
                         <h4 className="text-lg font-semibold mb-4">Follow Us</h4>
                         <div className="flex gap-6">
                             <a
-                                href="https://www.facebook.com/everwellmag"
+                                href="https://www.facebook.com/everwellmagazine"
                                 className="flex items-center justify-center w-10 h-10 border border-white/30 rounded-full hover:rotate-12 hover:scale-110 transition-all duration-300"
                                 aria-label="Facebook"
                             >
                                 <Image
-                                    src="https://cms.everwellmag.com/uploads/everwellmag_facebook_icon_09fa45467d.svg"
+                                    src="https://cms.everwellmagazine.com/uploads/everwellmag_facebook_icon_09fa45467d.svg"
                                     alt="Facebook"
                                     width={40}
                                     height={40}
                                 />
                             </a>
                             <a
-                                href="https://x.com/everwellmag"
+                                href="https://x.com/everwellmagazine"
                                 className="flex items-center justify-center w-10 h-10 border border-white/30 rounded-full hover:rotate-12 hover:scale-110 transition-all duration-300"
                                 aria-label="X (Twitter)"
                             >
                                 <Image
-                                    src="https://cms.everwellmag.com/uploads/everwellmag_X_icon_7240bb70e5.svg?"
+                                    src="https://cms.everwellmagazine.com/uploads/everwellmag_X_icon_7240bb70e5.svg"
                                     alt="X"
                                     width={40}
                                     height={40}
                                 />
                             </a>
                             <a
-                                href="https://www.instagram.com/everwellmag"
+                                href="https://www.instagram.com/everwellmagazine"
                                 className="flex items-center justify-center w-10 h-10 border border-white/30 rounded-full hover:rotate-12 hover:scale-110 transition-all duration-300"
                                 aria-label="Instagram"
                             >
                                 <Image
-                                    src="https://cms.everwellmag.com/uploads/everwellmag_instagram_icon_21526d5407.svg"
+                                    src="https://cms.everwellmagazine.com/uploads/everwell_magazine_instagram_icon_2dbd914e6d.svg"
                                     alt="Instagram"
                                     width={40}
                                     height={40}
@@ -117,7 +118,7 @@ export default function Footer() {
                     <div className="text-center md:text-right md:col-span-1">
                         <h4 className="text-lg font-semibold mb-4">Stay Connected</h4>
                         <p className="text-sm mb-2 opacity-90">
-                            Contact us: <a href="mailto:support@everwellmag.com" className="hover:underline">support@everwellmag.com</a>
+                            Contact us: <a href="mailto:support@everwellmagazine.com" className="hover:underline">support@everwellmagazine.com</a>
                         </p>
                         {/* Newsletter form simple - nếu muốn add, connect với api/subscribe */}
                         <form className="flex flex-col gap-2 mt-4">

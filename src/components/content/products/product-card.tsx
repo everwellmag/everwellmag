@@ -1,11 +1,11 @@
 import type { Product } from '@/lib/types/product';
 import Link from 'next/link';
 import Image from 'next/image';
-
+import { CMS_DOMAIN, DEFAULT_OG_IMAGE } from '@/lib/config';
 // Hàm chuẩn hóa URL ảnh
 const normalizeImageUrl = (url?: string): string => {
-    if (!url) return 'https://cms.everwellmag.com/Uploads/default-image.jpg';
-    return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
+    if (!url) return DEFAULT_OG_IMAGE;
+    return url.startsWith('http') ? url : `${CMS_DOMAIN}${url}`;
 };
 
 // Hàm tạo star rating

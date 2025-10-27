@@ -3,6 +3,7 @@
 import type { Article } from '@/lib/types/article';
 import Link from 'next/link';
 import Image from 'next/image';
+import { CMS_DOMAIN, DEFAULT_OG_IMAGE } from '@/lib/config';
 
 // Get the first image URL from blocks.body
 const getFirstImageFromBlocks = (blocks: Article['blocks']): string | null => {
@@ -12,7 +13,7 @@ const getFirstImageFromBlocks = (blocks: Article['blocks']): string | null => {
             const matches = block.body.match(regex);
             if (matches) {
                 const url = matches[0].replace(/!\[.*?\]\((.*?)\)/, '$1');
-                return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
+                return url.startsWith('http') ? url : `${CMS_DOMAIN}${url}`;
             }
         }
     }
@@ -22,7 +23,7 @@ const getFirstImageFromBlocks = (blocks: Article['blocks']): string | null => {
 // Normalize image URL
 const normalizeImageUrl = (url?: string): string | null => {
     if (!url) return null;
-    return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
+    return url.startsWith('http') ? url : `${CMS_DOMAIN}${url}`;
 };
 
 interface ArticleCardProps {
@@ -46,7 +47,7 @@ export default function ArticleCard({
     const imageUrl =
         normalizeImageUrl(article.image?.url) ||
         getFirstImageFromBlocks(article.blocks) ||
-        'https://cms.everwellmag.com/Uploads/default-image.jpg';
+        DEFAULT_OG_IMAGE;
 
     // URL bài viết giữ nguyên
     const articleUrl = `/article/${slug}`;

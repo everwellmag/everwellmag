@@ -1,5 +1,6 @@
 // src/components/layout/seo/article-schema.tsx
 import type { Article } from '@/lib/types/article';
+import { DEFAULT_OG_IMAGE, DEFAULT_OG_LOGO } from '@/lib/config';
 
 interface ArticleSchemaProps {
     article: Article;
@@ -22,7 +23,7 @@ export default function ArticleSchema({ article }: ArticleSchemaProps) {
         '@type': 'Article',
         headline: article.title,
         description,
-        image: article.image?.url || 'https://everwellmag.com/images/og/default.jpg',
+        image: article.image?.url || DEFAULT_OG_IMAGE,
         datePublished: article.publishedAt,
         dateModified: article.updatedAt,
         publisher: {
@@ -30,7 +31,7 @@ export default function ArticleSchema({ article }: ArticleSchemaProps) {
             name: 'Everwell Magazine',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://cms.everwellmag.com/uploads/logo_everwell_magazine_156480b913.svg',
+                url: DEFAULT_OG_LOGO,
             },
         },
     };

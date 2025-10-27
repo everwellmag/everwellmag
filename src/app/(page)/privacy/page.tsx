@@ -4,10 +4,10 @@ export default function PrivacyPolicy() {
     return (
         <div className="max-w-3xl mx-auto px-4 py-10">
             <Head>
-                <title>Privacy Policy | EverWellmag</title>
+                <title>Privacy Policy | everwellmagazine</title>
                 <meta
                     name="description"
-                    content="Privacy Policy for EverWellmag: Learn how we collect, use, and protect your information while using our website."
+                    content="Privacy Policy for everwellmagazine: Learn how we collect, use, and protect your information while using our website."
                 />
             </Head>
 
@@ -18,7 +18,7 @@ export default function PrivacyPolicy() {
             </p>
 
             <p className="mb-4">
-                At <strong>EverWellmag</strong>, we respect your privacy and are committed to protecting
+                At <strong>everwellmagazine</strong>, we respect your privacy and are committed to protecting
                 your personal information. This Privacy Policy outlines how we collect, use,
                 and safeguard your data when you visit our website.
             </p>
@@ -63,8 +63,8 @@ export default function PrivacyPolicy() {
 
             <p>
                 For questions about this Privacy Policy, please contact us at{" "}
-                <a href="mailto:support@everwellmag.com" className="text-blue-600 underline">
-                    support@everwellmag.com
+                <a href="mailto:support@everwellmagazine.com" className="text-blue-600 underline">
+                    support@everwellmagazine.com
                 </a>.
             </p>
         </div>

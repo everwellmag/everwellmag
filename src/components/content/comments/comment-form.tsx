@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { CMS_DOMAIN } from '@/lib/config';
 
 interface CommentFormProps {
     articleSlug?: string;
@@ -27,14 +28,14 @@ export default function CommentForm({ articleSlug, productSlug }: CommentFormPro
             if (articleSlug) {
                 entityType = 'article';
                 const response = await fetch(
-                    `https://cms.everwellmag.com/api/articles?filters[slug][$eq]=${articleSlug}&fields[0]=documentId`
+                    `${CMS_DOMAIN}/api/articles?filters[slug][$eq]=${articleSlug}&fields[0]=documentId`
                 );
                 const data = await response.json();
                 documentId = data.data?.[0]?.documentId;
             } else if (productSlug) {
                 entityType = 'product';
                 const response = await fetch(
-                    `https://cms.everwellmag.com/api/products?filters[slug][$eq]=${productSlug}&fields[0]=documentId`
+                    `${CMS_DOMAIN}/api/products?filters[slug][$eq]=${productSlug}&fields[0]=documentId`
                 );
                 const data = await response.json();
                 documentId = data.data?.[0]?.documentId;

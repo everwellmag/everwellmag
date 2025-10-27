@@ -1,9 +1,9 @@
 import Image from 'next/image';
-
+import { CMS_DOMAIN, DEFAULT_OG_IMAGE } from '@/lib/config';
 // Hàm normalizeImageUrl (giữ inline nếu không có trong utils)
 const normalizeImageUrl = (url?: string): string => {
-    if (!url) return 'https://cms.everwellmag.com/Uploads/default-image.jpg';
-    return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
+    if (!url) return DEFAULT_OG_IMAGE;
+    return url.startsWith('http') ? url : `${CMS_DOMAIN}${url}`;
 };
 
 interface MarkdownImageProps {
@@ -12,7 +12,7 @@ interface MarkdownImageProps {
 }
 
 export const MarkdownImage = ({ src, alt }: MarkdownImageProps) => {
-    const imageSrc = typeof src === 'string' ? normalizeImageUrl(src) : 'https://cms.everwellmag.com/Uploads/default-image.jpg';
+    const imageSrc = typeof src === 'string' ? normalizeImageUrl(src) : DEFAULT_OG_IMAGE;
     return (
         <Image
             src={imageSrc}

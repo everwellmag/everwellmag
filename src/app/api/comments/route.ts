@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-
+import { CMS_DOMAIN } from '@/lib/config';
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Proxy tới Strapi
-        const response = await fetch('https://cms.everwellmag.com/api/comments', {
+        const response = await fetch(`${CMS_DOMAIN}/api/comments`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

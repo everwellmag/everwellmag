@@ -118,7 +118,7 @@ export default function Navbar() {
                 {/* Logo */}
                 <Link href="/" className="flex items-center space-x-2">
                     <Image
-                        src="https://cms.everwellmag.com/uploads/logo_everwell_magazine_156480b913.svg"
+                        src="https://cms.everwellmagazine.com/uploads/logo_everwell_magazine_156480b913.svg"
                         alt="EverWell Magazine Logo"
                         width={240}
                         height={0}

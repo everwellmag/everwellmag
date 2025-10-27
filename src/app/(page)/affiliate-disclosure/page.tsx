@@ -4,17 +4,17 @@ export default function AffiliateDisclosure() {
     return (
         <div className="max-w-3xl mx-auto px-4 py-10">
             <Head>
-                <title>Affiliate Disclosure | EverWellmag</title>
+                <title>Affiliate Disclosure | everwellmagazine</title>
                 <meta
                     name="description"
-                    content="Affiliate Disclosure: EverWellmag may earn commissions from affiliate links to products or services recommended on this site."
+                    content="Affiliate Disclosure: everwellmagazine may earn commissions from affiliate links to products or services recommended on this site."
                 />
             </Head>
 
             <h1 className="text-3xl font-bold mb-6">Affiliate Disclosure</h1>
 
             <p className="mb-4">
-                At <strong>EverWellmag</strong>, we believe in transparency and honesty with our readers.
+                At <strong>everwellmagazine</strong>, we believe in transparency and honesty with our readers.
                 As such, we want to disclose that some of the links on our website may be
                 affiliate links. This means that we may earn a small commission when you
                 click on a link and make a purchase — at no additional cost to you.
@@ -34,8 +34,8 @@ export default function AffiliateDisclosure() {
 
             <p>
                 If you have any questions about our affiliate relationships, please contact us at{" "}
-                <a href="mailto:support@everwellmag.com" className="text-blue-600 underline">
-                    support@everwellmag.com
+                <a href="mailto:support@everwellmagazine.com" className="text-blue-600 underline">
+                    support@everwellmagazine.com
                 </a>.
             </p>
         </div>

@@ -5,7 +5,7 @@ export default function SiteSchema() {
                 '@context': 'https://schema.org',
                 '@type': 'WebSite',
                 name: 'Everwell Magazine',
-                url: 'https://www.everwellmag.com/',
+                url: 'https://www.everwellmagazine.com/',
                 description: 'Your trusted source for health and wellness insights, expert advice, and top-quality supplements tailored for the US audience.',
             })}
         </script>

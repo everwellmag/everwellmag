@@ -4,11 +4,11 @@ import { CustomMarkdown } from '@/components/common/markdown-renderer';
 import CommentSection from '@/components/content/comments/comment-section';
 import type { Product } from '@/lib/types/product';
 import type { Comment } from '@/lib/types/comment';
-
+import { CMS_DOMAIN, DEFAULT_OG_IMAGE } from '@/lib/config';
 // Hàm chuẩn hóa URL ảnh
 const normalizeImageUrl = (url?: string): string => {
-    if (!url) return 'https://cms.everwellmag.com/Uploads/default-image.jpg';
-    return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
+    if (!url) return DEFAULT_OG_IMAGE;
+    return url.startsWith('http') ? url : `${CMS_DOMAIN}${url}`;
 };
 
 // Hàm lấy ảnh đầu tiên từ description
@@ -18,7 +18,7 @@ const getFirstImageFromDescription = (description: string): string | null => {
     if (!match) return null;
     const url = match[1];
     if (typeof url !== 'string') return null;
-    return url.startsWith('http') ? url : `https://cms.everwellmag.com${url}`;
+    return url.startsWith('http') ? url : `${CMS_DOMAIN}${url}`;
 };
 
 // Hàm tạo star rating
@@ -62,7 +62,7 @@ export default function ProductDetail({ product, comments, totalComments, curren
     const imageUrl =
         normalizeImageUrl(product.image?.url) ||
         getFirstImageFromDescription(description) ||
-        'https://cms.everwellmag.com/Uploads/default-image.jpg';
+        DEFAULT_OG_IMAGE;
     const rating = product.rating || 0;
     const supplier = product.supplier || 'Unknown';
     const releaseYear = product.ReleaseYear || 'N/A';

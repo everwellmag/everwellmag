@@ -4,9 +4,15 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'cms.everwellmag.com',
+        hostname: 'cms.everwellmagazine.com',
         port: '',
-        pathname: '/uploads/**',
+        pathname: '/uploads/**', // Giữ nguyên, nhưng sẽ test thêm /uploads/**
+      },
+      {
+        protocol: 'https',
+        hostname: 'cms.everwellmagazine.com',
+        port: '',
+        pathname: '/uploads/**', // Thêm để cover case chữ thường
       },
     ],
   },
@@ -17,7 +23,7 @@ const nextConfig = {
         has: [
           {
             type: 'host',
-            value: '^(?!localhost|www\.everwellmagazine\.com|everwellmagazine\.com).*$', // Loại trừ localhost và new domain
+            value: '^(?!localhost|www\.everwellmagazine\.com|everwellmagazine\.com|cms\.everwellmagazine\.com).*$',
           },
         ],
         destination: 'https://www.everwellmagazine.com/:path*',

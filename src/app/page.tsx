@@ -7,43 +7,43 @@ const categories = [
     slug: 'weight-loss',
     name: 'Weight Loss',
     description: 'Explore diet plans, workouts, and supplements for healthy, sustainable weight loss.',
-    image: { url: 'https://cms.everwellmag.com/uploads/weight_loss_supplements_c5f8cbdcec.webp', alternativeText: 'Weight Loss' },
+    image: { url: 'https://cms.everwellmagazine.com/uploads/weight_loss_supplements_c5f8cbdcec.webp', alternativeText: 'Weight Loss' },
   },
   {
     slug: 'blood-sugar',
     name: 'Blood Sugar',
     description: 'Manage blood sugar with expert diet tips and top-rated supplements.',
-    image: { url: 'https://cms.everwellmag.com/uploads/blood_sugar_issues_6f8b3f2f30.webp', alternativeText: 'Blood Sugar' },
+    image: { url: 'https://cms.everwellmagazine.com/uploads/blood_sugar_issues_6f8b3f2f30.webp', alternativeText: 'Blood Sugar' },
   },
   {
     slug: 'eye-health',
     name: 'Eye Health',
     description: 'Protect your vision with care tips and supplements for optimal eye health.',
-    image: { url: 'https://cms.everwellmag.com/uploads/Common_Eye_Conditions_435281392e.webp', alternativeText: 'Eye Health' },
+    image: { url: 'https://cms.everwellmagazine.com/uploads/Common_Eye_Conditions_435281392e.webp', alternativeText: 'Eye Health' },
   },
   {
     slug: 'heart-health',
     name: 'Heart Health',
     description: 'Support your heart with tips and supplements for cardiovascular wellness.',
-    image: { url: 'https://cms.everwellmag.com/uploads/everwell_magazine_banner_91a7caaa15.webp', alternativeText: 'Heart Health' },
+    image: { url: 'https://cms.everwellmagazine.com/uploads/everwell_magazine_banner_91a7caaa15.webp', alternativeText: 'Heart Health' },
   },
   {
     slug: 'mens-health',
     name: "Men's Health",
     description: 'Address men’s health issues with care tips and targeted supplements.',
-    image: { url: 'https://cms.everwellmag.com/uploads/Common_Men_s_Health_Issues_a39fbb1616.webp', alternativeText: "Men's Health" },
+    image: { url: 'https://cms.everwellmagazine.com/uploads/Common_Men_s_Health_Issues_a39fbb1616.webp', alternativeText: "Men's Health" },
   },
   {
     slug: 'womens-health',
     name: "Women's Health",
     description: 'Discover solutions for women’s health and wellness with expert advice.',
-    image: { url: 'https://cms.everwellmag.com/uploads/Common_Women_s_Health_Issues_790bf93ba9.webp', alternativeText: "Women's Health" },
+    image: { url: 'https://cms.everwellmagazine.com/uploads/Common_Women_s_Health_Issues_790bf93ba9.webp', alternativeText: "Women's Health" },
   },
   {
     slug: 'mind-sleep',
     name: 'Mind & Sleep',
     description: 'Boost mental clarity and improve sleep with wellness tips and supplements.',
-    image: { url: 'https://cms.everwellmag.com/uploads/Common_Mind_Sleep_Issues_3dbee0cbdf.webp', alternativeText: 'Mind & Sleep' },
+    image: { url: 'https://cms.everwellmagazine.com/uploads/Common_Mind_Sleep_Issues_3dbee0cbdf.webp', alternativeText: 'Mind & Sleep' },
   },
 ];
 
@@ -56,7 +56,7 @@ export default function Home() {
       <section className="mb-12">
         <div className="relative w-full h-64 md:h-96 rounded-lg overflow-hidden">
           <Image
-            src="https://cms.everwellmag.com/uploads/everwell_magazine_banner_91a7caaa15.webp"
+            src="https://cms.everwellmagazine.com/uploads/everwell_magazine_banner_91a7caaa15.webp"
             alt="Everwell Magazine - Your Health Journey Starts Here"
             fill
             className="object-cover"

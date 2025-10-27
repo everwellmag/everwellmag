@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { STRAPI_API_URL } from '@/lib/utils/constants';
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
@@ -32,8 +33,8 @@ export async function GET(request: NextRequest) {
 
     try {
         const [articlesRes, productsRes] = await Promise.all([
-            fetch(`https://cms.everwellmag.com/api/articles?${articlesParams}`),
-            fetch(`https://cms.everwellmag.com/api/products?${productsParams}`),
+            fetch(`${STRAPI_API_URL}/articles?${articlesParams}`),
+            fetch(`${STRAPI_API_URL}/products?${productsParams}`),
         ]);
 
         const articlesData = await articlesRes.json();

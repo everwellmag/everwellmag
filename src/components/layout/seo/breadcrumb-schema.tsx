@@ -16,7 +16,7 @@ export default function BreadcrumbSchema({ items }: BreadcrumbSchemaProps) {
             '@type': 'ListItem',
             position: index + 1,
             name: item.name,
-            item: `https://www.everwellmag.com${item.url}`,
+            item: `https://www.everwellmagazine.com${item.url}`,
         })),
     };
 

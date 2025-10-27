@@ -1,9 +1,11 @@
+// C:\Users\Kathay\everwellmag\src\app\layout.tsx
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import Navbar from '../components/layout/navbar';
 import Footer from '../components/layout/footer'; // Import the new Footer component
 import Script from 'next/script';
+import { CMS_DOMAIN, DEFAULT_OG_IMAGE, SITE_NAME, SITE_DOMAIN } from '@/lib/config'; // Import from config.ts
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -16,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: 'Everwell Magazine - Health & Wellness',
+    title: `${SITE_NAME} - Health & Wellness`, // Use SITE_NAME
     description: 'Discover expert health and wellness tips, diet plans, and products at Everwell Magazine.',
     robots: {
         index: true,
@@ -27,29 +29,29 @@ export const metadata: Metadata = {
         google: 'E5RD3D753jQq557Fg3lZTj1BYRwNTDV-mgF-3goTXBs',
     },
     alternates: {
-        canonical: 'https://www.everwellmag.com', // Clear canonical for homepage
+        canonical: SITE_DOMAIN, // Fix typo and use SITE_DOMAIN
     },
     openGraph: {
-        title: 'Everwell Magazine - Health & Wellness',
+        title: `${SITE_NAME} - Health & Wellness`,
         description: 'Discover expert health and wellness tips, diet plans, and products at Everwell Magazine.',
-        url: 'https://www.everwellmag.com',
-        siteName: 'Everwell Magazine', // Add site_name
+        url: SITE_DOMAIN,
+        siteName: SITE_NAME, // Use SITE_NAME
         locale: 'en_US', // Add locale
         type: 'website',
         images: [
             {
-                url: 'https://cms.everwellmag.com/Uploads/default-image.jpg',
+                url: DEFAULT_OG_IMAGE,
                 width: 1200,
                 height: 630,
-                alt: 'Everwell Magazine',
+                alt: SITE_NAME,
             },
         ],
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'Everwell Magazine - Health & Wellness',
+        title: `${SITE_NAME} - Health & Wellness`,
         description: 'Discover expert health and wellness tips, diet plans, and products at Everwell Magazine.',
-        images: ['https://cms.everwellmag.com/Uploads/default-image.jpg'],
+        images: [DEFAULT_OG_IMAGE],
         site: '@everwellmag', // Add Twitter site handle
         creator: '@everwellmag', // Add Twitter creator handle
     },
@@ -61,9 +63,9 @@ const schema = {
     '@graph': [
         {
             '@type': 'Organization',
-            name: 'Everwell Magazine',
-            url: 'https://www.everwellmag.com',
-            logo: 'https://cms.everwellmag.com/Uploads/logo.jpg', // Replace with actual logo URL
+            name: SITE_NAME,
+            url: SITE_DOMAIN,
+            logo: `${CMS_DOMAIN}/uploads/logo.jpg`, // Use CMS_DOMAIN for logo
             sameAs: [
                 'https://www.facebook.com/everwellmag', // Replace with actual URL
                 'https://x.com/everwellmag', // Replace with actual URL
@@ -72,21 +74,21 @@ const schema = {
         },
         {
             '@type': 'WebPage',
-            '@id': 'https://www.everwellmag.com#webpage',
-            url: 'https://www.everwellmag.com',
-            name: 'Everwell Magazine - Health & Wellness',
+            '@id': `${SITE_DOMAIN}#webpage`,
+            url: SITE_DOMAIN,
+            name: `${SITE_NAME} - Health & Wellness`,
             description: 'Discover expert health and wellness tips, diet plans, and products at Everwell Magazine.',
             publisher: {
                 '@type': 'Organization',
-                name: 'Everwell Magazine',
+                name: SITE_NAME,
                 logo: {
                     '@type': 'ImageObject',
-                    url: 'https://cms.everwellmag.com/Uploads/logo.jpg', // Replace with actual logo URL
+                    url: `${CMS_DOMAIN}/uploads/logo.jpg`, // Use CMS_DOMAIN for logo
                 },
             },
             inLanguage: 'en',
             isPartOf: {
-                '@id': 'https://www.everwellmag.com#website',
+                '@id': `${SITE_DOMAIN}#website`,
             },
         },
         {
@@ -96,7 +98,7 @@ const schema = {
                     '@type': 'ListItem',
                     position: 1,
                     name: 'Home',
-                    item: 'https://www.everwellmag.com',
+                    item: SITE_DOMAIN,
                 },
             ],
         },

@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/config';
 
 export const metadata: Metadata = {
     title: 'Contact Us | Everwell Magazine',
@@ -7,7 +8,7 @@ export const metadata: Metadata = {
         title: 'Contact Us | Everwell Magazine',
         description: 'Get in touch with Everwell Magazine for feedback, inquiries, or support.',
         type: 'website',
-        images: [{ url: 'https://cms.everwellmag.com/Uploads/default-image.jpg' }],
+        images: [{ url: DEFAULT_OG_IMAGE }],
     },
 };
 

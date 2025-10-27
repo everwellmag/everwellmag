@@ -4,17 +4,17 @@ export default function MedicalDisclaimer() {
     return (
         <div className="max-w-3xl mx-auto px-4 py-10">
             <Head>
-                <title>Medical Disclaimer | EverWellmag</title>
+                <title>Medical Disclaimer | everwellmagazine</title>
                 <meta
                     name="description"
-                    content="Medical Disclaimer: The information provided by EverWellmag is for educational purposes only and not a substitute for professional medical advice."
+                    content="Medical Disclaimer: The information provided by everwellmagazine is for educational purposes only and not a substitute for professional medical advice."
                 />
             </Head>
 
             <h1 className="text-3xl font-bold mb-6">Medical Disclaimer</h1>
 
             <p className="mb-4">
-                The information provided by <strong>EverWellmag</strong> (“we,” “us,” or “our”)
+                The information provided by <strong>everwellmagazine</strong> (“we,” “us,” or “our”)
                 on this website is for general informational and educational purposes only.
                 All information on the Site is provided in good faith; however, we make no
                 representation or warranty of any kind regarding accuracy, adequacy, validity,
@@ -37,7 +37,7 @@ export default function MedicalDisclaimer() {
 
             <p>
                 Never disregard professional medical advice or delay seeking it because of
-                something you have read on <strong>EverWellmag</strong>.
+                something you have read on <strong>everwellmagazine</strong>.
             </p>
         </div>
     );

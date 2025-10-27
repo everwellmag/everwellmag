@@ -1,9 +1,8 @@
 // src/lib/config.ts
 export const SITE_DOMAIN = 'https://www.everwellmagazine.com';
-export const CMS_DOMAIN = 'https://cms.everwellmag.com';
+export const CMS_DOMAIN = 'https://cms.everwellmagazine.com'; // Sửa thành domain mới
 export const DEFAULT_OG_IMAGE = `${CMS_DOMAIN}/Uploads/default_image_0295f000e6.jpg`;
-
-// Thông tin liên hệ mặc định
+export const DEFAULT_OG_LOGO = `${CMS_DOMAIN}/uploads/logo_everwell_magazine_156480b913.svg`;
 export const DEFAULT_EMAIL = 'contact@everwellmagazine.com';
 export const DEFAULT_PHONE = '+1-800-123-4567';
 export const DEFAULT_ADDRESS = {
@@ -15,4 +14,7 @@ export const DEFAULT_ADDRESS = {
 };
 
 export const DEFAULT_TWITTER_HANDLE = '@everwellmagazine';
-export const SITE_NAME = 'Everwell Magazine'; 
+export const SITE_NAME = 'Everwell Magazine';
+
+
+//import { CMS_DOMAIN, DEFAULT_OG_IMAGE } from '@/lib/config';

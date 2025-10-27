@@ -4,24 +4,24 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'cms.everwellmag.com', // ✅ Giữ nguyên hostname Strapi
+        hostname: 'cms.everwellmag.com',
         port: '',
-        pathname: '/uploads/**', // Cho phép uploads từ Strapi
+        pathname: '/uploads/**',
       },
     ],
   },
   async redirects() {
     return [
       {
-        source: '/:path*', // Match tất cả paths
+        source: '/:path*',
         has: [
           {
             type: 'host',
-            value: '^(?!localhost).*$', // Loại trừ localhost, match mọi hostname khác
+            value: '^(?!localhost|www\.everwellmagazine\.com|everwellmagazine\.com).*$', // Loại trừ localhost và new domain
           },
         ],
-        destination: 'https://www.everwellmagazine.com/:path*', // Redirect sang new domain
-        permanent: true, // 301 redirect cho SEO
+        destination: 'https://www.everwellmagazine.com/:path*',
+        permanent: true,
       },
     ];
   },

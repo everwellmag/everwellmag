@@ -1,4 +1,6 @@
+// src/app/sitemap.ts
 import { MetadataRoute } from 'next';
+import { SITE_DOMAIN } from '@/lib/config';
 
 interface Article {
     id: number;
@@ -23,8 +25,6 @@ interface StrapiResponse<T> {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = 'https://everwellmag.com';
-
     // Fetch categories
     const categoryRes = await fetch('https://cms.everwellmag.com/api/categories', {
         next: { revalidate: 60 },
@@ -34,8 +34,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const categoryUrls = categoryJson.data
         .filter((c) => c.slug)
         .map((c) => ({
-            url: `${baseUrl}/category/${c.slug}`,
+            url: `${SITE_DOMAIN}/category/${c.slug}`,
             lastModified: c.updatedAt || new Date().toISOString(),
+            // Tùy chọn: Thêm priority và changefreq
+            priority: 0.8,
+            changefreq: 'weekly',
         }));
 
     // Fetch articles
@@ -47,8 +50,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const articleUrls = articleJson.data
         .filter((a) => a.slug)
         .map((a) => ({
-            url: `${baseUrl}/article/${a.slug}`,
+            url: `${SITE_DOMAIN}/article/${a.slug}`,
             lastModified: a.updatedAt || new Date().toISOString(),
+            priority: 0.9, // Bài viết quan trọng hơn
+            changefreq: 'daily',
         }));
 
     // Fetch products
@@ -60,14 +65,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const productUrls = productJson.data
         .filter((p) => p.slug)
         .map((p) => ({
-            url: `${baseUrl}/product/${p.slug}`,
+            url: `${SITE_DOMAIN}/product/${p.slug}`,
             lastModified: p.updatedAt || new Date().toISOString(),
+            priority: 0.7,
+            changefreq: 'weekly',
         }));
 
     return [
         {
-            url: baseUrl,
+            url: SITE_DOMAIN,
             lastModified: new Date().toISOString(),
+            priority: 1.0,
+            changefreq: 'daily',
         },
         ...categoryUrls,
         ...articleUrls,

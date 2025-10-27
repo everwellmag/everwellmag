@@ -1,13 +1,15 @@
+// src/app/robots.ts
 import { MetadataRoute } from "next";
+import { SITE_DOMAIN } from '@/lib/config';
 
 export default function robots(): MetadataRoute.Robots {
-    const baseUrl = "https://everwellmag.com";
-
     return {
         rules: {
             userAgent: "*",
             allow: "/",
+            // Tùy chọn: Chặn các path không muốn crawl
+            // disallow: ["/admin", "/api/"],
         },
-        sitemap: `${baseUrl}/sitemap.xml`,
+        sitemap: `${SITE_DOMAIN}/sitemap.xml`, // Dùng SITE_DOMAIN từ config.ts
     };
 }

@@ -23,7 +23,7 @@ export default function CommentSection({
 
     return (
         <section
-            className="mt-12 max-w-3xl mx-auto rounded-lg shadow-md p-6"
+            className="mt-12 max-w-4xl mx-auto rounded-lg shadow-md p-6"
             style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--foreground)' }}
         >
             <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>Comments ({totalComments})</h2>

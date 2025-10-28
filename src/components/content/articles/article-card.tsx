@@ -69,7 +69,7 @@ export default function ArticleCard({
                 </div>
 
                 {/* Right: Content */}
-                <div className="w-1/2 p-4 flex flex-col justify-center">
+                <div className="w-1/2 p-4 flex flex-col justify-start">
                     <div>
                         <h2
                             className="text-lg font-bold text-[var(--foreground)] font-[var(--font-sans)] line-clamp-2 group-hover:text-[var(--link-hover)] transition-colors"

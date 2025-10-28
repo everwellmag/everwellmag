@@ -51,7 +51,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     }
 
     return (
-        <main className="container mx-auto p-4">
+        <main className="container mx-auto pt-8 p-4">
             {/* =============== HEADER - CLEAN & THEMED =============== */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
                 {/* TITLE CARD - LEFT */}
@@ -94,7 +94,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
             {articles.length > 0 && (
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--title-color)' }}>
+                    <h2 className="text-2xl font-semibold pt-4 mb-1" style={{ color: 'var(--title-color)' }}>
                         Latest Articles
                     </h2>
                     <ArticleList
@@ -110,7 +110,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
             {products.length > 0 && (
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--title-color)' }}>
+                    <h2 className="text-2xl font-semibold mb-1" style={{ color: 'var(--title-color)' }}>
                         Recommended Supplements
                     </h2>
                     <ProductList

@@ -59,7 +59,7 @@ export default async function SubCategoryPage({ params, searchParams }: SubCateg
     }
 
     return (
-        <main className="container mx-auto p-4">
+        <main className="container mx-auto pt-8 p-4">
             {/* =============== HEADER - IDENTICAL TO CATEGORY PAGE =============== */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
                 {/* TITLE CARD - LEFT */}

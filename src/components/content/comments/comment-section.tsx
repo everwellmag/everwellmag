@@ -23,10 +23,10 @@ export default function CommentSection({
 
     return (
         <section
-            className="mt-12 max-w-4xl mx-auto rounded-lg shadow-md p-6"
-            style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--foreground)' }}
+            className="mt-12 max-w-4xl mx-auto rounded-lg shadow-md px-0 pb-6"
+            style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)' }}
         >
-            <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>Comments ({totalComments})</h2>
+            <h2 className="text-2xl font-bold mb-6 px-6" style={{ color: 'var(--foreground)' }}>Comments ({totalComments})</h2>
             <CommentForm articleSlug={articleSlug} productSlug={productSlug} />
             <CommentList comments={comments} />
             <Pagination

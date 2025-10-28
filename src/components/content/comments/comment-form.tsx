@@ -94,8 +94,8 @@ export default function CommentForm({ articleSlug, productSlug }: CommentFormPro
     return (
         <form
             onSubmit={handleSubmit}
-            className="mb-8 p-6 rounded-lg border"
-            style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)' }}
+            className="mb-8 p-4 rounded-lg"
+            style={{ backgroundColor: 'var(--card-bg)' }}
         >
             {success && (
                 <p

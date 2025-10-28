@@ -18,7 +18,7 @@ export default function CommentList({ comments }: CommentListProps) {
     return (
         <div className="space-y-4">
             {comments.length === 0 ? (
-                <p className="italic" style={{ color: 'var(--text-secondary)' }}>No comments yet. Be the first to share your thoughts!</p>
+                <p className="italic px-6" style={{ color: 'var(--text-secondary)' }}>No comments yet. Be the first to share your thoughts!</p>
             ) : (
                 comments.map((comment) => (
                     <div

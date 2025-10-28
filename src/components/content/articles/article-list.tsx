@@ -1,4 +1,3 @@
-// src/components/content/articles/article-list.tsx
 import ArticleCard from './article-card';
 import Pagination from '@/components/ui/pagination';
 import type { Article } from '@/lib/types/article';
@@ -10,7 +9,7 @@ interface ArticleListProps {
     currentPage: number;
     totalItems: number;
     pageSize: number;
-    q?: string; // Thêm prop q
+    q?: string;
 }
 
 export default function ArticleList({
@@ -22,42 +21,46 @@ export default function ArticleList({
     pageSize,
     q,
 }: ArticleListProps) {
-    // Sort client-side (giữ nguyên)
+    // Client-side sort: priority first, then newest
     const sortedArticles = [...articles].sort((a, b) => {
         const priorityA = a.priority ?? Number.MAX_SAFE_INTEGER;
         const priorityB = b.priority ?? Number.MAX_SAFE_INTEGER;
-        if (priorityA !== priorityB) {
-            return priorityA - priorityB;
-        }
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return priorityA !== priorityB
+            ? priorityA - priorityB
+            : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
-    // Điều chỉnh baseUrl để hỗ trợ search
-    const baseUrl = q ? `/search?q=${encodeURIComponent(q)}` : `/${category}/${subcategory}`.replace(/\/$/, '');
+    // Dynamic base URL for pagination
+    const baseUrl = q
+        ? `/search?q=${encodeURIComponent(q)}`
+        : `/${category}/${subcategory}`.replace(/\/$/, '');
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <section className="container mx-auto px-4 py-8">
+            {/* RESPONSIVE MASONRY-LIKE GRID */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-fr">
                 {sortedArticles.map((article, index) => (
-                    <div
+                    <article
                         key={article.id}
-                        className="animate-fade-in"
-                        style={{ animationDelay: `${index * 100}ms` }}
+                        className="animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out"
+                        style={{ animationDelay: `${Math.min(index * 75, 600)}ms` }}
                     >
                         <ArticleCard article={article} category={category} subcategory={subcategory} />
-                    </div>
+                    </article>
                 ))}
             </div>
+
+            {/* PAGINATION – chỉ hiện khi cần */}
             {totalItems > pageSize && (
-                <div className="mt-8">
+                <nav aria-label="Pagination" className="mt-12 flex justify-center">
                     <Pagination
                         currentPage={currentPage}
                         totalItems={totalItems}
                         pageSize={pageSize}
                         baseUrl={baseUrl}
                     />
-                </div>
+                </nav>
             )}
-        </div>
+        </section>
     );
 }

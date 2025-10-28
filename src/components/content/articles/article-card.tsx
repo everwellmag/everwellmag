@@ -43,22 +43,22 @@ export default function ArticleCard({
     const slug = article.slug || '';
     const description = article.description || '';
     const excerpt = description.length > 100 ? description.slice(0, 100) + '...' : description;
-    // Prioritize Image field, fallback to first image in blocks, then default image
+
     const imageUrl =
         normalizeImageUrl(article.image?.url) ||
         getFirstImageFromBlocks(article.blocks) ||
         DEFAULT_OG_IMAGE;
 
-    // URL bài viết giữ nguyên
     const articleUrl = `/article/${slug}`;
 
     return (
-        <div
-            className="group bg-[var(--card-bg)] border border-[var(--border-color)] rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-[var(--card-bg-dark)] flex h-48"
-        >
-            {/* Left: Image */}
-            <div className="relative w-1/2 h-full overflow-hidden">
-                <Link href={articleUrl}>
+        <Link href={articleUrl} className="block">
+            <div
+                className="group bg-[var(--card-bg)] border border-[var(--border-color)] rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-[var(--card-bg-dark)] flex h-40 cursor-pointer"
+            // ↑ h-40 (160px) + cursor-pointer
+            >
+                {/* Left: Image */}
+                <div className="relative w-1/2 h-full overflow-hidden">
                     <Image
                         src={imageUrl}
                         alt={title}
@@ -66,29 +66,22 @@ export default function ArticleCard({
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </Link>
-            </div>
-            {/* Right: Content */}
-            <div className="w-1/2 p-4 flex flex-col justify-between">
-                <div>
-                    <h2
-                        className="text-lg font-bold text-[var(--foreground)] font-[var(--font-sans)] line-clamp-2"
-                    >
-                        <Link href={articleUrl} className="hover:text-[var(--link-hover)] transition-colors">
-                            {title}
-                        </Link>
-                    </h2>
-                    <p className="text-[var(--text-secondary)] mt-2 text-sm font-[var(--font-sans)] line-clamp-3">
-                        {excerpt}
-                    </p>
                 </div>
-                <Link
-                    href={articleUrl}
-                    className="btn-gradient text-white font-[var(--font-sans)] px-3 py-1.5 rounded-md text-sm inline-block w-fit"
-                >
-                    Read More
-                </Link>
+
+                {/* Right: Content */}
+                <div className="w-1/2 p-4 flex flex-col justify-center">
+                    <div>
+                        <h2
+                            className="text-lg font-bold text-[var(--foreground)] font-[var(--font-sans)] line-clamp-2 group-hover:text-[var(--link-hover)] transition-colors"
+                        >
+                            {title}
+                        </h2>
+                        <p className="text-[var(--text-secondary)] mt-2 text-sm font-[var(--font-sans)] line-clamp-3">
+                            {excerpt}
+                        </p>
+                    </div>
+                </div>
             </div>
-        </div>
+        </Link>
     );
 }

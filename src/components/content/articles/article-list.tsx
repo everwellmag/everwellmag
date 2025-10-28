@@ -10,6 +10,7 @@ interface ArticleListProps {
     totalItems: number;
     pageSize: number;
     q?: string;
+    showPagination?: boolean;
 }
 
 export default function ArticleList({

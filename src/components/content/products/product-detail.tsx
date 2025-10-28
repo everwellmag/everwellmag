@@ -146,7 +146,7 @@ export default function ProductDetail({ product, comments, totalComments, curren
                                 {pricemulti.map((price, index) => (
                                     <div
                                         key={index}
-                                        className="flex items-center px-4 py-2 rounded-full border border-[var(--border-color)] transition-all duration-200"
+                                        className="flex items-center px-3 py-2 rounded-full border border-[var(--border-color)] transition-all duration-200"
                                         style={{ backgroundColor: 'var(--background)' }}
                                     >
                                         <span className="text-sm font-medium mr-2" style={{ color: 'var(--foreground)' }}>
@@ -167,7 +167,7 @@ export default function ProductDetail({ product, comments, totalComments, curren
                     </div>
                     <Link
                         href={affiliateLink}
-                        className="inline-block px-6 py-3 rounded-lg text-white font-semibold text-center transition duration-200 btn-gradient"
+                        className="block w-full px-6 py-3 rounded-lg text-white font-semibold text-center transition duration-200 btn-gradient"
                     >
                         Buy Now from Official Site
                     </Link>

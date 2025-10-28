@@ -22,7 +22,7 @@ export default async function RelatedArticles({ currentArticle, category }: Rela
         if (!related?.length) return null;
 
         return (
-            <section className="container mx-auto px-4 py-8 mt-12">
+            <section className="container mx-auto px-4 py-8 mt-0">
                 <h2 className="text-2xl font-semibold mb-6" style={{ color: 'var(--title-color)' }}>
                     Related Articles ({related.length})
                 </h2>

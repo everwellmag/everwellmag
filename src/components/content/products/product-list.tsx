@@ -11,6 +11,7 @@ interface ProductListProps {
     totalItems: number;
     pageSize: number;
     q?: string;
+    showPagination?: boolean;
 }
 
 export default function ProductList({

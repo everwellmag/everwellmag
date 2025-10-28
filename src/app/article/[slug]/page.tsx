@@ -77,7 +77,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
         <>
             {/* === NỘI DUNG CHÍNH – GIỚI HẠN CHIỀU RỘNG === */}
             <main className="container mx-auto px-4 py-8 max-w-4xl">
-                <Link href="/" className="text-[var(--link-color)] hover:text-[var(--link-hover)] mb-6 inline-block font-[var(--font-sans)] transition-colors">
+                <Link href="/" className="text-[var(--link-color)] hover:text-[var(--link-hover)] mb-2 inline-block font-[var(--font-sans)] transition-colors">
                     ← Back to Home
                 </Link>
 
@@ -93,7 +93,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
                     <ArticleContent blocks={article.blocks || []} />
                 </article>
 
-                <section className="mb-12">
+                <section className="mb-1">
                     <CommentSection
                         articleSlug={slug}
                         comments={comments}

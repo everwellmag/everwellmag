@@ -1,3 +1,4 @@
+// src/lib/types/category.ts
 export interface Category {
     id: number;
     name: string;
@@ -12,4 +13,6 @@ export interface Category {
         alternativeText?: string;
         caption?: string;
     };
+    children?: Category[];
+    parent?: Category | null;
 }

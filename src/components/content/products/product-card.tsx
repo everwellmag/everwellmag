@@ -67,7 +67,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 />
             </Link>
             <h2
-                className="text-xl font-bold line-clamp-2 mb-3"
+                className="text-lg font-bold line-clamp-2 mb-3"
                 style={{ color: 'var(--foreground)' }}
             >
                 <Link href={`/product/${slug}`}>{title}</Link>

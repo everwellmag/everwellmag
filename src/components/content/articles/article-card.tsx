@@ -72,11 +72,11 @@ export default function ArticleCard({
                 <div className="w-1/2 p-4 flex flex-col justify-start">
                     <div>
                         <h2
-                            className="text-lg font-bold text-[var(--foreground)] font-[var(--font-sans)] line-clamp-2 group-hover:text-[var(--link-hover)] transition-colors"
+                            className="text-lg font-bold text-[var(--foreground)] font-[var(--font-sans)] line-clamp-3 group-hover:text-[var(--link-hover)] transition-colors"
                         >
                             {title}
                         </h2>
-                        <p className="text-[var(--text-secondary)] mt-2 text-sm font-[var(--font-sans)] line-clamp-3">
+                        <p className="text-[var(--text-secondary)] mt-2 text-sm font-[var(--font-sans)] line-clamp-2">
                             {excerpt}
                         </p>
                     </div>

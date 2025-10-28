@@ -32,7 +32,7 @@ const SimpleMathCaptcha = forwardRef<SimpleMathCaptchaRef, SimpleMathCaptchaProp
         }, []);
 
         const check = () => {
-            const ok = a + b === Number(answer);
+            const ok = a * b === Number(answer);
             setVerified(ok);
             onVerify(ok);
         };
@@ -44,13 +44,13 @@ const SimpleMathCaptcha = forwardRef<SimpleMathCaptchaRef, SimpleMathCaptchaProp
 
         return (
             <div className="flex items-center gap-2 text-base">
-                <span className="font-medium">{a} + {b} =</span>
+                <span className="font-medium">{a} x {b} =</span>
                 <input
                     type="text"
                     value={answer}
                     onChange={e => setAnswer(e.target.value.replace(/\D/g, ''))}
                     onBlur={check}
-                    placeholder="?"
+                    placeholder=" ?"
                     className="w-12 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[var(--link-color)]"
                     style={{ borderColor: 'var(--border-color)' }}
                     disabled={verified}

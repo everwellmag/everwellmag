@@ -36,7 +36,7 @@ export default function ProductList({
     const baseUrl = q ? `/search?q=${encodeURIComponent(q)}` : `/${category}/${subcategory}`.replace(/\/$/, '');
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-2 py-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {sortedProducts.map((product) => (
                     <ProductCard

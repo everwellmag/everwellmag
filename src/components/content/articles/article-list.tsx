@@ -36,7 +36,7 @@ export default function ArticleList({
         : `/${category}/${subcategory}`.replace(/\/$/, '');
 
     return (
-        <section className="container mx-auto px-4 py-8">
+        <section className="container mx-auto px-1 py-8">
             {/* RESPONSIVE MASONRY-LIKE GRID */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-fr">
                 {sortedArticles.map((article, index) => (

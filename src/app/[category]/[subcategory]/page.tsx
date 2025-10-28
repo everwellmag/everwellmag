@@ -1,4 +1,3 @@
-// src/app/[category]/[subcategory]/page.tsx
 import { notFound } from 'next/navigation';
 import { getCategoryBySlug } from '@/lib/api/strapi/get-category';
 import { getArticles } from '@/lib/api/strapi/get-articles';
@@ -24,7 +23,7 @@ export default async function SubCategoryPage({ params, searchParams }: SubCateg
 
     const subcategoryData = await getCategoryBySlug(subcategory);
     if (!subcategoryData) {
-        console.log('Không tìm thấy danh mục con:', subcategory);
+        console.log('Subcategory not found:', subcategory);
         notFound();
     }
 
@@ -53,22 +52,54 @@ export default async function SubCategoryPage({ params, searchParams }: SubCateg
             products = response.data;
             totalItems = response.meta?.pagination?.total || products.length;
         } else {
-            console.log('Type không hợp lệ:', type);
+            console.log('Invalid type:', type);
         }
     } catch (error) {
-        console.error('Lỗi khi fetch dữ liệu cho danh mục con:', subcategory, error);
+        console.error('Failed to fetch data for subcategory:', subcategory, error);
     }
 
     return (
         <main className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-4 bg-gradient-blue-purple-hover bg-clip-text text-transparent">
-                {subcategoryData.name || subcategory}
-            </h1>
-            {subcategoryData.description && (
-                <div className="prose mb-6">
-                    <p>{subcategoryData.description}</p>
+            {/* =============== HEADER - IDENTICAL TO CATEGORY PAGE =============== */}
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+                {/* TITLE CARD - LEFT */}
+                <div
+                    className="p-6 rounded-2xl shadow-sm border"
+                    style={{
+                        background: 'color-mix(in srgb, var(--card-bg), transparent 50%)',
+                        borderColor: 'var(--border-color2)',
+                    }}
+                >
+                    <h1
+                        className="text-3xl md:text-4xl font-bold"
+                        style={{ color: 'var(--title-color)' }}
+                    >
+                        {subcategoryData.name || subcategory}
+                    </h1>
                 </div>
-            )}
+
+                {/* DESCRIPTION CARD - RIGHT */}
+                {subcategoryData.description && (
+                    <div
+                        className="p-6 rounded-2xl shadow-sm border backdrop-blur-sm"
+                        style={{
+                            backgroundColor: 'color-mix(in srgb, var(--card-bg), transparent 30%)',
+                            borderColor: 'var(--border-color2)',
+                        }}
+                    >
+                        <div className="prose prose-sm md:prose-base max-w-none">
+                            <p
+                                className="leading-relaxed"
+                                style={{ color: 'var(--text-secondary)' }}
+                            >
+                                {subcategoryData.description}
+                            </p>
+                        </div>
+                    </div>
+                )}
+            </div>
+            {/* ========================================================= */}
+
             {type === 'article' ? (
                 <ArticleList
                     articles={articles}
@@ -88,8 +119,11 @@ export default async function SubCategoryPage({ params, searchParams }: SubCateg
                     pageSize={pageSize}
                 />
             )}
+
             {articles.length === 0 && products.length === 0 && (
-                <p>No content available for this subcategory.</p>
+                <p className="text-center py-12" style={{ color: 'var(--text-secondary)' }}>
+                    No content available in this subcategory.
+                </p>
             )}
         </main>
     );

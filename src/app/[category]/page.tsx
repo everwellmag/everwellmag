@@ -1,4 +1,3 @@
-// src/app/[category]/page.tsx
 import { notFound } from 'next/navigation';
 import { getCategoryBySlug } from '@/lib/api/strapi/get-category';
 import { getArticles } from '@/lib/api/strapi/get-articles';
@@ -39,7 +38,6 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         });
         articles = articlesResponse.data;
         totalArticles = articlesResponse.meta?.pagination?.total || articles.length;
-        console.log('Articles for category', category, ':', JSON.stringify(articles, null, 2));
 
         const productsResponse = await getProducts(category, {
             'pagination[page]': pageNumber,
@@ -48,24 +46,57 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         });
         products = productsResponse.data;
         totalProducts = productsResponse.meta?.pagination?.total || products.length;
-        console.log('Products for category', category, ':', JSON.stringify(products, null, 2));
     } catch (error) {
         console.error('Failed to fetch data for category:', category, error);
     }
 
     return (
         <main className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-4 bg-gradient-blue-purple-hover bg-clip-text text-transparent">
-                {categoryData.name || category}
-            </h1>
-            {categoryData.description && (
-                <div className="prose mb-6">
-                    <p>{categoryData.description}</p>
+            {/* =============== HEADER - CLEAN & THEMED =============== */}
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+                {/* TITLE CARD - LEFT */}
+                <div
+                    className="p-6 rounded-2xl shadow-sm border"
+                    style={{
+                        background: 'color-mix(in srgb, var(--card-bg), transparent 50%)',
+                        borderColor: 'var(--border-color2)',
+                    }}
+                >
+                    <h1
+                        className="text-3xl md:text-4xl font-bold"
+                        style={{ color: 'var(--title-color)' }}   // ← SOLID COLOR FROM CSS VAR
+                    >
+                        {categoryData.name || category}
+                    </h1>
                 </div>
-            )}
+
+                {/* DESCRIPTION CARD - RIGHT */}
+                {categoryData.description && (
+                    <div
+                        className="p-6 rounded-2xl shadow-sm border backdrop-blur-sm"
+                        style={{
+                            backgroundColor: 'color-mix(in srgb, var(--card-bg), transparent 30%)',
+                            borderColor: 'var(--border-color2)',
+                        }}
+                    >
+                        <div className="prose prose-sm md:prose-base max-w-none">
+                            <p
+                                className="leading-relaxed"
+                                style={{ color: 'var(--text-secondary)' }}
+                            >
+                                {categoryData.description}
+                            </p>
+                        </div>
+                    </div>
+                )}
+            </div>
+            {/* ========================================================= */}
+
             {articles.length > 0 && (
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold mb-4">New Articles</h2>
+                    <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--title-color)' }}>
+                        Latest Articles
+                    </h2>
                     <ArticleList
                         articles={articles}
                         category={category}
@@ -76,9 +107,12 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                     />
                 </section>
             )}
+
             {products.length > 0 && (
                 <section>
-                    <h2 className="text-2xl font-semibold mb-4">Supplements</h2>
+                    <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--title-color)' }}>
+                        Recommended Supplements
+                    </h2>
                     <ProductList
                         products={products}
                         category={category}
@@ -89,8 +123,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                     />
                 </section>
             )}
+
             {articles.length === 0 && products.length === 0 && (
-                <p>No content available for this category.</p>
+                <p className="text-center py-12" style={{ color: 'var(--text-secondary)' }}>
+                    No content available in this category.
+                </p>
             )}
         </main>
     );

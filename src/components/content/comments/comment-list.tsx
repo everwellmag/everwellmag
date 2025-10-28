@@ -16,7 +16,7 @@ export default function CommentList({ comments }: CommentListProps) {
     };
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 px-4">
             {comments.length === 0 ? (
                 <p className="italic px-6" style={{ color: 'var(--text-secondary)' }}>No comments yet. Be the first to share your thoughts!</p>
             ) : (

@@ -74,7 +74,7 @@ export default function ProductDetail({ product, comments, totalComments, curren
     return (
         <main className="container mx-auto px-4 py-10 max-w-5xl">
             {/* Breadcrumb */}
-            <nav className="mb-6 text-sm flex items-center gap-1">
+            <nav className="mb-6 text-sm flex items-center gap-2">
                 <Link
                     href="/"
                     className="font-medium transition-colors hover:text-[var(--link-hover)]"

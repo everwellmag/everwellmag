@@ -25,4 +25,11 @@ export interface Article {
     createdAt: string;
     updatedAt: string;
     publishedAt?: string;
+
+    categories: {
+        id: number;
+        name: string;
+        slug: string;
+        type: string;
+    }[];
 }

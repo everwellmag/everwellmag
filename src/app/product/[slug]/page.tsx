@@ -1,9 +1,11 @@
 // src/app/product/[slug]/page.tsx
 import { fetchStrapi } from '@/lib/api/strapi/fetch-strapi';
+import { getProducts } from '@/lib/api/strapi/get-products';
 import type { Product } from '@/lib/types/product';
 import type { Comment } from '@/lib/types/comment';
 import { notFound } from 'next/navigation';
 import ProductDetail from '@/components/content/products/product-detail';
+import RelatedProducts from '@/components/content/products/related-products';
 
 interface ProductPageProps {
     params: Promise<{ slug: string }>;
@@ -24,10 +26,11 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
     let product: Product | null = null;
     let comments: Comment[] = [];
     let totalComments = 0;
+    let relatedProducts: Product[] = [];
 
     try {
+        // === 1. LẤY CHI TIẾT SẢN PHẨM ===
         const response = await fetchStrapi(`products?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`);
-        console.log('Product detail API response:', JSON.stringify(response, null, 2));
         product = response.data[0] as Product;
 
         if (!product) {
@@ -35,8 +38,8 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
             notFound();
         }
 
+        // === 2. LẤY BÌNH LUẬN ===
         if (product.documentId) {
-            console.log('Fetching comments for product documentId:', product.documentId);
             const commentsResponse = await fetchStrapi('comments', {
                 'filters[product][documentId][$eq]': product.documentId,
                 'populate': 'product',
@@ -44,29 +47,48 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
                 'pagination[page]': pageNumber,
                 'pagination[pageSize]': pageSize,
             });
-            console.log('Comments API response:', JSON.stringify(commentsResponse, null, 2));
             comments = (commentsResponse.data as Comment[]) || [];
             totalComments = commentsResponse.meta?.pagination?.total || comments.length;
-        } else {
-            console.warn('No product.documentId found, skipping comments');
+        }
+
+        // === 3. LẤY RELATED PRODUCTS (cùng category, loại trừ current) ===
+        const categorySlug = product.categories[0]?.slug;
+        if (categorySlug) {
+            const relatedResponse = await getProducts(categorySlug, {
+                'pagination[page]': 1,
+                'pagination[pageSize]': 12,
+                sort: 'priority:asc,createdAt:desc',
+                'filters[id][$ne]': product.id,
+            });
+            relatedProducts = relatedResponse.data || [];
         }
     } catch (error) {
-        console.error('Error fetching product or comments for slug:', slug, error);
-        console.log('Proceeding with product display, comments may be empty');
+        console.error('Error fetching data for product slug:', slug, error);
+        // Vẫn hiển thị sản phẩm nếu có, chỉ thiếu comments/related
     }
 
     if (!product) {
-        console.log('No product found for slug:', slug);
         notFound();
     }
 
     return (
-        <ProductDetail
-            product={product}
-            comments={comments}
-            totalComments={totalComments}
-            currentPage={pageNumber}
-            slug={slug}
-        />
+        <>
+            {/* CHI TIẾT SẢN PHẨM */}
+            <ProductDetail
+                product={product}
+                comments={comments}
+                totalComments={totalComments}
+                currentPage={pageNumber}
+                slug={slug}
+            />
+
+            {/* SẢN PHẨM LIÊN QUAN – chỉ hiện nếu có */}
+            {relatedProducts.length > 0 && (
+                <RelatedProducts
+                    currentProduct={product}
+                    category={product.categories[0]?.slug || ''}
+                />
+            )}
+        </>
     );
 }

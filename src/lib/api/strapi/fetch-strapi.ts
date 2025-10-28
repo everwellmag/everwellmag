@@ -1,16 +1,21 @@
+// src/lib/api/strapi/fetch-strapi.ts
 import { STRAPI_API_URL } from '@/lib/utils/constants';
 
-type StrapiParams = Record<string, string | number | boolean>;
+// Hỗ trợ tất cả params Strapi: filters[...], populate, sort, v.v.
+type StrapiParams = Record<string, string | number | boolean | undefined>;
 
 export async function fetchStrapi(
     endpoint: string,
     params: StrapiParams = {},
-    options?: { method?: 'POST'; body?: unknown } // ← any → unknown
+    options?: { method?: 'POST'; body?: unknown }
 ) {
     const url = new URL(`${STRAPI_API_URL}/${endpoint}`);
 
+    // Loại bỏ undefined để tránh append rỗng
     Object.entries(params).forEach(([key, value]) => {
-        url.searchParams.append(key, String(value));
+        if (value !== undefined) {
+            url.searchParams.append(key, String(value));
+        }
     });
 
     const isPost = options?.method === 'POST';

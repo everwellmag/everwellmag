@@ -12,9 +12,9 @@ interface TableOfContentsProps {
 }
 
 export default function TableOfContents({ blocks }: TableOfContentsProps) {
-    // Generate TOC from markdown headings
     const toc = useMemo(() => {
-        const headings: { text: string; level: number; id: string }[] = [];
+        const headings: { text: string; level: number; id: string; key: string }[] = [];
+        let counter = 0; // ← ĐẾM ĐỂ KEY DUY NHẤT
 
         blocks?.forEach((block) => {
             if (block.__component === "shared.rich-text" && block.body) {
@@ -26,8 +26,13 @@ export default function TableOfContents({ blocks }: TableOfContentsProps) {
                             .filter((child: PhrasingContent): child is Text => child.type === "text")
                             .map((child) => child.value)
                             .join("");
-                        const id = slugify(text);
-                        headings.push({ text, level: node.depth, id });
+                        const baseId = slugify(text) || `heading-${counter}`;
+                        headings.push({
+                            text,
+                            level: node.depth,
+                            id: baseId,           // ← DÙNG ĐỂ SCROLL
+                            key: `${baseId}-${counter++}` // ← KEY DUY NHẤT = id + counter
+                        });
                     }
                 });
             }
@@ -35,12 +40,11 @@ export default function TableOfContents({ blocks }: TableOfContentsProps) {
         return headings;
     }, [blocks]);
 
-    // Handle smooth scroll with offset
     const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
         e.preventDefault();
         const element = document.getElementById(id);
         if (element) {
-            const offset = 80; // Match scroll-padding-top in globals.css
+            const offset = 80;
             const y = element.getBoundingClientRect().top + window.scrollY - offset;
             window.scrollTo({ top: y, behavior: "smooth" });
         }
@@ -49,20 +53,18 @@ export default function TableOfContents({ blocks }: TableOfContentsProps) {
     if (toc.length === 0) return null;
 
     return (
-        <div className="mb-8 p-4 bg-[var(--card-bg)] border border-[var(--border-color)] rounded-lg shadow-md dark:bg-[var(--card-bg-dark)]">
-            <h3 className="text-lg font-semibold text-[var(--foreground)] font-[var(--font-sans)] mb-3">
-                Table of Contents
-            </h3>
+        <div className="mb-8 p-4 bg-[var(--card-bg)] border border-[var(--border-color)] rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold text-[var(--foreground)] mb-3">Table of Contents</h3>
             <ul className="space-y-2">
                 {toc.map((heading) => (
                     <li
-                        key={heading.id}
-                        className={`text-m ${heading.level === 3 ? "pl-4" : "pl-0"} text-[var(--text-secondary)]`}
+                        key={heading.key} // ← KEY DUY NHẤT, KHÔNG BAO GIỜ TRÙNG
+                        className={`text-sm ${heading.level === 3 ? "pl-4" : "pl-0"} text-[var(--text-secondary)]`}
                     >
                         <a
                             href={`#${heading.id}`}
                             onClick={(e) => handleScroll(e, heading.id)}
-                            className="text-[var(--link-color)] hover:text-[var(--link-hover)] transition-colors font-[var(--font-sans)]"
+                            className="text-[var(--link-color)] hover:text-[var(--link-hover)] transition-colors"
                         >
                             {heading.text}
                         </a>

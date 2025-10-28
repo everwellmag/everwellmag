@@ -143,12 +143,15 @@ export default function CommentForm({ articleSlug, productSlug }: CommentFormPro
             </div>
 
             {/* CAPTCHA + NÚT – CĂN PHẢI */}
-            <div className="mt-6 flex flex-wrap items-center justify-end gap-3">
-                <SimpleMathCaptcha ref={captchaRef} onVerify={setMathOk} />
+            <div className="mt-4 flex justify-end items-center gap-3">
+                <SimpleMathCaptcha
+                    ref={captchaRef}
+                    onVerify={setMathOk}
+                />
                 <button
                     type="submit"
                     disabled={submitting || !mathOk}
-                    className="px-6 py-2 rounded-lg text-white font-semibold transition duration-200 btn-gradient disabled:bg-[var(--placeholder-bg)] disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    className="px-6 py-2 rounded-lg text-white font-semibold transition duration-200 btn-gradient disabled:bg-[var(--placeholder-bg)] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {submitting ? 'Submitting...' : 'Post Comment'}
                 </button>

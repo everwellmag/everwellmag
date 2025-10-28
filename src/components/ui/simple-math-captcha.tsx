@@ -43,15 +43,15 @@ const SimpleMathCaptcha = forwardRef<SimpleMathCaptchaRef, SimpleMathCaptchaProp
         }));
 
         return (
-            <div className="flex items-center gap-2 text-base font-bold">
-                <span className="font-medium">{a} + {b} = ?</span>
+            <div className="flex items-center gap-2 text-base">
+                <span className="font-medium">{a} + {b} =</span>
                 <input
                     type="text"
                     value={answer}
                     onChange={e => setAnswer(e.target.value.replace(/\D/g, ''))}
                     onBlur={check}
                     placeholder="?"
-                    className="w-20 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[var(--link-color)]"
+                    className="w-12 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[var(--link-color)]"
                     style={{ borderColor: 'var(--border-color)' }}
                     disabled={verified}
                 />

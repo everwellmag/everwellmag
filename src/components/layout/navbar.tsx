@@ -108,8 +108,6 @@ export default function Navbar() {
                 { href: '/mind-sleep/supplements-mind-sleep', label: 'Supplements for Mind & Sleep' },
             ],
         },
-        { href: '/about', label: 'About' },
-        { href: '/contact', label: 'Contact' },
     ];
 
     return (

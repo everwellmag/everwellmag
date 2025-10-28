@@ -62,8 +62,9 @@ export default function Footer() {
 
                     {/* Middle Left: Quick Links - Dọc hoàn toàn, mỗi link 1 dòng */}
                     <div className="text-center md:text-left md:col-span-1">
-                        <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+                        <h4 className="text-lg font-semibold mb-4">Legal Links</h4>
                         <ul className="space-y-2 text-sm opacity-90">
+                            <li><Link href="/about" className="hover:underline">About</Link></li>
                             <li><Link href="/terms" className="hover:underline">Terms</Link></li>
                             <li><Link href="/privacy" className="hover:underline">Privacy</Link></li>
                             <li><Link href="/affiliate-disclosure" className="hover:underline">Affiliate Disclosure</Link></li>

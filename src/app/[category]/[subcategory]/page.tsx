@@ -71,7 +71,7 @@ export default async function SubCategoryPage({ params, searchParams }: SubCateg
                     }}
                 >
                     <h1
-                        className="text-3xl md:text-4xl font-bold"
+                        className="text-3xl md:text-3xl font-bold"
                         style={{ color: 'var(--title-color)' }}
                     >
                         {subcategoryData.name || subcategory}

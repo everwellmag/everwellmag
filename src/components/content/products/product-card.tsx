@@ -10,7 +10,7 @@ const normalizeImageUrl = (url?: string): string => {
 
 // Hàm tạo star rating
 const getStarRating = (rating?: number): React.ReactNode => {
-    if (rating === undefined || rating < 0) return <span className="text-gray-500 text-sm">No rating</span>;
+    if (rating === undefined || rating < 0) return <span className="text-gray-500 text-base">No rating</span>;
     const fullStars = Math.floor(rating);
     const decimal = rating % 1;
     const stars = [];
@@ -73,13 +73,13 @@ export default function ProductCard({ product }: ProductCardProps) {
                 <Link href={`/product/${slug}`}>{title}</Link>
             </h2>
             <div className="space-y-2 mb-4">
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-base" style={{ color: 'var(--text-secondary)' }}>
                     <span className="font-medium">Supplier:</span> {supplier}
                 </p>
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-base" style={{ color: 'var(--text-secondary)' }}>
                     <span className="font-medium">Released:</span> {releaseYear}
                 </p>
-                <p className="text-sm flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-base flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
                     <span className="font-medium">Rating:</span> {getStarRating(rating)} <span>({rating.toFixed(1)}/5)</span>
                 </p>
                 {pricemulti.length > 0 ? (
@@ -90,10 +90,10 @@ export default function ProductCard({ product }: ProductCardProps) {
                                 className="flex items-center px-3 py-1 rounded-full border border-[var(--border-color)]"
                                 style={{ backgroundColor: 'var(--background)' }}
                             >
-                                <span className="text-sm font-medium mr-2" style={{ color: 'var(--foreground)' }}>
+                                <span className="text-base font-medium mr-2" style={{ color: 'var(--foreground)' }}>
                                     {price.quantity} {price.quantity > 1 ? 'Units' : 'Unit'}
                                 </span>
-                                <span className="text-sm font-semibold" style={{ color: '#10B981' }}>
+                                <span className="text-base font-semibold" style={{ color: '#10B981' }}>
                                     {price.currency}
                                     {price.price}
                                 </span>
@@ -101,7 +101,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                         ))}
                     </div>
                 ) : (
-                    <p className="text-sm italic" style={{ color: 'var(--text-secondary)' }}>
+                    <p className="text-base italic" style={{ color: 'var(--text-secondary)' }}>
                         No pricing options available
                     </p>
                 )}
@@ -109,7 +109,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             <div className="flex gap-2 mt-auto">
                 <Link
                     href={affiliateLink}
-                    className="flex-1 px-4 py-2 rounded-lg text-white font-semibold text-center transition duration-200 btn-gradient text-sm"
+                    className="flex-1 px-4 py-3 rounded-lg text-white font-semibold text-center transition duration-200 btn-gradient text-base"
                     target="_blank"                    // Mở tab mới
                     rel="nofollow noopener noreferrer" // Chống phạt Google + bảo mật
                 >
@@ -117,7 +117,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 </Link>
                 <Link
                     href={`/product/${slug}`}
-                    className="flex-1 px-4 py-2 rounded-lg font-semibold text-center transition duration-200 text-sm border border-[var(--border-color)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--placeholder-bg)]"
+                    className="flex-1 px-4 py-3 rounded-lg font-semibold text-center transition duration-200 text-base border border-[var(--border-color)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--placeholder-bg)]"
                 >
                     Detail
                 </Link>

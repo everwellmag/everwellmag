@@ -59,7 +59,7 @@ export default function TableOfContents({ blocks }: TableOfContentsProps) {
                 {toc.map((heading) => (
                     <li
                         key={heading.key} // ← KEY DUY NHẤT, KHÔNG BAO GIỜ TRÙNG
-                        className={`text-sm ${heading.level === 3 ? "pl-4" : "pl-0"} text-[var(--text-secondary)]`}
+                        className={`text-base ${heading.level === 3 ? "pl-4" : "pl-0"} text-[var(--text-secondary)]`}
                     >
                         <a
                             href={`#${heading.id}`}

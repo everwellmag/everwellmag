@@ -76,7 +76,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
     return (
         <>
             {/* === NỘI DUNG CHÍNH – GIỚI HẠN CHIỀU RỘNG === */}
-            <main className="container mx-auto px-1 py-8 max-w-4xl">
+            <main className="container mx-auto px-2 py-8 max-w-4xl">
                 <Link href="/" className="text-[var(--link-color)] hover:text-[var(--link-hover)] mb-2 inline-block font-[var(--font-sans)] transition-colors">
                     ← Back to Home
                 </Link>

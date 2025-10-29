@@ -43,7 +43,7 @@ export const CustomMarkdown = ({ content }: MarkdownRendererProps) => {
                 components={{
                     p: ({ children, ...props }: React.ComponentProps<"p">) => (
                         <p
-                            className="mb-4 text-base md:text-lg leading-relaxed"
+                            className="mb-4 text-lg md:text-lg leading-relaxed"
                             style={{ color: "var(--foreground)" }}
                             {...props}
                         >

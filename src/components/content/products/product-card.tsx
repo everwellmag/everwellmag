@@ -109,7 +109,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             <div className="flex gap-2 mt-auto">
                 <Link
                     href={affiliateLink}
-                    className="flex-1 px-4 py-3 rounded-lg text-white font-semibold text-center transition duration-200 btn-gradient text-base"
+                    className="flex-1 px-4 py-2 rounded-lg text-white font-semibold text-center transition duration-200 btn-gradient text-base"
                     target="_blank"                    // Mở tab mới
                     rel="nofollow noopener noreferrer" // Chống phạt Google + bảo mật
                 >
@@ -117,7 +117,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 </Link>
                 <Link
                     href={`/product/${slug}`}
-                    className="flex-1 px-4 py-3 rounded-lg font-semibold text-center transition duration-200 text-base border border-[var(--border-color)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--placeholder-bg)]"
+                    className="flex-1 px-4 py-2 rounded-lg font-semibold text-center transition duration-200 text-base border border-[var(--border-color)] bg-[var(--background)] text-[var(--foreground)] hover:bg-[var(--placeholder-bg)]"
                 >
                     Detail
                 </Link>

@@ -1,6 +1,6 @@
 // src/components/ui/simple-math-captcha.tsx
 'use client';
-import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle, useCallback } from 'react';
 
 interface SimpleMathCaptchaProps {
     onVerify: (ok: boolean) => void;
@@ -17,7 +17,7 @@ const SimpleMathCaptcha = forwardRef<SimpleMathCaptchaRef, SimpleMathCaptchaProp
         const [answer, setAnswer] = useState('');
         const [verified, setVerified] = useState(false);
 
-        const generate = () => {
+        const generate = useCallback(() => {
             const x = Math.floor(Math.random() * 9) + 1;
             const y = Math.floor(Math.random() * 9) + 1;
             setA(x);
@@ -25,11 +25,11 @@ const SimpleMathCaptcha = forwardRef<SimpleMathCaptchaRef, SimpleMathCaptchaProp
             setAnswer('');
             setVerified(false);
             onVerify(false);
-        };
+        }, [onVerify]);
 
         useEffect(() => {
             generate();
-        }, []);
+        }, [generate]);
 
         const check = () => {
             const ok = a * b === Number(answer);
@@ -37,10 +37,9 @@ const SimpleMathCaptcha = forwardRef<SimpleMathCaptchaRef, SimpleMathCaptchaProp
             onVerify(ok);
         };
 
-        // Expose reset method
         useImperativeHandle(ref, () => ({
             reset: generate,
-        }));
+        }), [generate]);
 
         return (
             <div className="flex items-center gap-2 text-base">
@@ -56,7 +55,7 @@ const SimpleMathCaptcha = forwardRef<SimpleMathCaptchaRef, SimpleMathCaptchaProp
                     disabled={verified}
                 />
                 {verified ? (
-                    <span className="text-green-600">✓</span>
+                    <span className="text-green-600">Verified</span>
                 ) : (
                     <button type="button" onClick={generate} className="text-base font-bold hover:text-green-600">
                         Verify

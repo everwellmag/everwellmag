@@ -168,6 +168,8 @@ export default function ProductDetail({ product, comments, totalComments, curren
                     <Link
                         href={affiliateLink}
                         className="block w-full px-6 py-3 rounded-lg text-white font-semibold text-center transition duration-200 btn-gradient"
+                        target="_blank"                    // Mở tab mới
+                        rel="nofollow noopener noreferrer" // Chống phạt Google + bảo mật
                     >
                         Buy Now from Official Site
                     </Link>

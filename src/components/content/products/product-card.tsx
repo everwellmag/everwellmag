@@ -110,6 +110,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                 <Link
                     href={affiliateLink}
                     className="flex-1 px-4 py-2 rounded-lg text-white font-semibold text-center transition duration-200 btn-gradient text-sm"
+                    target="_blank"                    // Mở tab mới
+                    rel="nofollow noopener noreferrer" // Chống phạt Google + bảo mật
                 >
                     Buy Now
                 </Link>

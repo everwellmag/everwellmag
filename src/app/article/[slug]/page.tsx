@@ -76,12 +76,12 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
     return (
         <>
             {/* === NỘI DUNG CHÍNH – GIỚI HẠN CHIỀU RỘNG === */}
-            <main className="container mx-auto px-4 py-8 max-w-4xl">
+            <main className="container mx-auto px-1 py-8 max-w-4xl">
                 <Link href="/" className="text-[var(--link-color)] hover:text-[var(--link-hover)] mb-2 inline-block font-[var(--font-sans)] transition-colors">
                     ← Back to Home
                 </Link>
 
-                <article className="bg-[var(--card-bg)] rounded-lg shadow-lg p-6 mb-12">
+                <article className="bg-[var(--card-bg)] rounded-lg shadow-lg px-2 p-6 mb-12">
                     <h1 className="text-3xl font-bold mb-4 text-[var(--foreground)] font-[var(--font-sans)] leading-tight">
                         {article.title}
                     </h1>

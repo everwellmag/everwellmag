@@ -178,7 +178,7 @@ export default function ProductDetail({ product, comments, totalComments, curren
 
             {/* Description section */}
             <section
-                className="mb-12 border border-[var(--border-color)] rounded-lg shadow-md p-6"
+                className="mb-12 border border-[var(--border-color)] rounded-lg shadow-md px-3 p-6"
                 style={{ backgroundColor: 'var(--card-bg)' }}
             >
                 <h2 className="text-2xl font-semibold mb-4" style={{ color: 'var(--foreground)' }}>

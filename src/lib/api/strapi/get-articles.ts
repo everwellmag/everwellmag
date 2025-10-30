@@ -3,12 +3,12 @@ import { fetchStrapi } from './fetch-strapi';
 import type { Article } from '@/lib/types/article';
 
 // HỖ TRỢ TẤT CẢ FILTERS STRAPI
-interface GetArticlesParams {
+export interface GetArticlesParams {  // ← THÊM `export`
     'pagination[page]'?: number;
     'pagination[pageSize]'?: number;
     sort?: string;
     populate?: string;
-    [key: string]: string | number | boolean | undefined; // ← CHO PHÉP filters[id][$ne]
+    [key: string]: string | number | boolean | undefined;
 }
 
 export async function getArticles(subcategorySlug: string = 'diet-plan', params: GetArticlesParams = {}) {

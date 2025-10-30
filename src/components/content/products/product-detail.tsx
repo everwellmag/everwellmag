@@ -1,3 +1,4 @@
+// src/components/content/products/product-detail.tsx
 import Link from 'next/link';
 import Image from 'next/image';
 import { CustomMarkdown } from '@/components/common/markdown-renderer';
@@ -6,6 +7,7 @@ import type { Product } from '@/lib/types/product';
 import type { Comment } from '@/lib/types/comment';
 import { CMS_DOMAIN, DEFAULT_OG_IMAGE } from '@/lib/config';
 import Breadcrumb from '@/components/common/breadcrumb';
+
 // Hàm chuẩn hóa URL ảnh
 const normalizeImageUrl = (url?: string): string => {
     if (!url) return DEFAULT_OG_IMAGE;
@@ -18,7 +20,6 @@ const getFirstImageFromDescription = (description: string): string | null => {
     const match = description.match(regex);
     if (!match) return null;
     const url = match[1];
-    if (typeof url !== 'string') return null;
     return url.startsWith('http') ? url : `${CMS_DOMAIN}${url}`;
 };
 
@@ -69,6 +70,7 @@ export default function ProductDetail({ product, comments, totalComments, curren
     const releaseYear = product.ReleaseYear || 'N/A';
     const affiliateLink = product.AffiliateLink || '#';
     const pricemulti = product.Pricemulti || [];
+    const tags = product.tags || [];
 
     return (
         <main className="container mx-auto px-4 py-10 max-w-5xl">
@@ -100,6 +102,7 @@ export default function ProductDetail({ product, comments, totalComments, curren
                         height={450}
                         className="w-full max-w-sm md:max-w-md h-auto object-cover rounded-lg shadow-md transition-transform hover:scale-[1.02]"
                         style={{ width: 'auto', height: 'auto' }}
+                        priority
                     />
                 </div>
 
@@ -111,6 +114,8 @@ export default function ProductDetail({ product, comments, totalComments, curren
                     <p className="text-xl md:text-2xl pb-4 font-semibold" style={{ color: 'var(--title-color)' }}>
                         {title}
                     </p>
+
+
                     <div className="space-y-3 mb-4">
                         <p>
                             <span className="font-medium">Supplier:</span>{' '}
@@ -128,6 +133,29 @@ export default function ProductDetail({ product, comments, totalComments, curren
                             <span className="font-medium">Rating:</span> {getStarRating(rating)} <span>({rating.toFixed(1)}/5)</span>
                         </p>
                     </div>
+
+                    {/* TAGS – THÊM Ở ĐÂY */}
+                    {tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-4">
+                            <p>
+                                <span className="font-medium">Tag:</span>{' '}
+                            </p>
+                            {tags.map((tag) => (
+                                <Link
+                                    key={tag.id}
+                                    href={`/tag/${tag.slug}`}
+                                    className="inline-block px-3 py-1 text-sm font-medium rounded-full transition-colors"
+                                    style={{
+                                        backgroundColor: tag.color || '#e5e7eb',
+                                        color: '#ffffff',
+                                    }}
+                                >
+                                    {tag.name}
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+
                     <div className="mb-6">
                         <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--foreground)' }}>
                             Pricing Options
@@ -143,9 +171,8 @@ export default function ProductDetail({ product, comments, totalComments, curren
                                         <span className="text-sm font-medium mr-2" style={{ color: 'var(--foreground)' }}>
                                             {price.quantity} {price.quantity > 1 ? 'Units' : 'Unit'}
                                         </span>
-                                        <span className="text-sm font-semibold" style={{ color: '#10B981' /* green-500 */ }}>
-                                            {price.currency}
-                                            {price.price}
+                                        <span className="text-sm font-semibold" style={{ color: '#10B981' }}>
+                                            {price.currency}{price.price}
                                         </span>
                                     </div>
                                 ))}
@@ -156,11 +183,12 @@ export default function ProductDetail({ product, comments, totalComments, curren
                             </p>
                         )}
                     </div>
+
                     <Link
                         href={affiliateLink}
                         className="block w-full px-6 py-3 rounded-lg text-white font-semibold text-center transition duration-200 btn-gradient"
-                        target="_blank"                    // Mở tab mới
-                        rel="nofollow noopener noreferrer" // Chống phạt Google + bảo mật
+                        target="_blank"
+                        rel="nofollow noopener noreferrer"
                     >
                         Buy Now from Official Site
                     </Link>

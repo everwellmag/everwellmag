@@ -1,20 +1,31 @@
 // src/components/ui/search-bar.tsx
 'use client';
 
-export default function SearchBar() {
+export default function SearchBar({ isMobile = false }: { isMobile?: boolean }) {
     return (
-        <form action="/search" className="flex w-full items-center">
+        <form
+            action="/search"
+            className={`flex items-center ${isMobile ? 'w-full gap-3' : 'w-48 md:w-64 gap-2'}`}
+        >
             <input
                 type="text"
                 name="q"
-                placeholder="Search articles or products..."
-                className="flex-1 min-w-0 border border-white/20 bg-white/10 text-white placeholder-white/50 rounded-l-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/30"
+                placeholder="Search..."
+                className={`
+          flex-1 min-w-0 border border-white/20 bg-white/10 text-white placeholder-white/50
+          px-3 py-2 text-base rounded-md focus:outline-none focus:ring-2 focus:ring-white/30
+          ${isMobile ? 'text-base' : 'text-sm'}
+        `}
+                style={{ fontSize: '16px' }}
             />
             <button
                 type="submit"
-                className="bg-white/20 text-white px-3 py-1.5 rounded-r-md hover:bg-white/30 transition-colors duration-200 whitespace-nowrap"
+                className={`
+          bg-white/20 text-white font-medium transition-colors duration-200
+          ${isMobile ? 'px-5 py-2 text-base' : 'px-4 py-2 text-sm'} rounded-md hover:bg-white/30
+        `}
             >
-                Search
+                {isMobile ? 'Go' : 'Search'}
             </button>
         </form>
     );

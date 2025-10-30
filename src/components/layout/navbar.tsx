@@ -5,12 +5,12 @@ import { useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import SearchBar from '@/components/ui/search-bar';
+import ThemeSwitcher from '@/components/ui/theme-switcher';
 
 export default function Navbar() {
-    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [openSubMenu, setOpenSubMenu] = useState<number | null>(null);
     const touchStartX = useRef<number | null>(null);
-    const touchEndX = useRef<number | null>(null);
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -25,23 +25,12 @@ export default function Navbar() {
         touchStartX.current = e.touches[0].clientX;
     };
 
-    const handleTouchMove = (e: React.TouchEvent) => {
-        touchEndX.current = e.touches[0].clientX;
-    };
-
     const handleTouchEnd = () => {
-        if (touchStartX.current !== null && touchEndX.current !== null) {
-            const deltaX = touchEndX.current - touchStartX.current;
-            if (isMenuOpen && deltaX < -100) {
-                setIsMenuOpen(false);
-                setOpenSubMenu(null);
-            }
-            if (!isMenuOpen && deltaX > 100) {
-                setIsMenuOpen(true);
-            }
-        }
+        if (!touchStartX.current) return;
+        const endX = performance.now() % 1000;
+        const deltaX = touchStartX.current - endX;
+        if (deltaX < -100) toggleMenu();
         touchStartX.current = null;
-        touchEndX.current = null;
     };
 
     const menuItems = [
@@ -112,129 +101,144 @@ export default function Navbar() {
 
     return (
         <nav className="bg-gradient-blue-purple text-white fixed top-0 left-0 w-full z-50 shadow-lg">
-            <div className="px-6 sm:px-8 lg:px-12 mx-auto flex justify-between items-center py-4">
-                {/* Logo */}
-                <Link href="/" className="flex items-center space-x-2">
-                    <Image
-                        src="https://cms.everwellmagazine.com/uploads/logo_everwell_magazine_156480b913.svg"
-                        alt="EverWell Magazine Logo"
-                        width={240}
-                        height={0}
-                        style={{ height: 'auto' }}
-                        priority
-                    />
-                    <span className="sr-only">EverWell Magazine</span>
-                </Link>
+            {/* Navbar Content – 90% trên mobile */}
+            <div className="px-4 sm:px-8 lg:px-12 mx-auto max-w-7xl w-full md:w-auto">
+                <div className="flex justify-between items-center py-4">
+                    {/* Logo */}
+                    <Link href="/" className="flex items-center">
+                        <Image
+                            src="https://cms.everwellmagazine.com/uploads/logo_everwell_magazine_156480b913.svg"
+                            alt="EverWell Magazine"
+                            width={220}
+                            height={0}
+                            style={{ height: 'auto' }}
+                            priority
+                        />
+                    </Link>
 
-                {/* Menu Desktop */}
-                <div className="hidden md:flex items-center gap-8">
-                    {menuItems.map((item) => (
-                        <div key={item.href} className="relative group">
-                            <Link
-                                href={item.href}
-                                className="py-2 font-medium text-white hover:bg-white/10 rounded-md transition-colors duration-200 truncate max-w-[160px]"
-                            >
-                                {item.label}
-                            </Link>
-                            {item.subItems && (
-                                <div className="dropdown-menu absolute top-full left-0 bg-gradient-blue-purple-hover text-white shadow-lg rounded-lg p-2 min-w-[300px] invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-300">
-                                    {item.subItems.map((subItem) => (
-                                        <Link
-                                            key={subItem.href}
-                                            href={subItem.href}
-                                            className="block px-4 py-2 text-base hover:bg-white/10 rounded transition-colors duration-200 truncate"
-                                        >
-                                            {subItem.label}
-                                        </Link>
-                                    ))}
+                    {/* Desktop Menu – KHÔNG XUỐNG DÒNG */}
+                    <div className="hidden md:flex items-center gap-4 flex-1 justify-end whitespace-nowrap">
+                        <div className="flex items-center gap-4">
+                            {menuItems.map((item, i) => (
+                                <div key={i} className="relative group">
+                                    <Link
+                                        href={item.href}
+                                        className="py-2 font-medium hover:bg-white/10 rounded-md px-3 transition-colors"
+                                    >
+                                        {item.label}
+                                    </Link>
+                                    {item.subItems && (
+                                        <div className="absolute top-full left-0 mt-1 min-w-max bg-gradient-blue-purple text-white shadow-xl rounded-lg p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                                            {item.subItems.map((sub, j) => (
+                                                <Link
+                                                    key={j}
+                                                    href={sub.href}
+                                                    className="block px-3 py-2 text-base hover:bg-white/10 rounded transition-colors whitespace-nowrap text-left"
+                                                >
+                                                    {sub.label}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
-                            )}
+                            ))}
                         </div>
-                    ))}
-                    <SearchBar />
-                </div>
+                        <div className="ml-4">
+                            <SearchBar />
+                        </div>
+                    </div>
 
-                {/* Hamburger Button Mobile */}
-                <button
-                    className="md:hidden text-white focus:outline-none"
-                    aria-label="Toggle menu"
-                    onClick={toggleMenu}
-                >
-                    <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
-            </div>
-
-            {/* Mobile Menu */}
-            <div
-                className={`md:hidden fixed top-0 right-0 w-full h-full max-h-[100vh] bg-gradient-blue-purple overflow-y-auto transform ${isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
-                    } transition-all duration-300 ease-in-out`}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-            >
-                <div className="flex flex-col gap-3 px-6 py-8">
-                    {/* Close Button */}
+                    {/* Mobile Hamburger */}
                     <button
-                        className="self-end text-white focus:outline-none mb-4"
-                        aria-label="Close menu"
+                        className="md:hidden p-2"
                         onClick={toggleMenu}
+                        aria-label="Toggle menu"
                     >
                         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
-                    {/* Search Bar in Mobile Menu */}
-                    <div className="mb-4">
-                        <SearchBar />
+                </div>
+            </div>
+
+            {/* Mobile Menu – 90% width */}
+            <div
+                className={`md:hidden fixed inset-0 bg-black/50 transition-opacity ${isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                onClick={toggleMenu}
+            />
+            <div
+                className={`md:hidden fixed top-0 right-0 h-full w-[90%] max-w-sm bg-gradient-blue-purple shadow-2xl transform transition-transform duration-300 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+            >
+                <div className="flex flex-col h-full overflow-y-auto p-6">
+                    {/* Close Button */}
+                    <div className="flex justify-end mb-6">
+                        <button onClick={toggleMenu} className="text-white">
+                            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
                     </div>
+
+                    {/* Search */}
+                    <div className="mb-6">
+                        <SearchBar isMobile />
+                    </div>
+
+                    {/* Menu Items */}
                     {menuItems.map((item, index) => (
-                        <div key={item.href}>
-                            <div className="flex justify-between items-center">
+                        <div key={index} className="border-b border-white/10 last:border-0">
+                            <div className="flex justify-between items-center py-3">
                                 <Link
                                     href={item.href}
-                                    className="text-xl font-medium text-white hover:text-blue-200 transition-colors duration-200 py-3"
                                     onClick={toggleMenu}
+                                    className="text-lg font-medium text-white hover:text-blue-200 transition"
                                 >
                                     {item.label}
                                 </Link>
                                 {item.subItems && (
                                     <button
-                                        className="text-white focus:outline-none p-3"
                                         onClick={() => toggleSubMenu(index)}
+                                        className="text-white p-2"
                                     >
                                         <svg
-                                            className={`w-6 h-6 transform transition-transform duration-200 ${openSubMenu === index ? 'rotate-180' : ''
-                                                }`}
+                                            className={`w-5 h-5 transition-transform ${openSubMenu === index ? 'rotate-180' : ''}`}
                                             fill="none"
                                             stroke="currentColor"
                                             viewBox="0 0 24 24"
                                         >
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </button>
                                 )}
                             </div>
+
                             {item.subItems && (
                                 <div
-                                    className={`pl-6 flex flex-col gap-3 mt-2 submenu overflow-hidden ${openSubMenu === index ? 'max-h-[500px]' : 'max-h-0'
-                                        } transition-all duration-300 ease-in-out`}
+                                    className={`overflow-hidden transition-all duration-300 ease-in-out ${openSubMenu === index ? 'max-h-96' : 'max-h-0'}`}
                                 >
-                                    {item.subItems.map((subItem) => (
-                                        <Link
-                                            key={subItem.href}
-                                            href={subItem.href}
-                                            className="text-lg text-white hover:text-blue-200 transition-colors duration-200 py-2"
-                                            onClick={toggleMenu}
-                                        >
-                                            {subItem.label}
-                                        </Link>
-                                    ))}
+                                    <div className="pl-4 py-2 space-y-2">
+                                        {item.subItems.map((sub, j) => (
+                                            <Link
+                                                key={j}
+                                                href={sub.href}
+                                                onClick={toggleMenu}
+                                                className="block text-white/80 hover:text-white text-base py-1 transition"
+                                            >
+                                                {sub.label}
+                                            </Link>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
                         </div>
                     ))}
+
+                    {/* Theme Switcher – Mobile Only */}
+                    <div className="mt-8 pt-6 border-t border-white/10">
+                        <ThemeSwitcher />
+                    </div>
                 </div>
             </div>
         </nav>

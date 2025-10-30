@@ -24,9 +24,10 @@ export default function Footer() {
                                 className="mx-auto md:mx-0"
                             />
                         </div>
-                        <p className="text-sm opacity-80">
-                            © 2025 Everwell Magazine. All rights reserved.
-                        </p>
+                        <div className="mt-4 border-t border-white/20 pt-2 text-center text-xs opacity-80">
+                            <p>Designed with ❤️ for health enthusiasts</p>
+                        </div>
+
                     </div>
 
                     {/* Middle Left: Quick Links - Dọc hoàn toàn, mỗi link 1 dòng */}
@@ -113,8 +114,10 @@ export default function Footer() {
                 </div>
 
                 {/* Divider */}
-                <div className="mt-4 border-t border-white/20 pt-6 text-center text-xs opacity-80">
-                    <p>Designed with ❤️ for health enthusiasts</p>
+                <div className="mt-4 border-t border-white/20 pt-4 text-center text-xs opacity-80">
+                    <p className="text-sm opacity-80">
+                        © 2025 Everwell Magazine. All rights reserved.
+                    </p>
                 </div>
             </div>
         </footer>

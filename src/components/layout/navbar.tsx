@@ -11,26 +11,39 @@ export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [openSubMenu, setOpenSubMenu] = useState<number | null>(null);
     const touchStartX = useRef<number | null>(null);
+    const touchEndX = useRef<number | null>(null);
 
     const toggleMenu = () => {
-        setIsMenuOpen(!isMenuOpen);
+        setIsMenuOpen(prev => !prev);
         setOpenSubMenu(null);
     };
 
     const toggleSubMenu = (index: number) => {
-        setOpenSubMenu(openSubMenu === index ? null : index);
+        setOpenSubMenu(prev => (prev === index ? null : index));
     };
 
     const handleTouchStart = (e: React.TouchEvent) => {
         touchStartX.current = e.touches[0].clientX;
+        touchEndX.current = null;
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        touchEndX.current = e.touches[0].clientX;
     };
 
     const handleTouchEnd = () => {
-        if (!touchStartX.current) return;
-        const endX = performance.now() % 1000;
-        const deltaX = touchStartX.current - endX;
-        if (deltaX < -100) toggleMenu();
+        if (touchStartX.current === null || touchEndX.current === null) return;
+
+        const deltaX = touchEndX.current - touchStartX.current;
+
+        if (isMenuOpen && deltaX < -100) {
+            toggleMenu();
+        } else if (!isMenuOpen && deltaX > 100) {
+            setIsMenuOpen(true);
+        }
+
         touchStartX.current = null;
+        touchEndX.current = null;
     };
 
     const menuItems = [
@@ -101,7 +114,7 @@ export default function Navbar() {
 
     return (
         <nav className="bg-gradient-blue-purple text-white fixed top-0 left-0 w-full z-50 shadow-lg">
-            {/* Navbar Content – 90% trên mobile */}
+            {/* Navbar Content */}
             <div className="px-4 sm:px-8 lg:px-12 mx-auto max-w-7xl w-full md:w-auto">
                 <div className="flex justify-between items-center py-4">
                     {/* Logo */}
@@ -116,7 +129,7 @@ export default function Navbar() {
                         />
                     </Link>
 
-                    {/* Desktop Menu – KHÔNG XUỐNG DÒNG */}
+                    {/* Desktop Menu */}
                     <div className="hidden md:flex items-center gap-4 flex-1 justify-end whitespace-nowrap">
                         <div className="flex items-center gap-4">
                             {menuItems.map((item, i) => (
@@ -161,27 +174,30 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* Mobile Menu – 90% width */}
+            {/* Mobile Menu – FULL WIDTH, MƯỢT NHƯ FILE CŨ */}
             <div
-                className={`md:hidden fixed inset-0 bg-black/50 transition-opacity ${isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                className={`md:hidden fixed inset-0 bg-black/50 transition-opacity duration-300 ${isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                    }`}
                 onClick={toggleMenu}
             />
             <div
-                className={`md:hidden fixed top-0 right-0 h-full w-[90%] max-w-sm bg-gradient-blue-purple shadow-2xl transform transition-transform duration-300 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+                className={`md:hidden fixed top-0 right-0 h-full w-full max-w-sm bg-gradient-blue-purple shadow-2xl transform transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                    }`}
                 onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
             >
                 <div className="flex flex-col h-full overflow-y-auto p-6">
                     {/* Close Button */}
                     <div className="flex justify-end mb-6">
-                        <button onClick={toggleMenu} className="text-white">
+                        <button onClick={toggleMenu} className="text-white p-2">
                             <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
                     </div>
 
-                    {/* Search */}
+                    {/* Search – KHÔNG ĐÓNG MENU */}
                     <div className="mb-6">
                         <SearchBar isMobile />
                     </div>
@@ -199,11 +215,15 @@ export default function Navbar() {
                                 </Link>
                                 {item.subItems && (
                                     <button
-                                        onClick={() => toggleSubMenu(index)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            toggleSubMenu(index);
+                                        }}
                                         className="text-white p-2"
                                     >
                                         <svg
-                                            className={`w-5 h-5 transition-transform ${openSubMenu === index ? 'rotate-180' : ''}`}
+                                            className={`w-5 h-5 transition-transform duration-200 ${openSubMenu === index ? 'rotate-180' : ''
+                                                }`}
                                             fill="none"
                                             stroke="currentColor"
                                             viewBox="0 0 24 24"
@@ -216,7 +236,8 @@ export default function Navbar() {
 
                             {item.subItems && (
                                 <div
-                                    className={`overflow-hidden transition-all duration-300 ease-in-out ${openSubMenu === index ? 'max-h-96' : 'max-h-0'}`}
+                                    className={`overflow-hidden transition-all duration-300 ease-in-out ${openSubMenu === index ? 'max-h-96' : 'max-h-0'
+                                        }`}
                                 >
                                     <div className="pl-4 py-2 space-y-2">
                                         {item.subItems.map((sub, j) => (
@@ -235,7 +256,7 @@ export default function Navbar() {
                         </div>
                     ))}
 
-                    {/* Theme Switcher – Mobile Only */}
+                    {/* Theme Switcher */}
                     <div className="mt-8 pt-6 border-t border-white/10">
                         <ThemeSwitcher />
                     </div>

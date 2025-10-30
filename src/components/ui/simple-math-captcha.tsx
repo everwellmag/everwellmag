@@ -49,8 +49,8 @@ const SimpleMathCaptcha = forwardRef<SimpleMathCaptchaRef, SimpleMathCaptchaProp
                     value={answer}
                     onChange={e => setAnswer(e.target.value.replace(/\D/g, ''))}
                     onBlur={check}
-                    placeholder=" ?"
-                    className="w-12 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[var(--link-color)]"
+                    placeholder="?"
+                    className="w-14 text-center py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[var(--link-color)]"
                     style={{ borderColor: 'var(--border-color)' }}
                     disabled={verified}
                 />

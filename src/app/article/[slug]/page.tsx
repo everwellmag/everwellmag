@@ -88,7 +88,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
 
     return (
         <>
-            <main className="container mx-auto px-2 py-8 max-w-4xl">
+            <main className="container mx-auto px-0 py-8 max-w-4xl">
                 <nav className="mb-6 text-sm flex items-center gap-2 flex-wrap">
                     <Link
                         href="/"

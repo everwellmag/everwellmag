@@ -17,10 +17,10 @@ export const MarkdownImage = ({ src, alt }: MarkdownImageProps) => {
         <Image
             src={imageSrc}
             alt={alt || 'Product image'}
-            width={786}
+            width={540}
             height={0}
-            className="w-full max-w-[90%] md:max-w-[786px] h-auto my-4 rounded-lg shadow-md mx-auto"
-            style={{ width: '100%', maxWidth: '786px', height: 'auto' }}
+            className="w-full max-w-[90%] md:max-w-[540px] h-auto my-4 rounded-lg shadow-md mx-auto"
+            style={{ width: '100%', maxWidth: '540px', height: 'auto' }}
             unoptimized
             loading="lazy"
         />

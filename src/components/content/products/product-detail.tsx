@@ -5,6 +5,7 @@ import CommentSection from '@/components/content/comments/comment-section';
 import type { Product } from '@/lib/types/product';
 import type { Comment } from '@/lib/types/comment';
 import { CMS_DOMAIN, DEFAULT_OG_IMAGE } from '@/lib/config';
+import Breadcrumb from '@/components/common/breadcrumb';
 // Hàm chuẩn hóa URL ảnh
 const normalizeImageUrl = (url?: string): string => {
     if (!url) return DEFAULT_OG_IMAGE;
@@ -68,32 +69,19 @@ export default function ProductDetail({ product, comments, totalComments, curren
     const releaseYear = product.ReleaseYear || 'N/A';
     const affiliateLink = product.AffiliateLink || '#';
     const pricemulti = product.Pricemulti || [];
-    const primaryCategory = product.categories?.[0] || { name: 'Uncategorized', slug: '' };
-    const categoryUrl = primaryCategory.slug ? `/${primaryCategory.slug}` : '/';
 
     return (
         <main className="container mx-auto px-4 py-10 max-w-5xl">
             {/* Breadcrumb */}
-            <nav className="mb-6 text-sm flex items-center gap-2">
-                <Link
-                    href="/"
-                    className="font-medium transition-colors hover:text-[var(--link-hover)]"
-                    style={{ color: 'var(--link-color)' }}
-                >
+            <nav className="mb-6 text-sm flex items-center gap-2 flex-wrap">
+                <Link href="/" className="font-medium hover:text-[var(--link-hover)]" style={{ color: 'var(--link-color)' }}>
                     Home
                 </Link>
                 <span className="text-gray-400">/</span>
-                <Link
-                    href={categoryUrl}
-                    className="font-medium transition-colors hover:text-[var(--link-hover)]"
-                    style={{ color: 'var(--link-color)' }}
-                >
-                    {primaryCategory.name}
-                </Link>
-                <span className="text-gray-400">/</span>
-                <span className="truncate max-w-[200px]" style={{ color: 'var(--text-secondary)' }}>
-                    {title}
-                </span>
+                <Breadcrumb
+                    categorySlug={product.categories?.[0]?.slug}
+                    categoryName={product.categories?.[0]?.name}
+                />
             </nav>
 
             {/* Gradient h1 */}
@@ -120,21 +108,24 @@ export default function ProductDetail({ product, comments, totalComments, curren
                     className="rounded-lg shadow-md p-6 border border-[var(--border-color)]"
                     style={{ backgroundColor: 'var(--card-bg)' }}
                 >
-                    <h2 className="text-xl md:text-2xl font-semibold mb-4" style={{ color: 'var(--title-color)' }}>
+                    <p className="text-xl md:text-2xl pb-4 font-semibold" style={{ color: 'var(--title-color)' }}>
                         {title}
-                    </h2>
-                    <div className="space-y-3 mb-6">
-                        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                            <span className="font-medium">Supplier:</span> {supplier}
+                    </p>
+                    <div className="space-y-3 mb-4">
+                        <p>
+                            <span className="font-medium">Supplier:</span>{' '}
+                            <span className="font-bold" style={{ color: 'var(--foreground)' }}>
+                                {supplier}
+                            </span>
                         </p>
-                        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                            <span className="font-medium">Released:</span> {releaseYear}
+                        <p>
+                            <span className="font-medium">Released:</span>{' '}
+                            <span className="font-bold" style={{ color: 'var(--foreground)' }}>
+                                {releaseYear}
+                            </span>
                         </p>
                         <p className="text-sm flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
                             <span className="font-medium">Rating:</span> {getStarRating(rating)} <span>({rating.toFixed(1)}/5)</span>
-                        </p>
-                        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                            <span className="font-medium">Categories:</span> {product.categories?.map((c) => c.name).join(', ') || 'Uncategorized'}
                         </p>
                     </div>
                     <div className="mb-6">

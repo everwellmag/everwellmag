@@ -8,6 +8,7 @@ import { notFound } from 'next/navigation';
 import CommentSection from '@/components/content/comments/comment-section';
 import ArticleContent from '@/components/content/articles/article-content';
 import RelatedArticles from '@/components/content/articles/related-articles';
+import Breadcrumb from '@/components/common/breadcrumb';
 
 interface ArticlePageProps {
     params: Promise<{ slug: string }>;
@@ -77,9 +78,22 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
         <>
             {/* === NỘI DUNG CHÍNH – GIỚI HẠN CHIỀU RỘNG === */}
             <main className="container mx-auto px-2 py-8 max-w-4xl">
-                <Link href="/" className="text-[var(--link-color)] hover:text-[var(--link-hover)] mb-2 inline-block font-[var(--font-sans)] transition-colors">
-                    ← Back to Home
-                </Link>
+                {/* BREADCRUMB + BACK TO HOME – 1 DÒNG, GIỐNG PRODUCT */}
+                <nav className="mb-6 text-sm flex items-center gap-2 flex-wrap">
+                    <Link
+                        href="/"
+                        className="font-medium transition-colors hover:text-[var(--link-hover)]"
+                        style={{ color: 'var(--link-color)' }}
+                    >
+                        Home
+                    </Link>
+                    <span className="text-gray-400">/</span>
+
+                    <Breadcrumb
+                        categorySlug={article.categories?.[0]?.slug}
+                        categoryName={article.categories?.[0]?.name}
+                    />
+                </nav>
 
                 <article className="bg-[var(--card-bg)] rounded-lg shadow-lg px-2 p-6 mb-12">
                     <h1 className="text-3xl font-bold mb-4 text-[var(--foreground)] font-[var(--font-sans)] leading-tight">

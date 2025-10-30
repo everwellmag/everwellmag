@@ -3,12 +3,12 @@ import { notFound } from 'next/navigation';
 import { getCategoryBySlug } from '@/lib/api/strapi/get-category';
 import { getArticles } from '@/lib/api/strapi/get-articles';
 import { getProducts } from '@/lib/api/strapi/get-products';
+import { fetchStrapi } from '@/lib/api/strapi/fetch-strapi';
 import ArticleList from '@/components/content/articles/article-list';
 import ProductList from '@/components/content/products/product-list';
 import type { Article } from '@/lib/types/article';
 import type { Product } from '@/lib/types/product';
 import type { Category } from '@/lib/types/category';
-import { fetchStrapi } from '@/lib/api/strapi/fetch-strapi';
 import Image from 'next/image';
 import { CMS_DOMAIN } from '@/lib/config';
 
@@ -17,13 +17,7 @@ const normalizeImageUrl = (url?: string): string => {
     return url.startsWith('http') ? url : `${CMS_DOMAIN}${url}`;
 };
 
-// BỎ CẢNH CACHE → trang luôn dynamic
 export const dynamic = 'force-dynamic';
-
-export async function generateStaticParams() {
-    // BỎ CẢNH CACHE → không tạo static params
-    return [];
-}
 
 interface CategoryPageProps {
     params: Promise<{ category: string }>;
@@ -39,13 +33,15 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     const categoryData = await getCategoryBySlug(category);
     if (!categoryData) notFound();
 
-    // BỎ CẢNH CACHE → dùng fetch bình thường
+    // CHỈ RENDER NẾU LÀ DANH MỤC CHA (mixed)
+    if (categoryData.type !== 'mixed') {
+        notFound(); // hoặc redirect nếu muốn
+    }
+
     const subcategoriesResponse = await fetchStrapi('categories', {
         'filters[parent][slug][$eq]': category,
-        'populate': 'image',
+        populate: 'image',
     });
-
-    // Cast an toàn vì fetchStrapi trả any
     const subcategories: Category[] = (subcategoriesResponse as { data: Category[] })?.data || [];
 
     let articles: Article[] = [];
@@ -58,12 +54,12 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             getArticles(category, {
                 'pagination[page]': pageNumber,
                 'pagination[pageSize]': pageSize,
-                sort: 'priority:asc,createdAt:desc'
+                sort: 'priority:asc,createdAt:desc',
             }),
             getProducts(category, {
                 'pagination[page]': pageNumber,
                 'pagination[pageSize]': pageSize,
-                sort: 'priority:asc,createdAt:desc'
+                sort: 'priority:asc,createdAt:desc',
             }),
         ]);
         articles = articlesResponse.data;
@@ -77,7 +73,10 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     return (
         <main className="container mx-auto pt-8 p-4">
             <div className="grid md:grid-cols-2 gap-6 mb-8">
-                <div className="p-6 rounded-2xl shadow-sm border flex items-center gap-5" style={{ background: 'color-mix(in srgb, var(--card-bg), transparent 50%)', borderColor: 'var(--border-color2)' }}>
+                <div
+                    className="p-6 rounded-2xl shadow-sm border flex items-center gap-5"
+                    style={{ background: 'color-mix(in srgb, var(--card-bg), transparent 50%)', borderColor: 'var(--border-color2)' }}
+                >
                     <div className="flex-shrink-0 w-32 h-20 rounded-lg overflow-hidden shadow-sm bg-gray-100">
                         {categoryData.image?.url ? (
                             <Image
@@ -99,7 +98,10 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                 </div>
 
                 {categoryData.description && (
-                    <div className="p-6 rounded-2xl shadow-sm border backdrop-blur-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--card-bg), transparent 30%)', borderColor: 'var(--border-color2)' }}>
+                    <div
+                        className="p-6 rounded-2xl shadow-sm border backdrop-blur-sm"
+                        style={{ backgroundColor: 'color-mix(in srgb, var(--card-bg), transparent 30%)', borderColor: 'var(--border-color2)' }}
+                    >
                         <p className="leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                             {categoryData.description}
                         </p>
@@ -114,7 +116,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                         {subcategories.map((sub) => (
                             <a
                                 key={sub.id}
-                                href={`/${sub.slug}`}
+                                href={`/${category}/${sub.slug}`}  // ← ĐÚNG ĐƯỜNG DẪN: /parent/child
                                 className="group flex items-start gap-4 p-5 rounded-xl border transition-all hover:shadow-md hover:-translate-y-1"
                                 style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)' }}
                             >

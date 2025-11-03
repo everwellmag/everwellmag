@@ -31,6 +31,7 @@ export async function getCategoryBySlug(slug: string): Promise<CategoryWithConte
             'populate[articles][fields][2]': 'slug',
             'populate[articles][fields][3]': 'priority',
             'populate[articles][fields][4]': 'createdAt',
+            'populate[articles][fields][5]': 'description',
             'populate[articles][populate][image][fields][0]': 'url',
 
             // Populate products

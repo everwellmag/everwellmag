@@ -1,14 +1,19 @@
 // src/app/article/[slug]/page.tsx
-import { fetchStrapi } from '@/lib/api/strapi/fetch-strapi';
-import { getArticles, type GetArticlesParams } from '@/lib/api/strapi/get-articles';
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import type { Article } from '@/lib/types/article';
 import type { Comment } from '@/lib/types/comment';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { getArticleBySlug } from '@/lib/api/strapi/get-article';
+import { getArticles, type GetArticlesParams } from '@/lib/api/strapi/get-articles';
+import { fetchStrapi } from '@/lib/api/strapi/fetch-strapi';
+
 import CommentSection from '@/components/content/comments/comment-section';
 import ArticleContent from '@/components/content/articles/article-content';
 import RelatedArticles from '@/components/content/articles/related-articles';
 import Breadcrumb from '@/components/common/breadcrumb';
+
+// ✅ ISR 5 phút
+export const revalidate = 300;
 
 interface ArticlePageProps {
     params: Promise<{ slug: string }>;
@@ -29,39 +34,32 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
     let relatedArticles: Article[] = [];
 
     try {
-        // === FETCH ARTICLE BY SLUG ===
-        const articleResponse = await fetchStrapi('articles', {
-            'filters[slug][$eq]': slug,
-            'populate[0]': 'image',
-            'populate[1]': 'tags',
-            'populate[2]': 'categories',
-            'populate[3]': 'author',
-            'populate[4]': 'blocks',
-            'populate[5]': 'blocks.file',
-        });
+        // === FETCH SONG SONG (Promise.all) ===
+        const [articleData] = await Promise.all([
+            getArticleBySlug(slug),
+        ]);
 
-        article = articleResponse.data?.[0] ?? null;
-        if (!article) notFound();
+        if (!articleData) notFound();
+        article = articleData;
 
-        // === FETCH COMMENTS ===
-        if (article.documentId) {
-            const commentsResponse = await fetchStrapi('comments', {
+        // === FETCH COMMENTS & RELATED SONG SONG ===
+        const commentsPromise = article.documentId
+            ? fetchStrapi('comments', {
                 'filters[article][documentId][$eq]': article.documentId,
-                'populate': 'article',
-                'sort': 'createdAt:desc',
+                populate: 'article',
+                sort: 'createdAt:desc',
                 'pagination[page]': pageNumber,
                 'pagination[pageSize]': pageSize,
-            });
-            comments = commentsResponse.data || [];
-            totalComments = commentsResponse.meta?.pagination?.total || comments.length;
-        }
+            })
+            : Promise.resolve(null);
 
-        // === FETCH RELATED ARTICLES ===
-        const categorySlug = article.categories?.[0]?.slug;
-        const tagSlugs = article.tags?.map((t) => t.slug).filter(Boolean) as string[] | undefined;
+        const relatedPromise = (async () => {
+            const categorySlug = article.categories?.[0]?.slug;
+            const tagSlugs = article.tags?.map((t) => t.slug).filter(Boolean) || [];
 
-        if (categorySlug || tagSlugs?.length) {
-            const articleParams: GetArticlesParams = {
+            if (!categorySlug && !tagSlugs.length) return null;
+
+            const relatedParams: GetArticlesParams = {
                 'pagination[page]': 1,
                 'pagination[pageSize]': 6,
                 sort: 'priority:asc,createdAt:desc',
@@ -69,19 +67,29 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
             };
 
             if (categorySlug) {
-                articleParams['filters[categories][slug][$eq]'] = categorySlug;
-            } else if (tagSlugs?.length) {
-                // Strapi hiểu $in[] khi append nhiều lần
+                relatedParams['filters[categories][slug][$eq]'] = categorySlug;
+            } else if (tagSlugs.length) {
                 tagSlugs.forEach((tag) => {
-                    articleParams[`filters[tags][slug][$in][]`] = tag;
+                    relatedParams[`filters[tags][slug][$in][]`] = tag;
                 });
             }
 
-            const relatedResponse = await getArticles('', articleParams);
-            relatedArticles = relatedResponse.data || [];
+            const res = await getArticles('', relatedParams);
+            return res.data || [];
+        })();
+
+        const [commentsResponse, relatedResponse] = await Promise.all([
+            commentsPromise,
+            relatedPromise,
+        ]);
+
+        if (commentsResponse) {
+            comments = commentsResponse.data || [];
+            totalComments = commentsResponse.meta?.pagination?.total || comments.length;
         }
+        if (relatedResponse) relatedArticles = relatedResponse;
     } catch (error) {
-        console.error('Error fetching article data:', error);
+        console.error('Error fetching article page data:', error);
     }
 
     if (!article) notFound();
@@ -89,6 +97,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
     return (
         <>
             <main className="container mx-auto px-2 py-8 max-w-4xl">
+                {/* BREADCRUMB */}
                 <nav className="mb-6 pl-2 text-sm flex items-center gap-2 flex-wrap">
                     <Link
                         href="/"
@@ -97,20 +106,28 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
                     >
                         Home
                     </Link>
-                    <span className="text-gray-400">/</span>
-                    <Breadcrumb
-                        categorySlug={article.categories?.[0]?.slug}
-                        categoryName={article.categories?.[0]?.name}
-                    />
+
+                    {article.categories?.[0] && (
+                        <>
+                            <span className="text-gray-400">/</span>
+                            <Breadcrumb
+                                parentSlug={article.categories?.[0]?.parent?.slug}
+                                parentName={article.categories?.[0]?.parent?.name}
+                                categorySlug={article.categories?.[0]?.slug}
+                                categoryName={article.categories?.[0]?.name}
+                            />
+                        </>
+                    )}
                 </nav>
 
+                {/* ARTICLE BODY */}
                 <article className="bg-[var(--card-bg)] rounded-lg shadow-lg p-6 mb-12">
-                    <h1 className="text-3xl font-bold mb-4 text-[var(--foreground)] font-[var(--font-sans)] leading-tight">
+                    <h1 className="text-3xl font-bold mb-4 text-[var(--foreground)] leading-tight">
                         {article.title}
                     </h1>
 
                     {article.description && (
-                        <p className="text-[var(--text-secondary)] mb-6 text-lg italic font-[var(--font-sans)] line-clamp-3">
+                        <p className="text-[var(--text-secondary)] mb-6 text-lg italic line-clamp-3">
                             {article.description}
                         </p>
                     )}
@@ -121,7 +138,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
                                 <Link
                                     key={tag.id}
                                     href={`/tag/${tag.slug}`}
-                                    className="inline-block px-3 py-1 text-xs font-medium rounded-full transition-colors"
+                                    className="inline-block px-3 py-1 text-xs font-medium rounded-full"
                                     style={{
                                         backgroundColor: tag.color || '#e5e7eb',
                                         color: '#ffffff',
@@ -147,7 +164,10 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
             </main>
 
             {relatedArticles.length > 0 && (
-                <RelatedArticles currentArticle={article} category={article.categories?.[0]?.slug || ''} />
+                <RelatedArticles
+                    currentArticle={article}
+                    category={article.categories?.[0]?.slug || ''}
+                />
             )}
         </>
     );

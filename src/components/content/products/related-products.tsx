@@ -14,9 +14,10 @@ export default async function RelatedProducts({ currentProduct, category }: Rela
     try {
         const { data: related } = await getProducts(category, {
             'pagination[page]': 1,
-            'pagination[pageSize]': 12,
+            'pagination[pageSize]': 8, // giảm nhỏ hơn để nhẹ
             sort: 'priority:asc,createdAt:desc',
             'filters[id][$ne]': currentId,
+            // không truyền populate -> sẽ dùng default minimal populate trong get-products.ts
         });
 
         if (!related || related.length === 0) return null;
@@ -27,7 +28,6 @@ export default async function RelatedProducts({ currentProduct, category }: Rela
                     Related Supplements ({related.length})
                 </h2>
 
-                {/* GRID ĐÚNG NHƯ product-list.tsx */}
                 <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-8">
                     {related.map((product) => (
                         <ProductCard

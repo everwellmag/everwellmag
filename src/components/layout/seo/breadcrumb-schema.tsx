@@ -1,4 +1,5 @@
 // src/components/layout/seo/breadcrumb-schema.tsx
+import { SITE_DOMAIN } from '@/lib/config';
 interface BreadcrumbItem {
     name: string;
     url: string;
@@ -16,7 +17,7 @@ export default function BreadcrumbSchema({ items }: BreadcrumbSchemaProps) {
             '@type': 'ListItem',
             position: index + 1,
             name: item.name,
-            item: `https://www.everwellmagazine.com${item.url}`,
+            item: `${SITE_DOMAIN}${item.url}`,
         })),
     };
 

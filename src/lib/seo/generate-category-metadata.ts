@@ -8,39 +8,45 @@ interface CategoryMetadataOptions {
     description?: string;
     type?: 'article' | 'product' | 'mixed';
     image?: string;
+    parentSlug?: string; // 👈 thêm để hỗ trợ subcategory
 }
 
-export function generateCategoryMetadata({ name, slug, description, type, image }: CategoryMetadataOptions): Metadata {
+export function generateCategoryMetadata({
+    name,
+    slug,
+    description,
+    type,
+    image,
+    parentSlug,
+}: CategoryMetadataOptions): Metadata {
     const title = `${name} | Everwell Magazine`;
-    const defaultDescription = type === 'article'
-        ? `Explore articles about ${name} on Everwell Magazine.`
-        : type === 'product'
-            ? `Discover ${name} products and supplements on Everwell Magazine.`
-            : `Explore articles and products about ${name} on Everwell Magazine.`;
+    const defaultDescription =
+        type === 'article'
+            ? `Explore articles about ${name} on Everwell Magazine.`
+            : type === 'product'
+                ? `Discover ${name} products and supplements on Everwell Magazine.`
+                : `Explore articles and products about ${name} on Everwell Magazine.`;
 
     const categoryDescription = description || defaultDescription;
+
     const categoryImage = image
         ? image.startsWith('http')
             ? image
             : `${CMS_DOMAIN}${image.startsWith('/') ? '' : '/'}${image}`
         : DEFAULT_OG_IMAGE;
 
+    const path = parentSlug ? `${parentSlug}/${slug}` : slug;
+    const canonicalUrl = `${SITE_DOMAIN}/${path}`;
+
     return {
         title,
         description: categoryDescription,
-        keywords: [
-            name.toLowerCase(),
-            type || 'health',
-            'wellness',
-            'everwell magazine',
-        ],
-        alternates: {
-            canonical: `${SITE_DOMAIN}/${slug}`,
-        },
+        keywords: [name.toLowerCase(), type || 'health', 'wellness', 'everwell magazine'],
+        alternates: { canonical: canonicalUrl },
         openGraph: {
             title,
             description: categoryDescription,
-            url: `${SITE_DOMAIN}/${slug}`,
+            url: canonicalUrl,
             type: 'website',
             images: [
                 {

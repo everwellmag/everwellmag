@@ -10,13 +10,20 @@ interface ProductMetadataOptions {
     image?: string;
 }
 
-export function generateProductMetadata({ Name, slug, Description, metaDescription, image }: ProductMetadataOptions): Metadata {
-    const title = `${Name} | Everwell Magazine`;
-    const productDescription = metaDescription || (
-        Description
+export function generateProductMetadata({
+    Name,
+    slug,
+    Description,
+    metaDescription,
+    image,
+}: ProductMetadataOptions): Metadata {
+    const metaTitle = `${Name} | Everwell Magazine`;
+
+    const metaDescriptionText =
+        metaDescription ||
+        (Description
             ? Description.replace(/[#*`[\]()]+/g, '').trim().substring(0, 160).replace(/\s+\S*$/, '...')
-            : `Discover ${Name} on Everwell Magazine.`
-    );
+            : `Discover ${Name} on Everwell Magazine.`);
 
     const productImage = image
         ? image.startsWith('http')
@@ -25,8 +32,8 @@ export function generateProductMetadata({ Name, slug, Description, metaDescripti
         : DEFAULT_OG_IMAGE;
 
     return {
-        title,
-        description: productDescription,
+        title: metaTitle,
+        description: metaDescriptionText,
         keywords: [
             Name.toLowerCase(),
             'supplement',
@@ -38,10 +45,10 @@ export function generateProductMetadata({ Name, slug, Description, metaDescripti
             canonical: `${SITE_DOMAIN}/product/${slug}`,
         },
         openGraph: {
-            title,
-            description: productDescription,
+            title: metaTitle,
+            description: metaDescriptionText,
             url: `${SITE_DOMAIN}/product/${slug}`,
-            type: 'website',
+            type: 'website', // ✅ tránh lỗi TS, vẫn hợp lệ OG
             images: [
                 {
                     url: productImage,
@@ -57,11 +64,14 @@ export function generateProductMetadata({ Name, slug, Description, metaDescripti
             card: 'summary_large_image',
             site: '@everwellmag',
             creator: '@everwellmag',
-            title,
-            description: productDescription,
-            images: productImage,
+            title: metaTitle,
+            description: metaDescriptionText,
+            images: [productImage],
         },
         other: {
+            'og:type': 'product', // ✅ vẫn thêm tag "product" thủ công để bot SEO đọc được
+            'product:brand': 'Everwell Magazine',
+            'product:availability': 'in stock',
             'og:image:secure_url': productImage,
             'og:image:type': 'image/webp',
             'og:image:alt': `${Name} - Everwell Magazine`,

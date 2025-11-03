@@ -1,9 +1,10 @@
 // src/app/product/[slug]/layout.tsx
 import { notFound } from 'next/navigation';
-import { fetchStrapi } from '@/lib/api/strapi/fetch-strapi';
+import { getProductBySlug } from '@/lib/api/strapi/get-product';
 import ProductSchema from '@/components/layout/seo/product-schema';
 import BreadcrumbSchema from '@/components/layout/seo/breadcrumb-schema';
 import { generateProductMetadata } from '@/lib/seo/generate-product-metadata';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { Product } from '@/lib/types/product';
 
 interface ProductLayoutProps {
@@ -13,22 +14,9 @@ interface ProductLayoutProps {
 
 export async function generateMetadata({ params }: ProductLayoutProps) {
     const { slug } = await params;
-    let product: Product | null = null;
+    const product = await getProductBySlug(slug, { detailed: true });
 
-    try {
-        const response = await fetchStrapi(`products?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`);
-        console.log('Layout fetchStrapi response:', JSON.stringify(response, null, 2));
-        product = response.data[0] as Product;
-
-        if (!product) {
-            console.log('No product found for slug:', slug);
-            return {
-                title: 'Not Found | Everwell Magazine',
-                description: 'Product not found.',
-            };
-        }
-    } catch (error) {
-        console.error('Error fetching product for slug:', slug, error);
+    if (!product) {
         return {
             title: 'Not Found | Everwell Magazine',
             description: 'Product not found.',
@@ -37,7 +25,7 @@ export async function generateMetadata({ params }: ProductLayoutProps) {
 
     return generateProductMetadata({
         Name: product.Name,
-        slug,
+        slug: product.slug,
         Description: product.Description,
         metaDescription: product.metaDescription,
         image: product.image?.url,
@@ -46,21 +34,9 @@ export async function generateMetadata({ params }: ProductLayoutProps) {
 
 export default async function ProductLayout({ children, params }: ProductLayoutProps) {
     const { slug } = await params;
-    let product: Product | null = null;
+    const product = await getProductBySlug(slug, { detailed: true });
 
-    try {
-        const response = await fetchStrapi(`products?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`);
-        console.log('Layout fetchStrapi response:', JSON.stringify(response, null, 2));
-        product = response.data[0] as Product;
-
-        if (!product) {
-            console.log('No product found for slug:', slug);
-            notFound();
-        }
-    } catch (error) {
-        console.error('Error fetching product for slug:', slug, error);
-        notFound();
-    }
+    if (!product) notFound();
 
     return (
         <>
@@ -68,8 +44,8 @@ export default async function ProductLayout({ children, params }: ProductLayoutP
             <BreadcrumbSchema
                 items={[
                     { name: 'Home', url: '/' },
-                    { name: 'Products', url: '/products' },
-                    { name: product.Name, url: `/product/${slug}` },
+                    { name: product.categories?.[0]?.name || 'Products', url: `/${product.categories?.[0]?.slug || 'products'}` },
+                    { name: product.Name, url: `/product/${product.slug}` },
                 ]}
             />
             <div>{children}</div>

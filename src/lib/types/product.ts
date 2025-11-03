@@ -12,11 +12,19 @@ export interface ProductTag {
     color?: string;
 }
 
+export interface ProductCategoryParent {
+    id: number;
+    name: string;
+    slug: string;
+    type: string;
+}
+
 export interface ProductCategory {
     id: number;
     name: string;
     slug: string;
     type: string;
+    parent?: ProductCategoryParent | null; // ✅ thêm để dùng breadcrumb cha
 }
 
 export interface ProductImage {
@@ -63,7 +71,7 @@ export interface Product {
     Pricemulti?: Pricemulti[];
     priority?: number | null;
     image?: ProductImage;
-    tags?: ProductTag[];           // THÊM DÒNG NÀY
+    tags?: ProductTag[];
     categories: ProductCategory[];
     createdAt: string;
     updatedAt: string;

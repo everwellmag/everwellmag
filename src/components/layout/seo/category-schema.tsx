@@ -1,17 +1,19 @@
 // src/components/layout/seo/category-schema.tsx
 import type { Category } from '@/lib/types/category';
+import { SITE_DOMAIN } from '@/lib/config';
 
 interface CategorySchemaProps {
     category: Category;
 }
 
 export default function CategorySchema({ category }: CategorySchemaProps) {
-    const schema = {
+    // 👇 Dùng Record<string, unknown> thay cho any
+    const schema: Record<string, unknown> = {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
         name: category.name,
         description: category.description || `Explore ${category.name} content on Everwell Magazine.`,
-        url: `https://www.everwellmagazine.com/${category.slug}`,
+        url: `${SITE_DOMAIN}/${category.parent ? `${category.parent.slug}/${category.slug}` : category.slug}`,
         publisher: {
             '@type': 'Organization',
             name: 'Everwell Magazine',
@@ -21,6 +23,14 @@ export default function CategorySchema({ category }: CategorySchemaProps) {
             },
         },
     };
+
+    if (category.parent) {
+        (schema as Record<string, unknown>).isPartOf = {
+            '@type': 'CollectionPage',
+            name: category.parent.name,
+            url: `${SITE_DOMAIN}/${category.parent.slug}`,
+        };
+    }
 
     return (
         <script

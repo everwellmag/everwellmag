@@ -22,6 +22,12 @@ export interface ArticleCategory {
     name: string;
     slug: string;
     type: string;
+    parent?: {
+        id: number;
+        name: string;
+        slug: string;
+        type?: string;
+    } | null;
 }
 
 export interface ArticleImage {
@@ -30,6 +36,16 @@ export interface ArticleImage {
     caption?: string;
     width?: number;
     height?: number;
+}
+
+// ✅ Thêm interface cho Author
+export interface ArticleAuthor {
+    id: number;
+    name: string;
+    avatar?: {
+        url: string;
+        alternativeText?: string;
+    } | null;
 }
 
 export interface Article {
@@ -48,4 +64,7 @@ export interface Article {
     // === TAGS & CATEGORIES ===
     tags?: ArticleTag[];
     categories: ArticleCategory[];
+
+    // ✅ AUTHOR (bổ sung để fix lỗi TS)
+    author?: ArticleAuthor | null;
 }

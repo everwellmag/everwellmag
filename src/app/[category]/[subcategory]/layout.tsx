@@ -25,7 +25,8 @@ export async function generateMetadata({ params }: SubcategoryLayoutProps) {
 
     return generateCategoryMetadata({
         name: subcategoryData.name,
-        slug: `${category}/${subcategory}`,
+        slug: subcategory,
+        parentSlug: category, // ✅ thêm parentSlug
         description: subcategoryData.description,
         type: subcategoryData.type || 'mixed',
         image: subcategoryData.image?.url,
@@ -44,9 +45,9 @@ export default async function SubcategoryLayout({ children, params }: Subcategor
         <>
             <CategorySchema category={subcategoryData} />
             <BreadcrumbSchema
-                items={[ // Sửa từ items= thành items={}
+                items={[
                     { name: 'Home', url: '/' },
-                    { name: category, url: `/${category}` },
+                    { name: subcategoryData.parent?.name || category, url: `/${subcategoryData.parent?.slug || category}` },
                     { name: subcategoryData.name, url: `/${category}/${subcategory}` },
                 ]}
             />

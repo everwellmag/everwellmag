@@ -64,7 +64,7 @@ export default function Home() {
 
       <section className="relative h-[75vh] min-h-[600px] overflow-hidden">
         <Image
-          src="https://cms.everwellmagazine.com/uploads/everwell_magazine_banner_91a7caaa15.webp"
+          src="https://cms.everwellmagazine.com/uploads/banner_everwell_magazine_new_3bd43eab11.webp"
           alt="Everwell Magazine – Your Health Journey Starts Here"
           fill
           className="object-cover brightness-75"

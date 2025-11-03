@@ -1,34 +1,37 @@
 // src/components/common/breadcrumb.tsx
 import Link from 'next/link';
-import { getCategoryBySlug } from '@/lib/api/strapi/get-category';
-// XÓA DÒNG NÀY: import type { Category } from '@/lib/types/category';
 
 interface BreadcrumbProps {
+    parentSlug?: string;
+    parentName?: string;
     categorySlug?: string;
     categoryName?: string;
 }
 
-export default async function Breadcrumb({ categorySlug, categoryName }: BreadcrumbProps) {
+export default function Breadcrumb({
+    parentSlug,
+    parentName,
+    categorySlug,
+    categoryName,
+}: BreadcrumbProps) {
     if (!categorySlug || !categoryName) {
         return <span style={{ color: 'var(--text-secondary)' }}>Uncategorized</span>;
     }
 
-    const childCat = await getCategoryBySlug(categorySlug);
-    const parentCat = childCat?.parent;
-
-    if (parentCat) {
+    // Nếu có category cha (type mixed)
+    if (parentSlug && parentName) {
         return (
             <>
                 <Link
-                    href={`/${parentCat.slug}`}
+                    href={`/${parentSlug}`}
                     className="font-medium transition-colors hover:text-[var(--link-hover)]"
                     style={{ color: 'var(--link-color)' }}
                 >
-                    {parentCat.name}
+                    {parentName}
                 </Link>
                 <span className="text-gray-400">/</span>
                 <Link
-                    href={`/${parentCat.slug}/${categorySlug}`}
+                    href={`/${parentSlug}/${categorySlug}`}
                     className="font-medium transition-colors hover:text-[var(--link-hover)]"
                     style={{ color: 'var(--link-color)' }}
                 >
@@ -38,6 +41,7 @@ export default async function Breadcrumb({ categorySlug, categoryName }: Breadcr
         );
     }
 
+    // Nếu chỉ có category con (không có parent)
     return (
         <Link
             href={`/${categorySlug}`}

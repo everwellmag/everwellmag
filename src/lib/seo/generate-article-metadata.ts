@@ -11,19 +11,34 @@ interface ArticleMetadataOptions {
     image?: string;
 }
 
-export function generateArticleMetadata({ title, slug, description, blocks, image }: ArticleMetadataOptions): Metadata {
+export function generateArticleMetadata({
+    title,
+    slug,
+    description,
+    blocks,
+    image,
+}: ArticleMetadataOptions): Metadata {
     const metaTitle = `${title} | Everwell Magazine`;
-    const metaDescription = description || (
-        blocks
+
+    // === TỰ ĐỘNG TẠO DESCRIPTION ===
+    const metaDescription =
+        description ||
+        (blocks
             ? blocks
-                .filter(block => block.__component === 'content.markdown' && block.body)
-                .map(block => block.body!.replace(/[#*`[\]()]+/g, '').trim())
+                .filter(
+                    (block) =>
+                        ['shared.rich-text', 'content.markdown'].includes(block.__component) &&
+                        block.body
+                )
+                .map((block) =>
+                    block.body!.replace(/[#*`[\]()]+/g, '').trim()
+                )
                 .join(' ')
                 .substring(0, 160)
                 .replace(/\s+\S*$/, '...')
-            : `Read more about ${title} on Everwell Magazine.`
-    );
+            : `Read more about ${title} on Everwell Magazine.`);
 
+    // === XỬ LÝ ẢNH ===
     const articleImage = image
         ? image.startsWith('http')
             ? image
@@ -33,12 +48,7 @@ export function generateArticleMetadata({ title, slug, description, blocks, imag
     return {
         title: metaTitle,
         description: metaDescription,
-        keywords: [
-            title.toLowerCase(),
-            'health',
-            'wellness',
-            'everwell magazine',
-        ],
+        keywords: [title.toLowerCase(), 'health', 'wellness', 'everwell magazine'],
         alternates: {
             canonical: `${SITE_DOMAIN}/article/${slug}`,
         },
@@ -64,7 +74,7 @@ export function generateArticleMetadata({ title, slug, description, blocks, imag
             creator: '@everwellmag',
             title: metaTitle,
             description: metaDescription,
-            images: articleImage,
+            images: [articleImage],
         },
         other: {
             'og:image:secure_url': articleImage,

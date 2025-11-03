@@ -75,16 +75,28 @@ export default function ProductDetail({ product, comments, totalComments, curren
     return (
         <main className="container mx-auto px-4 py-10 max-w-5xl">
             {/* Breadcrumb */}
-            <nav className="mb-6 text-sm flex items-center gap-2 flex-wrap">
-                <Link href="/" className="font-medium hover:text-[var(--link-hover)]" style={{ color: 'var(--link-color)' }}>
+            <nav className="mb-6 text-sm flex items-center gap-2 flex-wrap pl-1">
+                <Link
+                    href="/"
+                    className="font-medium transition-colors hover:text-[var(--link-hover)]"
+                    style={{ color: 'var(--link-color)' }}
+                >
                     Home
                 </Link>
-                <span className="text-gray-400">/</span>
-                <Breadcrumb
-                    categorySlug={product.categories?.[0]?.slug}
-                    categoryName={product.categories?.[0]?.name}
-                />
+
+                {product.categories?.[0] && (
+                    <>
+                        <span className="text-gray-400">/</span>
+                        <Breadcrumb
+                            parentSlug={product.categories?.[0]?.parent?.slug}
+                            parentName={product.categories?.[0]?.parent?.name}
+                            categorySlug={product.categories?.[0]?.slug}
+                            categoryName={product.categories?.[0]?.name}
+                        />
+                    </>
+                )}
             </nav>
+
 
             {/* Gradient h1 */}
             <h1 className="text-2xl md:text-3xl font-bold text-center mb-8 bg-gradient-blue-purple-hover bg-clip-text text-transparent">

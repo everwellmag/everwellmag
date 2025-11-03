@@ -1,7 +1,6 @@
-// src/components/layout/navbar.tsx
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import SearchBar from '@/components/ui/search-bar';
@@ -14,13 +13,22 @@ export default function Navbar() {
     const touchEndX = useRef<number | null>(null);
 
     const toggleMenu = () => {
-        setIsMenuOpen(prev => !prev);
+        setIsMenuOpen((prev) => !prev);
         setOpenSubMenu(null);
     };
 
     const toggleSubMenu = (index: number) => {
-        setOpenSubMenu(prev => (prev === index ? null : index));
+        setOpenSubMenu((prev) => (prev === index ? null : index));
     };
+
+    // Khi mở menu => khóa scroll body
+    useEffect(() => {
+        if (isMenuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    }, [isMenuOpen]);
 
     const handleTouchStart = (e: React.TouchEvent) => {
         touchStartX.current = e.touches[0].clientX;
@@ -35,12 +43,8 @@ export default function Navbar() {
         if (touchStartX.current === null || touchEndX.current === null) return;
 
         const deltaX = touchEndX.current - touchStartX.current;
-
-        if (isMenuOpen && deltaX < -100) {
-            toggleMenu();
-        } else if (!isMenuOpen && deltaX > 100) {
-            setIsMenuOpen(true);
-        }
+        if (isMenuOpen && deltaX < -100) toggleMenu();
+        else if (!isMenuOpen && deltaX > 100) setIsMenuOpen(true);
 
         touchStartX.current = null;
         touchEndX.current = null;
@@ -174,12 +178,14 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* Mobile Menu – FULL WIDTH, MƯỢT NHƯ FILE CŨ */}
+            {/* Overlay */}
             <div
                 className={`md:hidden fixed inset-0 bg-black/50 transition-opacity duration-300 ${isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
                     }`}
                 onClick={toggleMenu}
             />
+
+            {/* Mobile Menu */}
             <div
                 className={`md:hidden fixed top-0 right-0 h-full w-full max-w-sm bg-gradient-blue-purple shadow-2xl transform transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
                     }`}
@@ -197,38 +203,30 @@ export default function Navbar() {
                         </button>
                     </div>
 
-                    {/* Search – KHÔNG ĐÓNG MENU */}
+                    {/* Search */}
                     <div className="mb-6">
-                        <SearchBar isMobile />
+                        <SearchBar isMobile onSearchComplete={() => setIsMenuOpen(false)} />
                     </div>
 
                     {/* Menu Items */}
                     {menuItems.map((item, index) => (
-                        <div
-                            key={index}
-                            className="border-b border-white/10 last:border-0"
-                        >
+                        <div key={index} className="border-b border-white/10 last:border-0">
                             <div
                                 className="flex justify-between items-center py-3 cursor-pointer select-none"
-                                onClick={(e) => {
-                                    if (item.subItems) {
-                                        // Nếu có submenu → toggle mở/đóng
-                                        e.preventDefault();
-                                        toggleSubMenu(index);
-                                    } else {
-                                        // Nếu KHÔNG có submenu → đi thẳng tới link cha
+                                onClick={() => {
+                                    if (item.subItems) toggleSubMenu(index);
+                                    else {
                                         toggleMenu();
                                         window.location.href = item.href;
                                     }
                                 }}
                             >
-                                {/* Link cha – click riêng chữ vẫn đi tới trang cha */}
                                 <Link
                                     href={item.href}
                                     className="text-lg font-medium text-white hover:text-blue-200 transition"
                                     onClick={(e) => {
-                                        e.stopPropagation(); // chặn mở submenu
-                                        toggleMenu(); // đóng menu
+                                        e.stopPropagation();
+                                        toggleMenu();
                                     }}
                                 >
                                     {item.label}
@@ -242,12 +240,7 @@ export default function Navbar() {
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
                                     >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M19 9l-7 7-7-7"
-                                        />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 )}
                             </div>
@@ -273,7 +266,6 @@ export default function Navbar() {
                             )}
                         </div>
                     ))}
-
 
                     {/* Theme Switcher */}
                     <div className="mt-8 pt-6 border-t border-white/10">

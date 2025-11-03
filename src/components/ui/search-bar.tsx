@@ -3,21 +3,31 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-export default function SearchBar({ isMobile = false }: { isMobile?: boolean }) {
+interface SearchBarProps {
+    isMobile?: boolean;
+    onSearchComplete?: () => void; // thêm callback để Navbar đóng menu
+}
+
+export default function SearchBar({ isMobile = false, onSearchComplete }: SearchBarProps) {
     const router = useRouter();
     const [query, setQuery] = useState('');
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!query.trim()) return;
+
         router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+
+        // callback đóng menu sau khi chuyển trang
+        if (onSearchComplete) {
+            setTimeout(() => onSearchComplete(), 200);
+        }
     };
 
     return (
         <form
             onSubmit={handleSubmit}
-            className={`flex items-center ${isMobile ? 'w-full gap-3' : 'w-48 md:w-64 gap-2'
-                }`}
+            className={`flex items-center ${isMobile ? 'w-full gap-3' : 'w-48 md:w-64 gap-2'}`}
         >
             <input
                 type="text"
@@ -36,7 +46,8 @@ export default function SearchBar({ isMobile = false }: { isMobile?: boolean }) 
                 type="submit"
                 className={`
           bg-white/20 text-white font-medium transition-colors duration-200
-          ${isMobile ? 'px-5 py-2 text-base' : 'px-4 py-2 text-sm'} rounded-md hover:bg-white/30
+          ${isMobile ? 'px-5 py-2 text-base' : 'px-4 py-2 text-sm'}
+          rounded-md hover:bg-white/30
         `}
             >
                 {isMobile ? 'Go' : 'Search'}

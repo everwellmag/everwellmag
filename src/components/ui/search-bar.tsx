@@ -1,16 +1,30 @@
-// src/components/ui/search-bar.tsx
 'use client';
 
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
 export default function SearchBar({ isMobile = false }: { isMobile?: boolean }) {
+    const router = useRouter();
+    const [query, setQuery] = useState('');
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!query.trim()) return;
+        router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+    };
+
     return (
         <form
-            action="/search"
-            className={`flex items-center ${isMobile ? 'w-full gap-3' : 'w-48 md:w-64 gap-2'}`}
+            onSubmit={handleSubmit}
+            className={`flex items-center ${isMobile ? 'w-full gap-3' : 'w-48 md:w-64 gap-2'
+                }`}
         >
             <input
                 type="text"
                 name="q"
                 placeholder="Search..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 className={`
           flex-1 min-w-0 border border-white/20 bg-white/10 text-white placeholder-white/50
           px-3 py-2 text-base rounded-md focus:outline-none focus:ring-2 focus:ring-white/30

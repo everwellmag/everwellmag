@@ -204,33 +204,51 @@ export default function Navbar() {
 
                     {/* Menu Items */}
                     {menuItems.map((item, index) => (
-                        <div key={index} className="border-b border-white/10 last:border-0">
-                            <div className="flex justify-between items-center py-3">
+                        <div
+                            key={index}
+                            className="border-b border-white/10 last:border-0"
+                        >
+                            <div
+                                className="flex justify-between items-center py-3 cursor-pointer select-none"
+                                onClick={(e) => {
+                                    if (item.subItems) {
+                                        // Nếu có submenu → toggle mở/đóng
+                                        e.preventDefault();
+                                        toggleSubMenu(index);
+                                    } else {
+                                        // Nếu KHÔNG có submenu → đi thẳng tới link cha
+                                        toggleMenu();
+                                        window.location.href = item.href;
+                                    }
+                                }}
+                            >
+                                {/* Link cha – click riêng chữ vẫn đi tới trang cha */}
                                 <Link
                                     href={item.href}
-                                    onClick={toggleMenu}
                                     className="text-lg font-medium text-white hover:text-blue-200 transition"
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // chặn mở submenu
+                                        toggleMenu(); // đóng menu
+                                    }}
                                 >
                                     {item.label}
                                 </Link>
+
                                 {item.subItems && (
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            toggleSubMenu(index);
-                                        }}
-                                        className="text-white p-2"
+                                    <svg
+                                        className={`w-5 h-5 text-white transition-transform duration-200 ${openSubMenu === index ? 'rotate-180' : ''
+                                            }`}
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
                                     >
-                                        <svg
-                                            className={`w-5 h-5 transition-transform duration-200 ${openSubMenu === index ? 'rotate-180' : ''
-                                                }`}
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </button>
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M19 9l-7 7-7-7"
+                                        />
+                                    </svg>
                                 )}
                             </div>
 
@@ -255,6 +273,7 @@ export default function Navbar() {
                             )}
                         </div>
                     ))}
+
 
                     {/* Theme Switcher */}
                     <div className="mt-8 pt-6 border-t border-white/10">

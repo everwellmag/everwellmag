@@ -48,11 +48,12 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                             <Image
                                 src={normalizeImageUrl(categoryData.image.url)}
                                 alt={categoryData.image.alternativeText || categoryData.name}
-                                width={128}
-                                height={80}
-                                className="w-full h-full object-cover"
-                                unoptimized
+                                width={600}
+                                height={400}
+                                className="w-full h-full object-cover rounded-lg"
                                 priority
+                                fetchPriority="high" // 🔥 giúp trình duyệt tải sớm
+                                sizes="(max-width: 768px) 100vw, 50vw" // giúp responsive LCP
                             />
                         ) : (
                             <div className="w-full h-full border-2 border-dashed border-gray-300 rounded-lg" />

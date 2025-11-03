@@ -47,12 +47,14 @@ export default async function SubCategoryPage({ params, searchParams }: SubCateg
                             <Image
                                 src={normalizeImageUrl(subcategoryData.image.url)}
                                 alt={subcategoryData.image.alternativeText || subcategoryData.name}
-                                width={128}
-                                height={80}
-                                className="w-full h-full object-cover"
-                                unoptimized
+                                width={600}
+                                height={400}
+                                className="w-full h-full object-cover rounded-lg"
                                 priority
+                                fetchPriority="high" // 🔥 giúp trình duyệt tải sớm
+                                sizes="(max-width: 768px) 100vw, 50vw" // giúp responsive LCP
                             />
+
                         ) : (
                             <div className="w-full h-full border-2 border-dashed border-gray-300 rounded-lg" />
                         )}

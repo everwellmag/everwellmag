@@ -29,10 +29,12 @@ export default function ArticleContent({ blocks }: ArticleContentProps) {
                                 <Image
                                     src={normalizeImageUrl(block.file.url) || DEFAULT_OG_IMAGE}
                                     alt={block.file.alternativeText || 'Article media'}
-                                    width={800}
-                                    height={600}
-                                    className="w-full max-w-2xl mx-auto rounded-lg shadow-md"
-                                    style={{ width: '100%', height: 'auto' }}
+                                    width={600}
+                                    height={400}
+                                    className="w-full h-full object-cover rounded-lg"
+                                    priority
+                                    fetchPriority="high" // 🔥 giúp trình duyệt tải sớm
+                                    sizes="(max-width: 768px) 100vw, 50vw" // giúp responsive LCP
                                 />
                             ) : (
                                 <p className="text-[var(--text-secondary)]">No content in this block.</p>

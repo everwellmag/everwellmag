@@ -23,7 +23,6 @@ export default function ProductList({
     pageSize,
     q,
 }: ProductListProps) {
-    // Sort client-side
     const sortedProducts = [...products].sort((a, b) => {
         const priorityA = a.priority ?? Number.MAX_SAFE_INTEGER;
         const priorityB = b.priority ?? Number.MAX_SAFE_INTEGER;
@@ -31,21 +30,20 @@ export default function ProductList({
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
-    // Base URL for pagination
     const baseUrl = q
         ? `/search?q=${encodeURIComponent(q)}`
         : `/${category}/${subcategory}`.replace(/\/$/, '');
 
     return (
         <div className="container mx-auto px-2 py-8">
-            {/* RESPONSIVE GRID: 1→2→3→4 columns */}
             <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-8">
-                {sortedProducts.map((product) => (
+                {sortedProducts.map((product, index) => (
                     <ProductCard
                         key={product.id}
                         product={product}
                         category={category}
                         subcategory={subcategory}
+                        priority={index === 0} // ✅ chỉ ảnh đầu tiên tải sớm
                     />
                 ))}
             </div>

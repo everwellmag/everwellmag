@@ -6,7 +6,7 @@ import ProductList from '@/components/content/products/product-list';
 import Image from 'next/image';
 import { CMS_DOMAIN } from '@/lib/config';
 
-export const revalidate = 600;
+export const revalidate = 3600; // ✅ ISR mỗi 1h thay vì 10 phút
 
 const normalizeImageUrl = (url?: string) => {
     if (!url) return '/placeholder.webp';
@@ -49,12 +49,15 @@ export default async function SubCategoryPage({ params, searchParams }: SubCateg
                                 alt={subcategoryData.image.alternativeText || subcategoryData.name}
                                 width={600}
                                 height={400}
-                                className="w-full h-full object-cover rounded-lg"
                                 priority
-                                fetchPriority="high" // 🔥 giúp trình duyệt tải sớm
-                                sizes="(max-width: 768px) 100vw, 50vw" // giúp responsive LCP
+                                fetchPriority="high" // ✅ giúp tải sớm LCP
+                                quality={80}
+                                placeholder="blur"
+                                blurDataURL="/placeholder.webp"
+                                sizes="(max-width: 768px) 100vw, 50vw"
+                                className="w-full h-auto object-cover rounded-lg"
+                                style={{ aspectRatio: '3 / 2' }} // ✅ giữ tỉ lệ, tránh CLS
                             />
-
                         ) : (
                             <div className="w-full h-full border-2 border-dashed border-gray-300 rounded-lg" />
                         )}

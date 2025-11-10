@@ -1,8 +1,15 @@
 // next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // ✅ Tối ưu hiệu suất build
+  reactStrictMode: true,
+  swcMinify: true,
+
+  // ✅ Cấu hình ảnh (bắt buộc giữ `unoptimized: true`)
   images: {
-    unoptimized: true, // NHẤT ĐỊNH PHẢI CÓ
+    unoptimized: true, // Giữ nguyên để build static / deploy Netlify
+    formats: ['image/avif', 'image/webp'], // hỗ trợ định dạng tối ưu
+    minimumCacheTTL: 31536000, // cache ảnh 1 năm
     remotePatterns: [
       {
         protocol: 'https',
@@ -13,6 +20,7 @@ const nextConfig = {
     ],
   },
 
+  // ✅ Cache headers
   async headers() {
     return [
       {
@@ -27,6 +35,7 @@ const nextConfig = {
     ];
   },
 
+  // ✅ Redirect toàn bộ domain lạ về domain chính
   async redirects() {
     return [
       {
@@ -34,13 +43,29 @@ const nextConfig = {
         has: [
           {
             type: 'host',
-            value: '^(?!localhost|www\\.everwellmagazine\\.com|everwellmagazine\\.com|cms\\.everwellmagazine\\.com).*$',
+            value:
+              '^(?!localhost|www\\.everwellmagazine\\.com|everwellmagazine\\.com|cms\\.everwellmagazine\\.com).*$',
           },
         ],
         destination: 'https://www.everwellmagazine.com/:path*',
         permanent: true,
       },
     ];
+  },
+
+  // ✅ Tối ưu code JS
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production', // xoá console.log khi build
+  },
+
+  // ✅ Chỉ target trình duyệt hiện đại để bỏ polyfill cũ
+  browserslist: [
+    'defaults and supports es6-module',
+    'maintained node versions',
+  ],
+
+  experimental: {
+    esmExternals: 'loose',
   },
 };
 

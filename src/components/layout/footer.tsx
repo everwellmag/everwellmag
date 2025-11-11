@@ -1,17 +1,16 @@
-// src/components/layout/footer.tsx
 "use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { DEFAULT_OG_LOGO } from '@/lib/config';
-import ThemeSwitcher from '@/components/ui/theme-switcher';
+import Link from "next/link";
+import Image from "next/image";
+import { DEFAULT_OG_LOGO } from "@/lib/config";
+import ThemeSwitcher from "@/components/ui/theme-switcher";
 
 export default function Footer() {
     const logoUrl = DEFAULT_OG_LOGO;
 
     return (
         <footer className="bg-gradient-blue-purple text-white py-12 w-full mx-0">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
                     {/* Left: Logo + Copyright */}
                     <div className="text-center md:text-left md:col-span-1">
@@ -21,28 +20,52 @@ export default function Footer() {
                                 alt="Everwell Magazine Logo"
                                 width={200}
                                 height={50}
+                                priority
+                                style={{
+                                    aspectRatio: "200/50",
+                                    objectFit: "contain",
+                                }}
                                 className="mx-auto md:mx-0"
                             />
                         </div>
                         <div className="mt-4 border-t border-white/20 pt-2 text-center text-xs opacity-80">
                             <p>Designed with ❤️ for health enthusiasts</p>
                         </div>
-
                     </div>
 
-                    {/* Middle Left: Quick Links - Dọc hoàn toàn, mỗi link 1 dòng */}
+                    {/* Middle Left: Legal Links */}
                     <div className="text-center md:text-left md:col-span-1">
                         <h4 className="text-lg font-semibold mb-4">Legal Links</h4>
                         <ul className="space-y-2 text-sm opacity-90">
-                            <li><Link href="/about" className="hover:underline">About</Link></li>
-                            <li><Link href="/terms" className="hover:underline">Terms</Link></li>
-                            <li><Link href="/privacy" className="hover:underline">Privacy</Link></li>
-                            <li><Link href="/affiliate-disclosure" className="hover:underline">Affiliate Disclosure</Link></li>
-                            <li><Link href="/medical-disclaimer" className="hover:underline">Medical Disclaimer</Link></li>
+                            <li>
+                                <Link href="/about" className="hover:underline">
+                                    About
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/terms" className="hover:underline">
+                                    Terms
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/privacy" className="hover:underline">
+                                    Privacy
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/affiliate-disclosure" className="hover:underline">
+                                    Affiliate Disclosure
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/medical-disclaimer" className="hover:underline">
+                                    Medical Disclaimer
+                                </Link>
+                            </li>
                         </ul>
                     </div>
 
-                    {/* Middle Right: Social Links with Icons */}
+                    {/* Middle Right: Social Links */}
                     <div className="flex flex-col items-center md:col-span-1">
                         <h4 className="text-lg font-semibold mb-4">Follow Us</h4>
                         <div className="flex gap-6">
@@ -56,6 +79,8 @@ export default function Footer() {
                                     alt="Facebook"
                                     width={40}
                                     height={40}
+                                    loading="lazy"
+                                    style={{ aspectRatio: "1/1" }}
                                 />
                             </a>
                             <a
@@ -65,9 +90,11 @@ export default function Footer() {
                             >
                                 <Image
                                     src="https://cms.everwellmagazine.com/uploads/everwellmag_X_icon_7240bb70e5.svg"
-                                    alt="X"
+                                    alt="X (Twitter)"
                                     width={40}
                                     height={40}
+                                    loading="lazy"
+                                    style={{ aspectRatio: "1/1" }}
                                 />
                             </a>
                             <a
@@ -80,19 +107,26 @@ export default function Footer() {
                                     alt="Instagram"
                                     width={40}
                                     height={40}
+                                    loading="lazy"
+                                    style={{ aspectRatio: "1/1" }}
                                 />
                             </a>
                         </div>
                     </div>
 
-                    {/* Right: Contact + Newsletter (optional) */}
+                    {/* Right: Contact + Newsletter */}
                     <div className="text-center md:text-right md:col-span-1">
                         <h4 className="text-lg font-semibold mb-4">Stay Connected</h4>
                         <p className="text-sm mb-2 opacity-90">
-                            Contact us: <a href="mailto:support@everwellmagazine.com" className="hover:underline">support@everwellmagazine.com</a>
+                            Contact us:{" "}
+                            <a
+                                href="mailto:support@everwellmagazine.com"
+                                className="hover:underline"
+                            >
+                                support@everwellmagazine.com
+                            </a>
                         </p>
-                        {/* Newsletter form simple - nếu muốn add, connect với api/subscribe */}
-                        <form className="flex flex-col gap-2 mt-4">
+                        <form className="flex flex-col gap-2 mt-4 min-h-[100px]">
                             <input
                                 type="email"
                                 placeholder="Subscribe to our newsletter"
@@ -108,8 +142,8 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Theme Switcher */}
-                <div className="mt-6">
+                {/* Theme Switcher with fixed height */}
+                <div className="mt-6 min-h-[2rem] flex justify-center items-center">
                     <ThemeSwitcher />
                 </div>
 

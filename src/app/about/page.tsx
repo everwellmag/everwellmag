@@ -12,7 +12,7 @@ export default function AboutPage() {
           knowledge on nutrition, fitness, and overall well-being.
         </p>
         <p>
-          Founded in 2026, our team of experts curates content to guide you
+          Founded in 2025, our team of experts curates content to guide you
           through your wellness journey. Whether you’re looking for diet plans,
           weight loss tips, or the best supplements, we’ve got you covered.
         </p>

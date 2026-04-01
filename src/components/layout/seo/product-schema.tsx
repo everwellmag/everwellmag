@@ -1,6 +1,6 @@
 // src/components/layout/seo/product-schema.tsx
 import type { Product } from "@/lib/types/product";
-import { SITE_DOMAIN, DEFAULT_OG_IMAGE, DEFAULT_OG_LOGO } from "@/lib/config";
+import { SITE_DOMAIN, DEFAULT_OG_IMAGE } from "@/lib/config";
 
 interface ProductSchemaProps {
   product: Product;
